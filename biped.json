@@ -1,6 +1,6 @@
 {
     "game": "BipedalWalker",
-    "maxFitness": -20,
+    "maxFitness": -250,
     "nStep": 1600,
     "NN-struc": [24, 20, 4, 1],
     "stdev_init": 0.1,
@@ -14,5 +14,6 @@
     "//comment2": "Parameter2 is leg height",
     "parameter2": [34, 35],
     "step_sizes": [1, 2],
-    "actors": 4
+    "actors": 4,
+    "training_schedule": "incremental"
 }

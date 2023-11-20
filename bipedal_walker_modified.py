@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING, List, Optional
 
 import numpy as np
 
-import gym
-from gym import error, spaces
-from gym.error import DependencyNotInstalled
-from gym.utils import EzPickle
+import gymnasium as gym
+from gymnasium import error, spaces
+from gymnasium.error import DependencyNotInstalled
+from gymnasium.utils import EzPickle
 
 try:
     import Box2D

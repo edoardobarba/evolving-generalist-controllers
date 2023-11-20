@@ -8,9 +8,48 @@ from cartpole_modified import CartPoleEnv
 import os
 
 
+def get_mean(parameter1_range, parameter2_range):
+    mean_par1 = np.mean(np.array(parameter1_range))
+    mean_par2 = np.mean(np.array(parameter2_range))
+
+    return mean_par1, mean_par2
+
+def get_var(parameter1_range, parameter2_range):
+    percentage_of_range = 0.4
+    std_dev_par1 = (parameter1_range[1]-parameter1_range[0]) * percentage_of_range / 2
+    std_dev_par2 = (parameter2_range[1]-parameter2_range[0]) * percentage_of_range / 2
+
+    print(std_dev_par1)
+    print(std_dev_par2)
+    return std_dev_par1, std_dev_par2
+
+
+# def clip_values(morphologies, parameter1_range, parameter2_range):
+#     morphologies[:, 0] = np.clip(morphologies[:, 0], parameter1_range[0], parameter1_range[1])
+#     morphologies[:, 1] = np.clip(morphologies[:, 1], parameter2_range[0], parameter2_range[1])
+#     return morphologies
+
+def generate_samples(parameter1_range, parameter2_range, num_samples):
+    mean_p1, mean_p2 = get_mean(parameter1_range, parameter2_range)
+    std_dev_p1, std_dev_p2 = get_var(parameter1_range, parameter2_range)
+    morphologies = []
+    for _ in range(num_samples):
+        p1 = np.random.normal(loc=mean_p1, scale=std_dev_p1)
+        while(p1 < parameter1_range[0] or p1 > parameter1_range[1]):
+            p1 = np.random.normal(loc=mean_p1, scale=std_dev_p1)
+
+        p2 = np.random.normal(loc=mean_p2, scale=std_dev_p2)
+        while(p2 < parameter2_range[0] or p2 > parameter2_range[1]):
+            p2 = np.random.normal(loc=mean_p2, scale=std_dev_p2)
+
+        morphologies.append([p1, p2])
+        
+    return np.array(morphologies)
+
+
 def generate_morphologies(parameter1_range, parameter2_range, step_sizes):
-    parameter1_values = np.arange(parameter1_range[0], parameter1_range[1], step_sizes[0])
-    parameter2_values = np.arange(parameter2_range[0], parameter2_range[1], step_sizes[1])
+    parameter1_values = np.arange(parameter1_range[0], parameter1_range[1] + 0.1, step_sizes[0])
+    parameter2_values = np.arange(parameter2_range[0], parameter2_range[1] + 0.1, step_sizes[1])
 
     morphologies = np.array(np.meshgrid(parameter1_values, parameter2_values)).T.reshape(-1, 2)
 

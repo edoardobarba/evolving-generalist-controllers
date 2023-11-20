@@ -8,10 +8,10 @@ from typing import Optional, Union
 
 import numpy as np
 
-import gym
-from gym import logger, spaces
-from gym.envs.classic_control import utils
-from gym.error import DependencyNotInstalled
+import gymnasium as gym
+from gymnasium import logger, spaces
+from gymnasium.envs.classic_control import utils
+from gymnasium.error import DependencyNotInstalled
 
 
 class CartPoleEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):

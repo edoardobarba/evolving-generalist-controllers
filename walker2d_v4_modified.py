@@ -1,8 +1,9 @@
 import numpy as np
 
-from gym import utils
-from gym.envs.mujoco import MujocoEnv
-from gym.spaces import Box
+import gymnasium as gym
+from gymnasium import utils
+from gymnasium.envs.mujoco import MujocoEnv
+from gymnasium.spaces import Box
 
 DEFAULT_CAMERA_CONFIG = {
     "trackbodyid": 2,
