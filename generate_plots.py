@@ -63,11 +63,17 @@ def plot_heatmap(all_variations, scores, title, save_path = None):
         plt.show()
 
 def plot_boxplots(history_reward_in_distr, history_reward_out_distr, history_reward_in_out_distr, title, save_path = None):
-    avg_scores_IN = np.mean(history_reward_in_distr, axis=0)
-    avg_scores_OUT = np.mean(history_reward_out_distr, axis=0)
-    avg_scores_INOUT = np.mean(history_reward_in_out_distr, axis=0)
+
+    avg_scores_IN = np.mean(history_reward_in_distr, axis=1)
+
+    avg_scores_OUT = np.mean(history_reward_out_distr, axis=1)
+    avg_scores_INOUT = np.mean(history_reward_in_out_distr, axis=1)
     data = [avg_scores_IN, avg_scores_OUT, avg_scores_INOUT]
     labels = ['IN', 'OUT', 'IN+OUT']
+
+    print(np.median(avg_scores_IN))
+    print(np.median(avg_scores_OUT))
+    print(np.median(avg_scores_INOUT))
 
     fig, ax = plt.subplots(figsize=(10, 7))
 
