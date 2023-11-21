@@ -8,12 +8,12 @@
     "generations": 5000,
     "filename": "Results_Cart",
     "xml": "None",
-    "runs": 2,
+    "runs": 10,
     "//comment1": "Parameter1 is mass",
     "parameter1": [0.05, 0.5],
     "//comment2": "Parameter2 is pole height",
     "parameter2": [0.25, 0.75],
     "step_sizes": [0.05, 0.1],
-    "actors": 4,
-    "training_schedule": "incremental"
+    "actors": 1,
+    "training_schedule": "Gaussian1"
 }

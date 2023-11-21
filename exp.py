@@ -6,6 +6,7 @@ import os
 import sys
 from datetime import datetime
 import shutil
+import time
 
 
 
@@ -47,13 +48,12 @@ def experiment_run(config):
     path = path + training_schedule + "/"
     timestamp_str = datetime.now().strftime("%Y%m%d%H%M%S")
     path = path + timestamp_str
-    os.makedirs(path, exist_ok=True)
 
     filename = "config.json"
     # Ensure the directory exists
     os.makedirs(path, exist_ok=True)
     # Combine the directory and filename to create the full path
-    new_file_path = os.path.join(path, filename)
+    new_file_path = path + "/" + filename
 
     # Save the config dictionary as a JSON file in the new directory
     with open(new_file_path, 'w') as new_json_file:
@@ -62,9 +62,10 @@ def experiment_run(config):
     for i in range(runs):
         variations = generate_morphologies(parameter1_range, parameter2_range, step_sizes)
         print("run: ", i)
-        path = path + str(i)
+        run_path = path + "/" + str(i)
+        print(run_path)
         # Ensure the directory exists
-        os.makedirs(path, exist_ok=True)
+        os.makedirs(run_path, exist_ok=True)
         cluster_count = 0
         generations = config['generations']
         
@@ -74,7 +75,7 @@ def experiment_run(config):
 
 
 
-            run = Algo(game=config['game'], path=path, xml_path=config['xml'], variations=variations,
+            run = Algo(game=config['game'], path=run_path, xml_path=config['xml'], variations=variations,
                        config=config, generation=generations, run_id=i, cluster_id=cluster_count, gauss_mean=mean, 
                        gauss_cov=cov)
             generation, variations = run.main()

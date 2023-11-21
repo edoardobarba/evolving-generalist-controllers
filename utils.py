@@ -8,16 +8,55 @@ from cartpole_modified import CartPoleEnv
 import os
 
 
+CARTPOLE_IN_LOWER_MASSPOLE = 0.05
+CARTPOLE_IN_UPPER_MASSPOLE = 0.5
+CARTPOLE_OUT_LOWER_MASSPOLE = 0.01
+CARTPOLE_OUT_UPPER_MASSPOLE = 1.0
+
+CARTPOLE_IN_LOWER_LENGTH = 0.25
+CARTPOLE_IN_UPPER_LENGTH = 0.75
+CARTPOLE_OUT_LOWER_LENGTH = 0.05
+CARTPOLE_OUT_UPPER_LENGTH = 1.0
+
+CARTPOLE_DEFAULT__MASS = 0.1
+CARTPOLE_DEFAULT_LENGTH = 0.5
+
+def get_validation_set():
+    parameter1_range = [CARTPOLE_IN_LOWER_MASSPOLE, CARTPOLE_IN_UPPER_MASSPOLE]
+    parameter2_range = [CARTPOLE_IN_LOWER_LENGTH, CARTPOLE_IN_UPPER_LENGTH]
+    
+    return generate_morphologies(parameter1_range, parameter2_range, [0.1, 0.1]) 
+
 def get_mean(parameter1_range, parameter2_range):
     mean_par1 = np.mean(np.array(parameter1_range))
     mean_par2 = np.mean(np.array(parameter2_range))
 
     return mean_par1, mean_par2
 
-def get_var(parameter1_range, parameter2_range):
-    percentage_of_range = 0.4
-    std_dev_par1 = (parameter1_range[1]-parameter1_range[0]) * percentage_of_range / 2
-    std_dev_par2 = (parameter2_range[1]-parameter2_range[0]) * percentage_of_range / 2
+def get_std(parameter1_range, parameter2_range, distr):
+    if distr == "Gaussian1":
+        mid_p1 = (parameter1_range[1]-parameter1_range[0])/2
+        right_mid_p1 = (parameter1_range[1]-mid_p1)/2
+        std_dev_par1 = (right_mid_p1 - mid_p1)
+
+        mid_p2 = (parameter2_range[1]-parameter2_range[0])/2
+        right_mid_p2 = (parameter2_range[1]-mid_p2)/2
+        std_dev_par2 = (right_mid_p2 - mid_p2)
+        # percentage_of_range = 0.4
+        # std_dev_par1 = (parameter1_range[1]-parameter1_range[0]) * percentage_of_range / 2
+        # std_dev_par2 = (parameter2_range[1]-parameter2_range[0]) * percentage_of_range / 2
+
+
+    elif distr == "Gaussian2":
+        mid_p1 = (parameter1_range[1]-parameter1_range[0])/2
+        right_mid_p1 = (parameter1_range[1]-mid_p1)/2
+        right_right_mid_p1 = (parameter1_range[1]-right_mid_p1)/2
+        std_dev_par1 = (right_right_mid_p1 - mid_p1)
+
+        mid_p2 = (parameter2_range[1]-parameter2_range[0])/2
+        right_mid_p2 = (parameter2_range[1]-mid_p2)/2
+        right_right_mid_p2 = (parameter2_range[1]-right_mid_p2)/2
+        std_dev_par2 = (right_right_mid_p2 - mid_p2)
 
     print(std_dev_par1)
     print(std_dev_par2)
@@ -29,21 +68,22 @@ def get_var(parameter1_range, parameter2_range):
 #     morphologies[:, 1] = np.clip(morphologies[:, 1], parameter2_range[0], parameter2_range[1])
 #     return morphologies
 
-def generate_samples(parameter1_range, parameter2_range, num_samples):
-    mean_p1, mean_p2 = get_mean(parameter1_range, parameter2_range)
-    std_dev_p1, std_dev_p2 = get_var(parameter1_range, parameter2_range)
-    morphologies = []
-    for _ in range(num_samples):
-        p1 = np.random.normal(loc=mean_p1, scale=std_dev_p1)
-        while(p1 < parameter1_range[0] or p1 > parameter1_range[1]):
+def generate_samples(parameter1_range, parameter2_range, num_samples, distr = "Gaussian1"):
+    if distr=="Gaussian1" or distr == "Gaussian2":
+        mean_p1, mean_p2 = get_mean(parameter1_range, parameter2_range)
+        std_dev_p1, std_dev_p2 = get_std(parameter1_range, parameter2_range, distr)
+        morphologies = []
+        for _ in range(num_samples):
             p1 = np.random.normal(loc=mean_p1, scale=std_dev_p1)
+            while(p1 < parameter1_range[0] or p1 > parameter1_range[1]):
+                p1 = np.random.normal(loc=mean_p1, scale=std_dev_p1)
 
-        p2 = np.random.normal(loc=mean_p2, scale=std_dev_p2)
-        while(p2 < parameter2_range[0] or p2 > parameter2_range[1]):
             p2 = np.random.normal(loc=mean_p2, scale=std_dev_p2)
+            while(p2 < parameter2_range[0] or p2 > parameter2_range[1]):
+                p2 = np.random.normal(loc=mean_p2, scale=std_dev_p2)
 
-        morphologies.append([p1, p2])
-        
+            morphologies.append([p1, p2])
+            
     return np.array(morphologies)
 
 
