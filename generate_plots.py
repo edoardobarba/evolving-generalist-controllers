@@ -52,6 +52,9 @@ def plot_heatmap(all_variations, scores, title, save_path = None):
     plt.title(title)
     plt.xlabel('Parameter 1')
     plt.ylabel('Parameter 2')
+    # Automatically adjust subplot parameters for a tight layout
+    plt.tight_layout()
+
     #plt.show()
     if save_path:
         save_path=os.path.join(save_path, "HeatMap " + title + ".png")
@@ -80,6 +83,9 @@ def plot_boxplots(history_reward_in_distr, history_reward_out_distr, history_rew
     ax.set_title(title)
     #ax.set_xlabel('Groups')
     ax.set_ylabel('Reward')
+    # Automatically adjust subplot parameters for a tight layout
+    plt.tight_layout()
+
 
     # Show legend
     #ax.legend()
@@ -122,7 +128,7 @@ if __name__ == "__main__":
     datafile_path = str(sys.argv[1])
     data = np.load(datafile_path)
     plots_path = os.path.join(os.path.dirname(datafile_path), "plots") 
-    os.makedirs(os.path.dirname(plots_path), exist_ok=True)
+    os.makedirs(plots_path, exist_ok=True)
 
 
     all_history_rewards_IN = data['all_history_rewards_IN']
@@ -151,9 +157,9 @@ if __name__ == "__main__":
     IN_variations = get_variations(test_set="IN")
     OUT_variations = get_variations(test_set="OUT")
     INOUT_variations = get_variations(test_set="INOUT")
-    print("len(IN_variations):" ,len(IN_variations))
-    print("len(OUT_variations):" ,len(OUT_variations))
-    print("len(INOUT_variations):" ,len(INOUT_variations))
+    # print("len(IN_variations):" ,len(IN_variations))
+    # print("len(OUT_variations):" ,len(OUT_variations))
+    # print("len(INOUT_variations):" ,len(INOUT_variations))
 
     plot_heatmap(IN_variations, all_history_rewards_IN, title='IN-Distribution', save_path=plots_path)
     plot_heatmap(OUT_variations, all_history_rewards_OUT, title='OUT-Distribution', save_path=plots_path)

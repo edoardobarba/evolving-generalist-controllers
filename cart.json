@@ -15,5 +15,5 @@
     "parameter2": [0.25, 0.75],
     "step_sizes": [0.05, 0.1],
     "actors": 1,
-    "training_schedule": "Gaussian1"
+    "training_schedule": "gaussian2"
 }

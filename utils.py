@@ -28,35 +28,40 @@ def get_validation_set():
     return generate_morphologies(parameter1_range, parameter2_range, [0.1, 0.1]) 
 
 def get_mean(parameter1_range, parameter2_range):
-    mean_par1 = np.mean(np.array(parameter1_range))
-    mean_par2 = np.mean(np.array(parameter2_range))
+    mean_par1 = (parameter1_range[1] + parameter1_range[0]) / 2
+    mean_par2 = (parameter2_range[1] + parameter2_range[0]) / 2
 
     return mean_par1, mean_par2
 
 def get_std(parameter1_range, parameter2_range, distr):
-    if distr == "Gaussian1":
-        mid_p1 = (parameter1_range[1]-parameter1_range[0])/2
-        right_mid_p1 = (parameter1_range[1]-mid_p1)/2
+    if distr == "gaussian1":
+        
+        mid_p1 = (parameter1_range[1] + parameter1_range[0]) / 2
+        right_mid_p1 = (parameter1_range[1] + mid_p1) / 2
         std_dev_par1 = (right_mid_p1 - mid_p1)
-
-        mid_p2 = (parameter2_range[1]-parameter2_range[0])/2
-        right_mid_p2 = (parameter2_range[1]-mid_p2)/2
+        mid_p2 = (parameter2_range[1] + parameter2_range[0]) / 2
+        right_mid_p2 = (parameter2_range[1] + mid_p2) / 2
         std_dev_par2 = (right_mid_p2 - mid_p2)
+        print("std 1:", std_dev_par1)
+        print("std 2:", std_dev_par2)
+
         # percentage_of_range = 0.4
         # std_dev_par1 = (parameter1_range[1]-parameter1_range[0]) * percentage_of_range / 2
         # std_dev_par2 = (parameter2_range[1]-parameter2_range[0]) * percentage_of_range / 2
 
-
-    elif distr == "Gaussian2":
-        mid_p1 = (parameter1_range[1]-parameter1_range[0])/2
-        right_mid_p1 = (parameter1_range[1]-mid_p1)/2
-        right_right_mid_p1 = (parameter1_range[1]-right_mid_p1)/2
+    elif distr == "gaussian2":
+        
+        mid_p1 = (parameter1_range[1] + parameter1_range[0]) / 2
+        right_mid_p1 = (parameter1_range[1] + mid_p1) / 2
+        right_right_mid_p1 = (parameter1_range[1] + right_mid_p1) / 2
         std_dev_par1 = (right_right_mid_p1 - mid_p1)
 
-        mid_p2 = (parameter2_range[1]-parameter2_range[0])/2
-        right_mid_p2 = (parameter2_range[1]-mid_p2)/2
-        right_right_mid_p2 = (parameter2_range[1]-right_mid_p2)/2
+        mid_p2 = (parameter2_range[1] + parameter2_range[0]) / 2
+        right_mid_p2 = (parameter2_range[1] + mid_p2) / 2
+        right_right_mid_p2 = (parameter2_range[1] + right_mid_p2) / 2
         std_dev_par2 = (right_right_mid_p2 - mid_p2)
+        print("std 1:", std_dev_par1)
+        print("std 2:", std_dev_par2)
 
     print(std_dev_par1)
     print(std_dev_par2)
@@ -69,7 +74,7 @@ def get_std(parameter1_range, parameter2_range, distr):
 #     return morphologies
 
 def generate_samples(parameter1_range, parameter2_range, num_samples, distr = "Gaussian1"):
-    if distr=="Gaussian1" or distr == "Gaussian2":
+    if distr=="gaussian1" or distr == "gaussian2":
         mean_p1, mean_p2 = get_mean(parameter1_range, parameter2_range)
         std_dev_p1, std_dev_p2 = get_std(parameter1_range, parameter2_range, distr)
         morphologies = []

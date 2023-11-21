@@ -1,6 +1,7 @@
 import json
 from utils import generate_morphologies
 from utils import generate_samples
+from utils import get_validation_set
 from evo import Algo
 import os
 import sys
@@ -25,33 +26,37 @@ def experiment_run(config):
         variations = generate_morphologies(parameter1_range, parameter2_range, step_sizes)
     else: 
         #mean, cov = get_initial_mean_cov()
-        variations = generate_samples(parameter1_range, parameter2_range, num_samples=66)
+        variations = generate_samples(parameter1_range, parameter2_range, num_samples=config['generations'], distr=training_schedule)
     
-    
-    # print("VARIATIONS: ")
-    # print(variations)
-    # # Create a scatter plot
-    # sns.scatterplot(x=variations[:, 0], y=variations[:, 1])
-    # # Set x-axis and y-axis limits
-    # plt.xlim(parameter1_range)
-    # plt.ylim(parameter2_range)
 
-    # # Set plot labels
-    # plt.title('Incremental discrete sampling')
-    # plt.xlabel('Pole Mass (parameter 1)')
-    # plt.ylabel('Pole Lenght (parameter 2)')
-
-    # # Display the plot
-    # plt.show()
     folder_name = config['filename']
     path = f"{folder_name}/" 
     path = path + training_schedule + "/"
     timestamp_str = datetime.now().strftime("%Y%m%d%H%M%S")
     path = path + timestamp_str
-
-    filename = "config.json"
     # Ensure the directory exists
     os.makedirs(path, exist_ok=True)
+
+    # print("VARIATIONS: ")
+    # print(variations)
+    # Create a scatter plot
+    sns.scatterplot(x=variations[:, 0], y=variations[:, 1])
+    # Set x-axis and y-axis limits
+    plt.xlim(parameter1_range)
+    plt.ylim(parameter2_range)
+
+    # Set plot labels
+    plt.title(training_schedule)
+    plt.xlabel('Pole Mass (parameter 1)')
+    plt.ylabel('Pole Lenght (parameter 2)')
+    save_plot_path = os.path.join(path, "Variations_generated_" + training_schedule + ".png")
+
+    plt.savefig(save_plot_path)
+    # Display the plot
+    # plt.show()
+
+    filename = "config.json"
+
     # Combine the directory and filename to create the full path
     new_file_path = path + "/" + filename
 
@@ -76,7 +81,7 @@ def experiment_run(config):
 
 
             run = Algo(game=config['game'], path=run_path, xml_path=config['xml'], variations=variations,
-                       config=config, generation=generations, run_id=i, cluster_id=cluster_count, gauss_mean=mean, 
+                       config=config, generation=generations, run_id=i, cluster_id=cluster_count, validation_set=get_validation_set(), gauss_mean=mean, 
                        gauss_cov=cov)
             generation, variations = run.main()
             generations = generations - generation

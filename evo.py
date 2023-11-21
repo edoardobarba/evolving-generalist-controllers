@@ -26,9 +26,10 @@ import matplotlib.pyplot as plt
 
         
 class Algo:
-    def __init__(self, game, path, xml_path, variations, config, run_id, cluster_id, generation, gauss_mean = None, gauss_cov = None):
+    def __init__(self, game, path, xml_path, variations, config, run_id, cluster_id, generation, validation_set, gauss_mean = None, gauss_cov = None):
         self.game = eval(game)
         self.variations = variations
+        self.validation_set = validation_set
         self.path = path
         self.xml_path = xml_path
         self.max_eval = generation
@@ -106,10 +107,10 @@ class Algo:
 
     def comparison(self, agent, mode, i):
         if mode == 1:
-            fitness = gym_render(self.game, agent, self.xml_path, self.variations[i], self.topology, self.steps)
+            fitness = gym_render(self.game, agent, self.xml_path, self.validation_set[i], self.topology, self.steps)
             return fitness
         else:
-            fitness = gym_render(self.game, agent, self.xml_path, self.variations[i], self.topology, self.steps)
+            fitness = gym_render(self.game, agent, self.xml_path, self.validation_set[i], self.topology, self.steps)
             return fitness
 
     # main function to run the evolution
@@ -124,8 +125,8 @@ class Algo:
         current_pop_best_fitness = self.max_eval  # Stores the best fitness in the current population.
         generalist_average_fitness = self.max_eval  # Represents the average fitness of the generalist individual across different environments.
         env_counter = 0  # Counts the current environment iteration in the loop.
-        generalist_fitness_scores = np.zeros(len(self.variations))  # An array to store fitness scores of the generalist individual across different environments.
-        good_fitness_scores = np.zeros(len(self.variations))  # Stores fitness scores for environments that are considered "good" based on certain criteria.
+        generalist_fitness_scores = np.zeros(len(self.validation_set))  # An array to store fitness scores of the generalist individual across different environments.
+        good_fitness_scores = np.zeros(len(self.validation_set))  # Stores fitness scores for environments that are considered "good" based on certain criteria.
         number_environments = []  # Records the number of environments at each iteration.
         bad_environments = []  # Stores the environments that are considered "bad" and will be eliminated.
         generalist_average_fitness_history = []  # Records the history of average fitness of the generalist individual across iterations.
@@ -213,33 +214,33 @@ class Algo:
                     else:
                         good_envs = []
 
-                        for i in range(len(self.variations)):
+                        for i in range(len(self.validation_set)):
                             if good_fitness_scores[i] < (generalist_average_fitness + generalist_old_dev):
-                                good_envs.append(self.variations[i])
+                                good_envs.append(self.validation_set[i])
                             else:
-                                bad_environments.append(self.variations[i])
+                                bad_environments.append(self.validation_set[i])
 
                         if len(good_envs) == 0:
                             print("primo break")
                             break
-                        elif len(good_envs) == len(self.variations):
+                        elif len(good_envs) == len(self.validation_set):
                             print("secondo break")
                             break
 
-                        self.variations = np.array(good_envs)
+                        self.validation_set = np.array(good_envs)
 
                         compare = joblib.Parallel(n_jobs=self.actors)(
                             joblib.delayed(self.comparison)(generalist_weights, 0, i)
-                            for i in range(len(self.variations)))
+                            for i in range(len(self.validation_set)))
 
                         generalist_fitness_scores = np.array(compare)
                         new_generalist_average_fitness = np.mean(generalist_fitness_scores)
                         if new_generalist_average_fitness < generalist_average_fitness:
                             good_fitness_scores = generalist_fitness_scores.copy()
-                        env_counter = len(self.variations) - 1
+                        env_counter = len(self.validation_set) - 1
                         improved = searcher.status.get('iter')
 
-                        print(' no_envs : ', len(self.variations))
+                        print(' no_envs : ', len(self.validation_set))
 
                 env_counter += 1
                 if env_counter >= len(self.variations):
@@ -253,7 +254,7 @@ class Algo:
                 xbest_weights = xbest_weights_copy
                 generalist_weights = xbest_weights
 
-            number_environments.append(len(self.variations))
+            number_environments.append(len(self.validation_set))
             generation = searcher.status.get('iter')
 
             if generalist_average_fitness < self.max_fitness:
