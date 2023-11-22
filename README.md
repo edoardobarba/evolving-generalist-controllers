@@ -37,3 +37,12 @@ To run simulations, use the `exp.py` file. Make sure to follow these steps:
 If you are running Ant or Walker2D experiments the morphology variations need to be unzipped first.
 
 
+
+EXAMPLES
+
+python3 test.py cart.json /home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231121125950
+
+python3 generate_plots.py /home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231121125950/all_history_rewards_data.npz
+
+python3 generate_boxplots.py
+

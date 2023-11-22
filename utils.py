@@ -6,6 +6,7 @@ from walker2d_v4_modified import Walker2dEnv
 from bipedal_walker_modified import BipedalWalker
 from cartpole_modified import CartPoleEnv
 import os
+from scipy.stats import cauchy
 
 
 CARTPOLE_IN_LOWER_MASSPOLE = 0.05
@@ -34,7 +35,7 @@ def get_mean(parameter1_range, parameter2_range):
     return mean_par1, mean_par2
 
 def get_std(parameter1_range, parameter2_range, distr):
-    if distr == "gaussian1":
+    if distr == "gaussian1" or distr == "cauchy1":
         
         mid_p1 = (parameter1_range[1] + parameter1_range[0]) / 2
         right_mid_p1 = (parameter1_range[1] + mid_p1) / 2
@@ -49,7 +50,7 @@ def get_std(parameter1_range, parameter2_range, distr):
         # std_dev_par1 = (parameter1_range[1]-parameter1_range[0]) * percentage_of_range / 2
         # std_dev_par2 = (parameter2_range[1]-parameter2_range[0]) * percentage_of_range / 2
 
-    elif distr == "gaussian2":
+    elif distr == "gaussian2" or distr == "cauchy2":
         
         mid_p1 = (parameter1_range[1] + parameter1_range[0]) / 2
         right_mid_p1 = (parameter1_range[1] + mid_p1) / 2
@@ -74,10 +75,10 @@ def get_std(parameter1_range, parameter2_range, distr):
 #     return morphologies
 
 def generate_samples(parameter1_range, parameter2_range, num_samples, distr = "Gaussian1"):
+    morphologies = []
     if distr=="gaussian1" or distr == "gaussian2":
         mean_p1, mean_p2 = get_mean(parameter1_range, parameter2_range)
         std_dev_p1, std_dev_p2 = get_std(parameter1_range, parameter2_range, distr)
-        morphologies = []
         for _ in range(num_samples):
             p1 = np.random.normal(loc=mean_p1, scale=std_dev_p1)
             while(p1 < parameter1_range[0] or p1 > parameter1_range[1]):
@@ -88,13 +89,62 @@ def generate_samples(parameter1_range, parameter2_range, num_samples, distr = "G
                 p2 = np.random.normal(loc=mean_p2, scale=std_dev_p2)
 
             morphologies.append([p1, p2])
+        return np.array(morphologies)
+
+    elif distr=="cauchy1" or distr=="cauchy2": 
+        mean_p1, mean_p2 = get_mean(parameter1_range, parameter2_range)
+        std_dev_p1, std_dev_p2 = get_std(parameter1_range, parameter2_range, distr)
+        cauchy_dist_p1 = cauchy(loc=mean_p1, scale=std_dev_p1)
+        cauchy_dist_p2 = cauchy(loc=mean_p2, scale=std_dev_p2)
+        for _ in range(num_samples):
+            p1 = cauchy_dist_p1.rvs(1)
+            while(p1 < parameter1_range[0] or p1 > parameter1_range[1]):
+                p1 = cauchy_dist_p1.rvs(1)
+
+            p2 = cauchy_dist_p2.rvs(1)
+            while(p2 < parameter2_range[0] or p2 > parameter2_range[1]):
+                p2 = cauchy_dist_p2.rvs(1)
+
+
+            morphologies.append([p1[0], p2[0]])
             
-    return np.array(morphologies)
+        return np.array(morphologies)
+    
+    elif distr == "uniform": 
+        for _ in range(num_samples): 
+            p1 = np.random.uniform(parameter1_range[0], parameter1_range[1])
+            p2 = np.random.uniform(parameter2_range[0], parameter2_range[1])
+            morphologies.append([p1, p2])
+                
+        return np.array(morphologies)
+    
+
+def get_set(test_set, step_sizes):
+    if test_set == "IN": 
+        parameter1_range = [CARTPOLE_IN_LOWER_MASSPOLE, CARTPOLE_IN_UPPER_MASSPOLE]
+        parameter2_range = [CARTPOLE_IN_LOWER_LENGTH, CARTPOLE_IN_UPPER_LENGTH]
+        return generate_morphologies(parameter1_range, parameter2_range, step_sizes) 
+    
+    if test_set == "INOUT": 
+        parameter1_range = [CARTPOLE_OUT_LOWER_MASSPOLE, CARTPOLE_OUT_UPPER_MASSPOLE]
+        parameter2_range = [CARTPOLE_OUT_LOWER_LENGTH, CARTPOLE_OUT_UPPER_LENGTH]
+
+        return generate_morphologies(parameter1_range, parameter2_range, step_sizes)
+    
+    if test_set == "OUT": 
+        OUT_set = []
+        # IN_set = get_set("IN", step_sizes)
+        INOUT_set  = get_set("INOUT", step_sizes)
+        for element in INOUT_set:
+            if (element[0] < CARTPOLE_IN_LOWER_MASSPOLE or element[0] > CARTPOLE_IN_UPPER_MASSPOLE) and (element[1] < CARTPOLE_IN_LOWER_LENGTH or element[1] > CARTPOLE_IN_UPPER_LENGTH):
+                OUT_set.append(element)
+
+        return np.array(OUT_set)
 
 
 def generate_morphologies(parameter1_range, parameter2_range, step_sizes):
-    parameter1_values = np.arange(parameter1_range[0], parameter1_range[1] + 0.1, step_sizes[0])
-    parameter2_values = np.arange(parameter2_range[0], parameter2_range[1] + 0.1, step_sizes[1])
+    parameter1_values = np.arange(parameter1_range[0], parameter1_range[1] + step_sizes[0], step_sizes[0])
+    parameter2_values = np.arange(parameter2_range[0], parameter2_range[1] + step_sizes[1], step_sizes[1])
 
     morphologies = np.array(np.meshgrid(parameter1_values, parameter2_values)).T.reshape(-1, 2)
 
