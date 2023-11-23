@@ -15,19 +15,20 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 def experiment_run(config):
-    all_schedules = ['gaussian1', 'gaussian2', 'cauchy1', 'cauchy2', 'uniform']
+    all_schedules = ['incremental', 'gaussian1', 'gaussian2', 'cauchy1', 'cauchy2', 'uniform']
     #all_schedules = ['incremental', 'gaussian1', 'gaussian2', 'cauchy1', 'cauchy2', 'uniform']
+    all_schedules = ['incremental']
     for training_schedule in all_schedules:
 
         runs = config['runs']
         parameter1_range, parameter2_range = config['parameter1'], config['parameter2']
-        step_sizes = config['step_sizes']
+        incremental_step_sizes = config['incremental_step_sizes']
         # training_schedule = config['training_schedule']
 
         mean = None 
         cov = None 
         if training_schedule == "incremental":
-            variations = generate_morphologies(parameter1_range, parameter2_range, step_sizes)
+            variations = generate_morphologies(parameter1_range, parameter2_range, incremental_step_sizes)
         else: 
             #mean, cov = get_initial_mean_cov()
             variations = generate_samples(parameter1_range, parameter2_range, num_samples=config['generations'], distr=training_schedule)
@@ -69,7 +70,7 @@ def experiment_run(config):
             json.dump(config, new_json_file, indent=4)
 
         for i in range(runs):
-            variations = generate_morphologies(parameter1_range, parameter2_range, step_sizes)
+            # variations = generate_morphologies(parameter1_range, parameter2_range, step_sizes)
             print("run: ", i)
             run_path = path + "/runs/" + str(i)
             print(run_path)
@@ -81,13 +82,10 @@ def experiment_run(config):
             while len(variations) != 0:
                 cluster_count += 1
 
-
-
-
                 run = Algo(game=config['game'], path=run_path, xml_path=config['xml'], variations=variations,
-                        config=config, generation=generations, run_id=i, cluster_id=cluster_count, validation_set=get_validation_set(), gauss_mean=mean, 
+                        config=config, generation=generations, run_id=i, cluster_id=cluster_count, validation_set=get_validation_set(config['game']), gauss_mean=mean, 
                         gauss_cov=cov)
-                generation, variations = run.main()
+                generation, variations2 = run.main()
                 generations = generations - generation
 
 

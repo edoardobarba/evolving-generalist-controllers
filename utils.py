@@ -7,6 +7,7 @@ from bipedal_walker_modified import BipedalWalker
 from cartpole_modified import CartPoleEnv
 import os
 from scipy.stats import cauchy
+import gymnasium as gym
 
 
 CARTPOLE_IN_LOWER_MASSPOLE = 0.05
@@ -19,14 +20,36 @@ CARTPOLE_IN_UPPER_LENGTH = 0.75
 CARTPOLE_OUT_LOWER_LENGTH = 0.05
 CARTPOLE_OUT_UPPER_LENGTH = 1.0
 
-CARTPOLE_DEFAULT__MASS = 0.1
-CARTPOLE_DEFAULT_LENGTH = 0.5
+CARTPOLE_DEFAULT__MASS1 = 1
+CARTPOLE_DEFAULT_MASS2 = 1
 
-def get_validation_set():
-    parameter1_range = [CARTPOLE_IN_LOWER_MASSPOLE, CARTPOLE_IN_UPPER_MASSPOLE]
-    parameter2_range = [CARTPOLE_IN_LOWER_LENGTH, CARTPOLE_IN_UPPER_LENGTH]
+
+
+ACROBOT_IN_LOWER_MASS1 = 0.3
+ACROBOT_IN_UPPER_MASS1 = 0.7
+ACROBOT_OUT_LOWER_MASS1 = 0.1
+ACROBOT_OUT_UPPER_MASS1 = 1.0
+
+ACROBOT_IN_LOWER_MASS2 = 0.3
+ACROBOT_IN_UPPER_MASS2 = 0.7
+ACROBOT_OUT_LOWER_MASS2 = 0.1
+ACROBOT_OUT_UPPER_MASS2 = 1.0
+
+ACROBOT_DEFAULT__MASS1 = 0.1
+ACROBOT_DEFAULT_MASS2 = 0.5
+
+def get_validation_set(game):
+    if game == "CartPoleEnv":
+        parameter1_range = [CARTPOLE_IN_LOWER_MASSPOLE, CARTPOLE_IN_UPPER_MASSPOLE]
+        parameter2_range = [CARTPOLE_IN_LOWER_LENGTH, CARTPOLE_IN_UPPER_LENGTH]
     
-    return generate_morphologies(parameter1_range, parameter2_range, [0.1, 0.1]) 
+        return generate_morphologies(parameter1_range, parameter2_range, [0.1, 0.1])
+
+    if game == "AcrobotEnv":
+        parameter1_range = [ACROBOT_IN_LOWER_MASS1, ACROBOT_IN_UPPER_MASS1]
+        parameter2_range = [ACROBOT_IN_LOWER_MASS2, ACROBOT_IN_UPPER_MASS2]
+    
+        return generate_morphologies(parameter1_range, parameter2_range, [0.1, 0.1])  
 
 def get_mean(parameter1_range, parameter2_range):
     mean_par1 = (parameter1_range[1] + parameter1_range[0]) / 2
@@ -161,6 +184,8 @@ def gym_render(game, agent, xml_path, parameters, topology, steps):
     elif game == Walker2dEnv:
         xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
         env = game(xml_file, render_mode=None, healthy_reward=0)
+    elif game == "AcrobotEnv":
+        env = gym.make('Acrobot-v1')
     else:
         env = game(parameters)
 
@@ -173,6 +198,9 @@ def gym_render(game, agent, xml_path, parameters, topology, steps):
 
     while not done:
         action = nn.feedforward(weights, topology, obs)
+
+        if game == "AcrobotEnv":
+            action = np.argmax(action)
 
         obs, reward, terminated, truncated, info = env.step(action)
 

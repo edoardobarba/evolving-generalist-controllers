@@ -14,13 +14,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import os
+from ant_v4_modified import AntEnv
+from walker2d_v4_modified import Walker2dEnv
+from bipedal_walker_modified import BipedalWalker
+from cartpole_modified import CartPoleEnv
+import gymnasium as gym
+#from utils import gym_render, save_dataframes
+import joblib
 
-"""
-Default parameters
-Cartpole:   masspole = 0.1
-            length = 0.5
-
-"""
+ACTORS = 8
 CARTPOLE_IN_LOWER_MASSPOLE = 0.05
 CARTPOLE_IN_UPPER_MASSPOLE = 0.5
 CARTPOLE_OUT_LOWER_MASSPOLE = 0.01
@@ -81,6 +83,51 @@ SEED=0
 
 # # cartpole_default = [0.1, 0.5] #mass and pole-lenght
 # # cartpole_train_ranges = [[0.05, 0.5], [0.25, 0.75]]
+def gym_render(game, agent, xml_path, parameters, topology, steps):
+    s = 0
+    total_reward = 0
+
+    if game == AntEnv:
+        xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(xml_path, parameters[0], parameters[1])
+        env = game(xml_file, render_mode=None, healthy_reward=0)
+    elif game == Walker2dEnv:
+        xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
+        env = game(xml_file, render_mode=None, healthy_reward=0)
+    elif game == "AcrobotEnv":
+        env = gym.make('Acrobot-v1')
+    else:
+        env = game(parameters)
+
+    obs, info = env.reset(seed=s)
+    done = False
+
+    nn = agent
+    weights = nn.reshape_layers(topology)
+
+    while not done:
+        action = nn.feedforward(weights, topology, obs)
+
+        if game == "AcrobotEnv":
+            action = np.argmax(action)
+
+        obs, reward, terminated, truncated, info = env.step(action)
+
+        s += 1
+        total_reward += reward
+
+        if s > steps:
+            break
+
+        done = terminated or truncated
+
+    env.close()
+
+    return -total_reward
+
+def comparison(game, agent, i, test_set, topology, max_steps, xml_path = None):
+
+    fitness = gym_render(game, agent, xml_path, test_set[i], topology, max_steps)
+    return fitness
 
 
 def do_episode(env, nn, weights, topology, max_steps, max_fitness):
@@ -172,23 +219,28 @@ def in_distr_test(game, nn, weights, topology, max_steps, max_fitness):
     history_reward = []    
     param1_values_in = []
     param2_values_in = []
-    for variation in all_variations:
-        # param1 = np.random.uniform(parameter1_range[0], parameter1_range[1])
-        # param2 = np.random.uniform(parameter2_range[0], parameter2_range[1])
-        param1 = variation[0]
-        param2 = variation[1]
-        param1_values_in.append(param1)
-        param2_values_in.append(param2)
-        env = game([param1, param2])
-        reward = do_episode(env, nn, weights, topology, max_steps, max_fitness)
-        history_reward.append(reward)
-        env.close()
+
+    compare = joblib.Parallel(n_jobs=ACTORS)(joblib.delayed(comparison)(game = game, agent=nn, i=i, test_set=all_variations, topology=topology, max_steps = max_steps)
+                                                              for i in range(len(all_variations)))
+    
+    #print(compare)
+    # for variation in all_variations:
+    #     # param1 = np.random.uniform(parameter1_range[0], parameter1_range[1])
+    #     # param2 = np.random.uniform(parameter2_range[0], parameter2_range[1])
+    #     param1 = variation[0]
+    #     param2 = variation[1]
+    #     param1_values_in.append(param1)
+    #     param2_values_in.append(param2)
+    #     env = game([param1, param2])
+    #     reward = do_episode(env, nn, weights, topology, max_steps, max_fitness)
+    #     history_reward.append(reward)
+    #     env.close()
 
     # Plot heatmaps
 
     #plot_heatmap(param1_values_in, param2_values_in, history_reward, 'In-Distribution Morphology')
 
-
+    history_reward=compare
     return history_reward, all_variations
 
 
@@ -217,28 +269,31 @@ def out_distr_test(game, nn, weights, topology, max_steps, max_fitness):
     # all_variations_bottom = generate_morphologies(parameter1_OUT_range, parameter2_left_range, [0.1, 0.1])
     # #print(all_variations_bottom ) 
     # all_variations = np.concatenate((all_variations_left, all_variations_up,all_variations_bottom, all_variations_rigth, ), axis=0)
-   
-    all_variations = utils.get_set("OUT", step_sizes=[0.1,0.1])
     history_reward = []    
     param1_values_in = []
     param2_values_in = []
-    for variation in all_variations:
-        # param1 = np.random.uniform(parameter1_range[0], parameter1_range[1])
-        # param2 = np.random.uniform(parameter2_range[0], parameter2_range[1])
-        param1 = variation[0]
-        param2 = variation[1]
-        param1_values_in.append(param1)
-        param2_values_in.append(param2)
-        # param1_left = np.random.uniform(parameter1_left_range[0], parameter1_left_range[1])
-        # param1_rigth = np.random.uniform(parameter1_rigth_range[0], parameter1_rigth_range[1])
-        # param2_left = np.random.uniform(parameter2_left_range[0], parameter2_left_range[1])
-        # param2_rigth = np.random.uniform(parameter2_rigth_range[0], parameter2_rigth_range[1])
-        # param1 = random.choice([param1_left, param1_rigth])
-        # param2 = random.choice([param2_left, param2_rigth])
-        env = game([param1, param2])
-        reward = do_episode(env, nn, weights, topology, max_steps, max_fitness)
-        history_reward.append(reward)
-        env.close()
+    all_variations = utils.get_set("OUT", step_sizes=[0.1,0.1])
+    compare = joblib.Parallel(n_jobs=ACTORS)(joblib.delayed(comparison)(game = game, agent=nn, i=i, test_set=all_variations, topology=topology, max_steps = max_steps)
+                                                              for i in range(len(all_variations)))
+    history_reward = compare
+
+    # for variation in all_variations:
+    #     # param1 = np.random.uniform(parameter1_range[0], parameter1_range[1])
+    #     # param2 = np.random.uniform(parameter2_range[0], parameter2_range[1])
+    #     param1 = variation[0]
+    #     param2 = variation[1]
+    #     param1_values_in.append(param1)
+    #     param2_values_in.append(param2)
+    #     # param1_left = np.random.uniform(parameter1_left_range[0], parameter1_left_range[1])
+    #     # param1_rigth = np.random.uniform(parameter1_rigth_range[0], parameter1_rigth_range[1])
+    #     # param2_left = np.random.uniform(parameter2_left_range[0], parameter2_left_range[1])
+    #     # param2_rigth = np.random.uniform(parameter2_rigth_range[0], parameter2_rigth_range[1])
+    #     # param1 = random.choice([param1_left, param1_rigth])
+    #     # param2 = random.choice([param2_left, param2_rigth])
+    #     env = game([param1, param2])
+    #     reward = do_episode(env, nn, weights, topology, max_steps, max_fitness)
+    #     history_reward.append(reward)
+    #     env.close()
 
     #plot_heatmap(param1_values_in, param2_values_in, history_reward, 'In-Distribution Morphology')
     return history_reward, all_variations
@@ -259,20 +314,23 @@ def in_out_distr_test(game, nn, weights, topology, max_steps, max_fitness):
 
     all_variations = utils.get_set("INOUT", step_sizes=[0.1,0.1])
 
-    history_reward = []    
-    param1_values_in = []
-    param2_values_in = []
-    for variation in all_variations:
-        param1 = variation[0]
-        param2 = variation[1]
-        # param1 = np.random.uniform(parameter1_range[0], parameter1_range[1])
-        # param2 = np.random.uniform(parameter2_range[0], parameter2_range[1])
-        param1_values_in.append(param1)
-        param2_values_in.append(param2)
-        env = game([param1, param2], render_mode=None)
-        reward = do_episode(env, nn, weights, topology, max_steps, max_fitness)
-        history_reward.append(reward)
-        env.close()
+    history_reward = []   
+    compare = joblib.Parallel(n_jobs=ACTORS)(joblib.delayed(comparison)(game = game, agent=nn, i=i, test_set=all_variations, topology=topology, max_steps = max_steps)
+                                                              for i in range(len(all_variations)))
+    history_reward = compare 
+    # param1_values_in = []
+    # param2_values_in = []
+    # for variation in all_variations:
+    #     param1 = variation[0]
+    #     param2 = variation[1]
+    #     # param1 = np.random.uniform(parameter1_range[0], parameter1_range[1])
+    #     # param2 = np.random.uniform(parameter2_range[0], parameter2_range[1])
+    #     param1_values_in.append(param1)
+    #     param2_values_in.append(param2)
+    #     env = game([param1, param2], render_mode=None)
+    #     reward = do_episode(env, nn, weights, topology, max_steps, max_fitness)
+    #     history_reward.append(reward)
+    #     env.close()
 
     #plot_heatmap(param1_values_in, param2_values_in, history_reward, 'IN+OUT-Distribution')
     return history_reward, all_variations
@@ -288,12 +346,13 @@ def list_folders(path):
 
 
 if __name__ == '__main__':
-    train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/incremental/20231122113354"
-    train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian1/20231122114610"
-    train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231122115344"
-    train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy1/20231122120249"
-    train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy2/20231122121031"
-    train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/uniform/20231122121824"
+    
+    train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy1/20231123094840"
+    train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy2/20231123094903"
+    train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian1/20231123094724"
+    train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231123094818"
+    train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/incremental/20231123095649"
+    train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/uniform/20231123094943"
 
     all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path]
 
@@ -312,7 +371,7 @@ if __name__ == '__main__':
 
         game = config['game']
         #parameter1_range, parameter2_range = config['parameter1'], config['parameter2']
-        step_sizes = config['step_sizes']
+        step_sizes = config['testing_step_sizes']
         topology = config["NN-struc"]
         max_steps = config["nStep"]
         max_fitness = config["maxFitness"]

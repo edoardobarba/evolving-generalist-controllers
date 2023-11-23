@@ -15,6 +15,8 @@ from cartpole_modified import CartPoleEnv
 from utils import generate_samples
 import seaborn as sns
 import matplotlib.pyplot as plt
+import gymnasium as gym
+
 
 # class Eval(Problem):
 #     def __init__(self, game, variations, topology, xml_path, steps, initial_bounds, counter):
@@ -27,7 +29,10 @@ import matplotlib.pyplot as plt
         
 class Algo:
     def __init__(self, game, path, xml_path, variations, config, run_id, cluster_id, generation, validation_set, gauss_mean = None, gauss_cov = None):
-        self.game = eval(game)
+        if game=="AcrobotEnv":
+            self.game = game
+        else:
+            self.game = eval(game)
         self.variations = variations
         self.validation_set = validation_set
         self.path = path
@@ -62,6 +67,8 @@ class Algo:
             xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(self.xml_path, self.parameters[0],
                                                                       self.parameters[1])
             env = self.game(xml_file, render_mode=None, healthy_reward=0)
+        elif self.game == "AcrobotEnv":
+            env = gym.make('Acrobot-v1', render_mode=None)
         else:
             env = self.game(self.parameters)
 
@@ -73,9 +80,10 @@ class Algo:
         weights = nn.reshape_layers(self.topology)
 
         while not done:
-
             action = nn.feedforward(weights, self.topology, obs)
-
+            # action = env.action_space.sample()
+            if self.game == "AcrobotEnv":
+                action = np.argmax(action)
             obs, reward, terminated, truncated, info = env.step(action)
 
             s += 1
@@ -141,7 +149,8 @@ class Algo:
         searcher = self.problem()
         pandas_logger = PandasLogger(searcher)
 
-        print('Number of Environments: ', len(self.variations))
+        print('Number of Environments in Training Set: ', len(self.variations))
+        print('Number of Environments in Validation Set: ', len(self.validation_set))
         logger = StdOutLogger(searcher, interval=50)
 
         while generation < self.max_eval:

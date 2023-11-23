@@ -15,12 +15,13 @@ import seaborn as sns
 import pandas as pd
 import os
 
-npz_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/incremental/20231122111009/all_history_rewards_data.npz"
-npz_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian1/20231122111104/all_history_rewards_data.npz"
-npz_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231122111134/all_history_rewards_data.npz"
-npz_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy1/20231122111151/all_history_rewards_data.npz"
-npz_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy2/20231122111322/all_history_rewards_data.npz"
-npz_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/uniform/20231122111359/all_history_rewards_data.npz"
+npz_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy1/20231122120249/all_history_rewards_data.npz"
+npz_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy2/20231122121031/all_history_rewards_data.npz"
+npz_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian1/20231122114610/all_history_rewards_data.npz"
+npz_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231122115344/all_history_rewards_data.npz"
+npz_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/incremental/20231122113354/all_history_rewards_data.npz"
+
+npz_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/uniform/20231122121824/all_history_rewards_data.npz"
 
 save_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/"
 
