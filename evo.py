@@ -50,8 +50,8 @@ class Algo:
         self.parameters = self.variations[0]
         self.gauss_mean = gauss_mean
         self.gauss_cov = gauss_cov
-        self.par1_range = config['parameter1']
-        self.par2_range = config['parameter2']
+        self.par1_range = config['IN_parameter1']
+        self.par2_range = config['IN_parameter1']
         self.training_schedule = config['training_schedule']
 
     def evaluate(self, agent: torch.Tensor) -> torch.Tensor:
@@ -68,7 +68,9 @@ class Algo:
                                                                       self.parameters[1])
             env = self.game(xml_file, render_mode=None, healthy_reward=0)
         elif self.game == "AcrobotEnv":
-            env = gym.make('Acrobot-v1', render_mode=None)
+            env = gym.make('Acrobot-v1', render_mode = None).unwrapped
+            env.LINK_MASS_1 = self.parameters[0]  #: [kg] mass of link 1
+            env.LINK_MASS_2 = self.parameters[1]  #: [kg] mass of link 2
         else:
             env = self.game(self.parameters)
 
@@ -81,7 +83,7 @@ class Algo:
 
         while not done:
             action = nn.feedforward(weights, self.topology, obs)
-            # action = env.action_space.sample()
+            #action = env.action_space.sample()
             if self.game == "AcrobotEnv":
                 action = np.argmax(action)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -165,7 +167,7 @@ class Algo:
                 xbest_weights_copy = xbest_weights.detach().clone()
                 improved = searcher.status.get('iter')
 
-            if len(self.variations) > 1:
+            if len(self.validation_set) > 1:
                 compare = joblib.Parallel(n_jobs=self.actors)(joblib.delayed(self.comparison)(xbest_weights, 1, i)
                                                               for i in range(len(generalist_fitness_scores)))
 
@@ -216,40 +218,40 @@ class Algo:
                 #         n_changed_gaussian_variance += 1
 
 
-                if (searcher.status.get('iter') - improved) % int(np.ceil(self.max_eval * 0.06)) == 0:
+                # if (searcher.status.get('iter') - improved) % int(np.ceil(self.max_eval * 0.06)) == 0:
 
-                    if current_pop_best_fitness != prev_pop_best_fitness:
-                        prev_pop_best_fitness = current_pop_best_fitness
-                    else:
-                        good_envs = []
+                #     if current_pop_best_fitness != prev_pop_best_fitness:
+                #         prev_pop_best_fitness = current_pop_best_fitness
+                #     else:
+                #         good_envs = []
 
-                        for i in range(len(self.validation_set)):
-                            if good_fitness_scores[i] < (generalist_average_fitness + generalist_old_dev):
-                                good_envs.append(self.validation_set[i])
-                            else:
-                                bad_environments.append(self.validation_set[i])
+                #         for i in range(len(self.validation_set)):
+                #             if good_fitness_scores[i] < (generalist_average_fitness + generalist_old_dev):
+                #                 good_envs.append(self.validation_set[i])
+                #             else:
+                #                 bad_environments.append(self.validation_set[i])
 
-                        if len(good_envs) == 0:
-                            print("primo break")
-                            break
-                        elif len(good_envs) == len(self.validation_set):
-                            print("secondo break")
-                            break
+                #         if len(good_envs) == 0:
+                #             print("primo break")
+                #             break
+                #         elif len(good_envs) == len(self.validation_set):
+                #             print("secondo break")
+                #             break
 
-                        self.validation_set = np.array(good_envs)
+                #         self.validation_set = np.array(good_envs)
 
-                        compare = joblib.Parallel(n_jobs=self.actors)(
-                            joblib.delayed(self.comparison)(generalist_weights, 0, i)
-                            for i in range(len(self.validation_set)))
+                #         compare = joblib.Parallel(n_jobs=self.actors)(
+                #             joblib.delayed(self.comparison)(generalist_weights, 0, i)
+                #             for i in range(len(self.validation_set)))
 
-                        generalist_fitness_scores = np.array(compare)
-                        new_generalist_average_fitness = np.mean(generalist_fitness_scores)
-                        if new_generalist_average_fitness < generalist_average_fitness:
-                            good_fitness_scores = generalist_fitness_scores.copy()
-                        env_counter = len(self.validation_set) - 1
-                        improved = searcher.status.get('iter')
+                #         generalist_fitness_scores = np.array(compare)
+                #         new_generalist_average_fitness = np.mean(generalist_fitness_scores)
+                #         if new_generalist_average_fitness < generalist_average_fitness:
+                #             good_fitness_scores = generalist_fitness_scores.copy()
+                #         env_counter = len(self.validation_set) - 1
+                #         improved = searcher.status.get('iter')
 
-                        print(' no_envs : ', len(self.validation_set))
+                #         print(' no_envs : ', len(self.validation_set))
 
                 env_counter += 1
                 if env_counter >= len(self.variations):
@@ -266,7 +268,7 @@ class Algo:
             number_environments.append(len(self.validation_set))
             generation = searcher.status.get('iter')
 
-            if generalist_average_fitness < self.max_fitness:
+            if generalist_average_fitness < self.max_fitness or generation > self.max_eval:
                 print("terzo break")
                 break
 
@@ -285,4 +287,4 @@ class Algo:
 
         save_dataframes(evals, xbest_weights, generalist_weights, generalist_evals, info, self.path)
 
-        return generation, np.array(bad_environments)
+        return generation, self.variations#np.array(bad_environments)

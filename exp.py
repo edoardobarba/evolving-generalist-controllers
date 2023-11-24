@@ -1,95 +1,80 @@
 import json
 from utils import generate_morphologies
 from utils import generate_samples
-from utils import get_validation_set
+from utils import get_set
 from evo import Algo
 import os
 import sys
 from datetime import datetime
 import shutil
 import time
-
-
+import joblib
 
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def experiment_run(config):
-    all_schedules = ['incremental', 'gaussian1', 'gaussian2', 'cauchy1', 'cauchy2', 'uniform']
-    #all_schedules = ['incremental', 'gaussian1', 'gaussian2', 'cauchy1', 'cauchy2', 'uniform']
-    all_schedules = ['incremental']
-    for training_schedule in all_schedules:
+PARALLEL_RUNS_ACTORS = -1
 
-        runs = config['runs']
-        parameter1_range, parameter2_range = config['parameter1'], config['parameter2']
-        incremental_step_sizes = config['incremental_step_sizes']
-        # training_schedule = config['training_schedule']
+def single_run(config, run_id, timestamp_str, training_schedule):
+    mean = None
+    cov = None
 
-        mean = None 
-        cov = None 
-        if training_schedule == "incremental":
-            variations = generate_morphologies(parameter1_range, parameter2_range, incremental_step_sizes)
-        else: 
-            #mean, cov = get_initial_mean_cov()
-            variations = generate_samples(parameter1_range, parameter2_range, num_samples=config['generations'], distr=training_schedule)
-        
-        #print(variations)
-        folder_name = config['filename']
-        path = f"{folder_name}/" 
-        path = path + training_schedule + "/"
-        timestamp_str = datetime.now().strftime("%Y%m%d%H%M%S")
-        path = path + timestamp_str
-        # Ensure the directory exists
-        os.makedirs(path, exist_ok=True)
+    #all_schedules = ['gaussian1', 'gaussian2', 'cauchy1', 'cauchy2', 'uniform']
 
-        # print("VARIATIONS: ")
-        # print(variations)
-        # Create a scatter plot
+    #training_schedule = config['training_schedule']
+    print("RUN id: ", run_id)
+    
+    if training_schedule == "incremental":
+        variations = generate_morphologies(config['IN_parameter1'], config['IN_parameter1'], config['incremental_step_sizes'])
+    else:
+        variations = generate_samples(config['IN_parameter1'], config['IN_parameter1'], num_samples=config['generations'], distr=training_schedule)
+
+    folder_name = config['filename']
+    path = f"{folder_name}/"
+    path = path + training_schedule + "/"
+    
+    path = path + timestamp_str
+    # Ensure the directory exists
+    os.makedirs(path, exist_ok=True)
+
+    if run_id==0:
         sns.scatterplot(x=variations[:, 0], y=variations[:, 1])
-        # Set x-axis and y-axis limits
-        plt.xlim(parameter1_range)
-        plt.ylim(parameter2_range)
-
-        # Set plot labels
+        plt.xlim(config['IN_parameter1'])
+        plt.ylim(config['IN_parameter1'])
         plt.title(training_schedule)
         plt.xlabel('Pole Mass (parameter 1)')
-        plt.ylabel('Pole Lenght (parameter 2)')
+        plt.ylabel('Pole Length (parameter 2)')
         save_plot_path = os.path.join(path, "Variations_generated_" + training_schedule + ".png")
-
         plt.savefig(save_plot_path)
-        # Display the plot
-        # plt.show()
 
-        filename = "config.json"
+    filename = "config.json"
+    new_file_path = path + "/" + filename
 
-        # Combine the directory and filename to create the full path
-        new_file_path = path + "/" + filename
+    with open(new_file_path, 'w') as new_json_file:
+        json.dump(config, new_json_file, indent=4)
 
-        # Save the config dictionary as a JSON file in the new directory
-        with open(new_file_path, 'w') as new_json_file:
-            json.dump(config, new_json_file, indent=4)
+    run_path = path + "/runs/" + str(run_id)
+    os.makedirs(run_path, exist_ok=True)
+    cluster_count = 0
+    generations = config['generations']
 
-        for i in range(runs):
-            # variations = generate_morphologies(parameter1_range, parameter2_range, step_sizes)
-            print("run: ", i)
-            run_path = path + "/runs/" + str(i)
-            print(run_path)
-            # Ensure the directory exists
-            os.makedirs(run_path, exist_ok=True)
-            cluster_count = 0
-            generations = config['generations']
-            
-            while len(variations) != 0:
-                cluster_count += 1
+    run = Algo(game=config['game'], path=run_path, xml_path=config['xml'], variations=variations,
+               config=config, generation=generations, run_id=run_id, cluster_id=cluster_count,
+               validation_set=get_set(config, 'IN'), gauss_mean=mean, gauss_cov=cov)
+    generation, _ = run.main()
 
-                run = Algo(game=config['game'], path=run_path, xml_path=config['xml'], variations=variations,
-                        config=config, generation=generations, run_id=i, cluster_id=cluster_count, validation_set=get_validation_set(config['game']), gauss_mean=mean, 
-                        gauss_cov=cov)
-                generation, variations2 = run.main()
-                generations = generations - generation
+def experiment_run_parallel(config):
+    runs = config['runs']
+    timestamp_str = datetime.now().strftime("%Y%m%d%H%M%S")
+    # Parallelize the runs using joblib
+    all_schedules = config['training_schedule']
+    print("ALL SCHEDULES:", all_schedules)
 
+    for training_schedule in all_schedules:
+        print("TRAINING USING: ", training_schedule)
+        joblib.Parallel(n_jobs=PARALLEL_RUNS_ACTORS)(joblib.delayed(single_run)(config, i, timestamp_str, training_schedule) for i in range(runs))
 
 with open(str(sys.argv[1])) as json_file:
     print('Running experiment for ', sys.argv[1])
     config = json.load(json_file)
-    experiment_run(config)
+    experiment_run_parallel(config)

@@ -15,18 +15,17 @@ import seaborn as sns
 import pandas as pd
 import os
 
-npz_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy1/20231122120249/all_history_rewards_data.npz"
-npz_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy2/20231122121031/all_history_rewards_data.npz"
-npz_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian1/20231122114610/all_history_rewards_data.npz"
-npz_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231122115344/all_history_rewards_data.npz"
-npz_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/incremental/20231122113354/all_history_rewards_data.npz"
+train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy1/20231124114220"
+train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy2/20231124114220"
+train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian1/20231124114220"
+train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian2/20231124114220"
+train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/incremental/20231124114220"
+train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/uniform/20231124114220"
+all_train_folders = [train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_incremental_path, train_uniform_path]
 
-npz_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/uniform/20231122121824/all_history_rewards_data.npz"
+save_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/"
 
-save_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/"
-
-
-def plot(incremental_history_rewards, gaussian1_history_rewards, gaussian2_history_rewards, 
+def plot(game, incremental_history_rewards, gaussian1_history_rewards, gaussian2_history_rewards, 
          cauchy1_history_rewards, cauchy2_history_rewards, uniform_history_rewards, 
          test, save_path):
     
@@ -51,7 +50,10 @@ def plot(incremental_history_rewards, gaussian1_history_rewards, gaussian2_histo
 
     ax.set_title(test + " TESTING")
     ax.set_ylabel('Reward')
-    ax.set_ylim(-1001, 0)
+    if game == "CartPoleEnv":
+        ax.set_ylim(-1001, 0)
+    elif game == "AcrobotEnv":
+        ax.set_ylim(0, 100)
     plt.tight_layout()
     
     if save_path:
@@ -61,8 +63,16 @@ def plot(incremental_history_rewards, gaussian1_history_rewards, gaussian2_histo
         plt.show()
 
 
+with open(str(sys.argv[1])) as json_file:
+    config = json.load(json_file)
+game=config['game']
 
-
+npz_cauchy1_path = train_cauchy1_path + "/all_history_rewards_data.npz"
+npz_cauchy2_path = train_cauchy2_path + "/all_history_rewards_data.npz"
+npz_gaussian1_path = train_gaussian1_path + "/all_history_rewards_data.npz"
+npz_gaussian2_path = train_gaussian2_path + "/all_history_rewards_data.npz"
+npz_incremental_path = train_incremental_path + "/all_history_rewards_data.npz"
+npz_uniform_path = train_uniform_path + "/all_history_rewards_data.npz"
 
 incremental_data = np.load(npz_incremental_path)
 gaussian1_data = np.load(npz_gaussian1_path)
@@ -70,10 +80,6 @@ gaussian2_data = np.load(npz_gaussian2_path)
 cauchy1_data = np.load(npz_cauchy1_path)
 cauchy2_data = np.load(npz_cauchy2_path)
 uniform_data = np.load(npz_uniform_path)
-
-# plots_path = os.path.join(os.path.dirname(datafile_path), "plots") 
-# os.makedirs(plots_path, exist_ok=True)
-
 
 #IN BOXPLOT 
 incremental_history_rewards_IN = incremental_data['all_history_rewards_IN']
@@ -100,34 +106,9 @@ cauchy2_history_rewards_INOUT = cauchy2_data['avg_rewards_INOUT']
 uniform_history_rewards_INOUT = uniform_data['avg_rewards_INOUT']
 
 
+plot(game, incremental_history_rewards_IN, gaussian1_history_rewards_IN, gaussian2_history_rewards_IN, cauchy1_history_rewards_IN, cauchy2_history_rewards_IN, uniform_history_rewards_IN, test="IN", save_path=save_path)
 
+plot(game, incremental_history_rewards_OUT, gaussian1_history_rewards_OUT, gaussian2_history_rewards_OUT, cauchy1_history_rewards_OUT, cauchy2_history_rewards_OUT, uniform_history_rewards_OUT, test="OUT", save_path=save_path)
 
-
-plot(incremental_history_rewards_IN, gaussian1_history_rewards_IN, gaussian2_history_rewards_IN, cauchy1_history_rewards_IN, cauchy2_history_rewards_IN, uniform_history_rewards_IN, test="IN", save_path=save_path)
-
-
-
-plot(incremental_history_rewards_OUT, gaussian1_history_rewards_OUT, gaussian2_history_rewards_OUT, cauchy1_history_rewards_OUT, cauchy2_history_rewards_OUT, uniform_history_rewards_OUT, test="OUT", save_path=save_path)
-
-
-
-plot(incremental_history_rewards_INOUT, gaussian1_history_rewards_INOUT, gaussian2_history_rewards_INOUT, cauchy1_history_rewards_INOUT, cauchy2_history_rewards_INOUT, uniform_history_rewards_INOUT, test="INOUT", save_path=save_path)
-
-
-
-
-
-
-# incremental_history_rewards_OUT = incremental_data['avg_rewards_OUT']
-# incremental_history_rewards_INOUT = incremental_data['avg_rewards_INOUT']
-
-
-
-# incremental_avg_scores_OUT = np.mean(incremental_history_rewards_OUT, axis=1)
-# incremental_avg_scores_INOUT= np.mean(incremental_history_rewards_INOUT, axis=1)
-
-
-# IN_data = [incremental_avg_scores_IN, incremental_avg_scores_OUT, incremental_avg_scores_INOUT]
-# labels = ['IN', 'OUT', 'IN+OUT']
-
+plot(game, incremental_history_rewards_INOUT, gaussian1_history_rewards_INOUT, gaussian2_history_rewards_INOUT, cauchy1_history_rewards_INOUT, cauchy2_history_rewards_INOUT, uniform_history_rewards_INOUT, test="INOUT", save_path=save_path)
 

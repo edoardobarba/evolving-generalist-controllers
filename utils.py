@@ -10,46 +10,48 @@ from scipy.stats import cauchy
 import gymnasium as gym
 
 
-CARTPOLE_IN_LOWER_MASSPOLE = 0.05
-CARTPOLE_IN_UPPER_MASSPOLE = 0.5
-CARTPOLE_OUT_LOWER_MASSPOLE = 0.01
-CARTPOLE_OUT_UPPER_MASSPOLE = 1.0
+# CARTPOLE_IN_LOWER_MASSPOLE = 0.05
+# CARTPOLE_IN_UPPER_MASSPOLE = 0.5
+# CARTPOLE_OUT_LOWER_MASSPOLE = 0.01
+# CARTPOLE_OUT_UPPER_MASSPOLE = 1.0
 
-CARTPOLE_IN_LOWER_LENGTH = 0.25
-CARTPOLE_IN_UPPER_LENGTH = 0.75
-CARTPOLE_OUT_LOWER_LENGTH = 0.05
-CARTPOLE_OUT_UPPER_LENGTH = 1.0
+# CARTPOLE_IN_LOWER_LENGTH = 0.25
+# CARTPOLE_IN_UPPER_LENGTH = 0.75
+# CARTPOLE_OUT_LOWER_LENGTH = 0.05
+# CARTPOLE_OUT_UPPER_LENGTH = 1.0
 
-CARTPOLE_DEFAULT__MASS1 = 1
-CARTPOLE_DEFAULT_MASS2 = 1
+# CARTPOLE_DEFAULT_MASS = 1
+# CARTPOLE_DEFAULT_LENGTH = 1
 
+# # ACROBOT_IN_LOWER_MASS1 = 0.3
+# # ACROBOT_IN_UPPER_MASS1 = 0.7
+# ACROBOT_IN_LOWER_MASS1 = 0.75
+# ACROBOT_IN_UPPER_MASS1 = 1.25
+# ACROBOT_OUT_LOWER_MASS1 = 0.5
+# ACROBOT_OUT_UPPER_MASS1 = 1.5
 
+# # ACROBOT_IN_LOWER_MASS2 = 0.3
+# # ACROBOT_IN_UPPER_MASS2 = 0.7
+# ACROBOT_IN_LOWER_MASS2 = 0.75
+# ACROBOT_IN_UPPER_MASS2 = 1.25
+# ACROBOT_OUT_LOWER_MASS2 = 0.5
+# ACROBOT_OUT_UPPER_MASS2 = 1.5
 
-ACROBOT_IN_LOWER_MASS1 = 0.3
-ACROBOT_IN_UPPER_MASS1 = 0.7
-ACROBOT_OUT_LOWER_MASS1 = 0.1
-ACROBOT_OUT_UPPER_MASS1 = 1.0
+# ACROBOT_DEFAULT__MASS1 = 1
+# ACROBOT_DEFAULT_MASS2 = 1
 
-ACROBOT_IN_LOWER_MASS2 = 0.3
-ACROBOT_IN_UPPER_MASS2 = 0.7
-ACROBOT_OUT_LOWER_MASS2 = 0.1
-ACROBOT_OUT_UPPER_MASS2 = 1.0
-
-ACROBOT_DEFAULT__MASS1 = 0.1
-ACROBOT_DEFAULT_MASS2 = 0.5
-
-def get_validation_set(game):
-    if game == "CartPoleEnv":
-        parameter1_range = [CARTPOLE_IN_LOWER_MASSPOLE, CARTPOLE_IN_UPPER_MASSPOLE]
-        parameter2_range = [CARTPOLE_IN_LOWER_LENGTH, CARTPOLE_IN_UPPER_LENGTH]
+# # def get_validation_set(game):
+# #     if game == "CartPoleEnv":
+# #         parameter1_range = [CARTPOLE_IN_LOWER_MASSPOLE, CARTPOLE_IN_UPPER_MASSPOLE]
+# #         parameter2_range = [CARTPOLE_IN_LOWER_LENGTH, CARTPOLE_IN_UPPER_LENGTH]
     
-        return generate_morphologies(parameter1_range, parameter2_range, [0.1, 0.1])
+# #         return generate_morphologies(parameter1_range, parameter2_range, [0.1, 0.1])
 
-    if game == "AcrobotEnv":
-        parameter1_range = [ACROBOT_IN_LOWER_MASS1, ACROBOT_IN_UPPER_MASS1]
-        parameter2_range = [ACROBOT_IN_LOWER_MASS2, ACROBOT_IN_UPPER_MASS2]
+# #     if game == "AcrobotEnv":
+# # #         parameter1_range = [ACROBOT_IN_LOWER_MASS1, ACROBOT_IN_UPPER_MASS1]
+# # #         parameter2_range = [ACROBOT_IN_LOWER_MASS2, ACROBOT_IN_UPPER_MASS2]
     
-        return generate_morphologies(parameter1_range, parameter2_range, [0.1, 0.1])  
+# #         return generate_morphologies(parameter1_range, parameter2_range, [0.1, 0.1])  
 
 def get_mean(parameter1_range, parameter2_range):
     mean_par1 = (parameter1_range[1] + parameter1_range[0]) / 2
@@ -87,8 +89,6 @@ def get_std(parameter1_range, parameter2_range, distr):
         print("std 1:", std_dev_par1)
         print("std 2:", std_dev_par2)
 
-    print(std_dev_par1)
-    print(std_dev_par2)
     return std_dev_par1, std_dev_par2
 
 
@@ -142,25 +142,33 @@ def generate_samples(parameter1_range, parameter2_range, num_samples, distr = "G
         return np.array(morphologies)
     
 
-def get_set(test_set, step_sizes):
+def get_set(config, test_set):
+    game = config["game"]
+    step_sizes = config["testing_step_sizes"]
+
     if test_set == "IN": 
-        parameter1_range = [CARTPOLE_IN_LOWER_MASSPOLE, CARTPOLE_IN_UPPER_MASSPOLE]
-        parameter2_range = [CARTPOLE_IN_LOWER_LENGTH, CARTPOLE_IN_UPPER_LENGTH]
+        parameter1_range = config["IN_parameter1"]
+        parameter2_range = config["IN_parameter1"]
         return generate_morphologies(parameter1_range, parameter2_range, step_sizes) 
     
     if test_set == "INOUT": 
-        parameter1_range = [CARTPOLE_OUT_LOWER_MASSPOLE, CARTPOLE_OUT_UPPER_MASSPOLE]
-        parameter2_range = [CARTPOLE_OUT_LOWER_LENGTH, CARTPOLE_OUT_UPPER_LENGTH]
-
+        parameter1_range = config["OUT_parameter1"]
+        parameter2_range = config["OUT_parameter1"]
         return generate_morphologies(parameter1_range, parameter2_range, step_sizes)
     
     if test_set == "OUT": 
         OUT_set = []
-        # IN_set = get_set("IN", step_sizes)
-        INOUT_set  = get_set("INOUT", step_sizes)
-        for element in INOUT_set:
-            if (element[0] < CARTPOLE_IN_LOWER_MASSPOLE or element[0] > CARTPOLE_IN_UPPER_MASSPOLE) and (element[1] < CARTPOLE_IN_LOWER_LENGTH or element[1] > CARTPOLE_IN_UPPER_LENGTH):
-                OUT_set.append(element)
+        INOUT_set  = get_set(config, "INOUT")
+        IN_parameter1_range = config["IN_parameter1"]
+        IN_parameter2_range = config["IN_parameter2"]
+
+        OUT_parameter1_range = config["OUT_parameter1"]
+        OUT_parameter2_range = config["OUT_parameter2"]
+
+        if game=="CartPoleEnv": 
+            for element in INOUT_set:
+                if (element[0] < IN_parameter1_range[0] or element[0] > IN_parameter1_range[1]) and (element[1] < IN_parameter2_range[0] or element[1] > IN_parameter2_range[1]):
+                    OUT_set.append(element)
 
         return np.array(OUT_set)
 
@@ -185,7 +193,9 @@ def gym_render(game, agent, xml_path, parameters, topology, steps):
         xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
         env = game(xml_file, render_mode=None, healthy_reward=0)
     elif game == "AcrobotEnv":
-        env = gym.make('Acrobot-v1')
+        env = gym.make('Acrobot-v1', render_mode = None).unwrapped
+        env.LINK_MASS_1 = parameters[0]  #: [kg] mass of link 1
+        env.LINK_MASS_2 = parameters[1]  #: [kg] mass of link 2
     else:
         env = game(parameters)
 
@@ -198,6 +208,7 @@ def gym_render(game, agent, xml_path, parameters, topology, steps):
 
     while not done:
         action = nn.feedforward(weights, topology, obs)
+        #action = env.action_space.sample()
 
         if game == "AcrobotEnv":
             action = np.argmax(action)

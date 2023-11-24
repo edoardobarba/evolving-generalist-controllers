@@ -46,3 +46,4 @@ python3 generate_plots.py /home/edo/THESIS/evolving-generalist-controllers/Resul
 
 python3 generate_boxplots.py
 
+["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform"]
