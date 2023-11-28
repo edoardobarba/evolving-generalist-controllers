@@ -10,10 +10,15 @@
     "xml": "None",
     "runs": 1,
     "//comment": "Parameter1 is leg width",
-    "parameter1": [8, 9],
+    "IN_parameter1": [9, 10],
     "//comment2": "Parameter2 is leg height",
-    "parameter2": [34, 35],
-    "step_sizes": [1, 2],
-    "actors": 4,
-    "training_schedule": "incremental"
+    "IN_parameter2": [30, 31],
+    "OUT_parameter1": [5, 15],
+    "OUT_parameter2": [26, 40],    
+    "incremental_step_sizes": [1, 2],
+    "testing_step_sizes": [1, 2],
+    "validation_step_sizes": [1, 2],
+    "actors": -1,
+    "training_schedule": ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "RL"]
 }
+

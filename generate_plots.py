@@ -15,14 +15,16 @@ import seaborn as sns
 import pandas as pd
 import os
 from scipy import stats
+import matplotlib.patches as patches
 
-train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy1/20231124114220"
-train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy2/20231124114220"
-train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian1/20231124114220"
-train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian2/20231124114220"
-train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/incremental/20231124114220"
-train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/uniform/20231124114220"
-all_train_folders = [train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_incremental_path, train_uniform_path]
+train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy1/20231127163539"
+train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy2/20231127163539"
+train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian1/20231127163539"
+train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231127163539"
+train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/incremental/20231127163539"
+train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/uniform/20231127163539"
+train_RL_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/RL/20231127172931"
+all_train_folders = [train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_incremental_path, train_uniform_path, train_RL_path]
 
 SEED=0
 
@@ -38,13 +40,19 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
 
     plt.figure(figsize=(10, 7))
     if game=="CartPoleEnv":
-        sns.heatmap(pivot_df, vmin=-1000, vmax=0)
+        sns.heatmap(pivot_df, vmin=-1000, vmax=0, annot=True)
+        plt.xlabel('Pole Mass')
+        plt.ylabel('Pole Length')
     elif game=="AcrobotEnv":
-        sns.heatmap(pivot_df, vmin=0, vmax=100)
+        sns.heatmap(pivot_df, vmin=0, vmax=100, annot=True)        
+        plt.xlabel('MASS1')
+        plt.ylabel('MASS2')
+        # Add the red square
+        rect = patches.Rectangle((2, 2), 6, 6, linewidth=2, edgecolor='black', facecolor='none')
+        plt.gca().add_patch(rect)
 
     plt.title(title)
-    plt.xlabel('Pole Mass')
-    plt.ylabel('Pole Length')
+
     #plt.axvline(x=0.05, color='red', linestyle='--', linewidth=2)  # Adjust color, linestyle, and linewidth as needed
     plt.tight_layout()
 
@@ -60,7 +68,8 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
 
         # Loop through the path parts
         for part in save_path_parts:
-            if part.lower() in ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform"]:
+
+            if part.lower() in ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "rl"]:
                 training_schedule = part
                 break
 
@@ -77,11 +86,12 @@ if __name__ == "__main__":
     all_ts_avgs_IN = []
     #datafile_path = str(sys.argv[1])
     for datafile_path in all_train_folders:
+        print(datafile_path)
         datafile_path = datafile_path + "/all_history_rewards_data.npz"
         data = np.load(datafile_path)
         plots_path = os.path.join(os.path.dirname(datafile_path), "plots") 
         os.makedirs(plots_path, exist_ok=True)
-
+        print()
 
         all_history_rewards_IN = data['all_history_rewards_IN']
         all_history_rewards_OUT = data['avg_rewards_OUT']
@@ -89,12 +99,15 @@ if __name__ == "__main__":
 
         all_avgs_IN = [np.mean(run_rewards) for run_rewards in all_history_rewards_IN]
         all_ts_avgs_IN.append(all_avgs_IN)
+        
         print("Mean reward IN: ", np.mean(all_avgs_IN))
 
         all_avgs_OUT = [np.mean(run_rewards) for run_rewards in all_history_rewards_OUT]
+        
         print("Mean reward OUT: ", np.mean(all_avgs_OUT))
 
         all_avgs_INOUT = [np.mean(run_rewards) for run_rewards in all_history_rewards_INOUT]
+        
         print("Mean reward INOUT: ", np.mean(all_avgs_INOUT))
 
         # Specify the file path for the text file
@@ -103,8 +116,14 @@ if __name__ == "__main__":
         with open(output_file_path, 'w') as f:
             sys.stdout = f  
             print("Mean reward IN: ", np.mean(all_avgs_IN))
+            print("std IN: ", np.std(all_avgs_IN))
+
             print("Mean reward OUT: ", np.mean(all_avgs_OUT))
+            print("std OUT: ", np.std(all_avgs_OUT))
+
             print("Mean reward INOUT: ", np.mean(all_avgs_INOUT))
+            print("std INOUT: ", np.std(all_avgs_INOUT))
+            
         sys.stdout = original_stdout
 
         IN_variations = utils.get_set(config, test_set="IN")

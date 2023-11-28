@@ -24,7 +24,7 @@ def single_run(config, run_id, timestamp_str, training_schedule):
     #training_schedule = config['training_schedule']
     print("RUN id: ", run_id)
     
-    if training_schedule == "incremental":
+    if training_schedule == "incremental" or training_schedule == "RL":
         variations = generate_morphologies(config['IN_parameter1'], config['IN_parameter1'], config['incremental_step_sizes'])
     else:
         variations = generate_samples(config['IN_parameter1'], config['IN_parameter1'], num_samples=config['generations'], distr=training_schedule)
@@ -42,8 +42,12 @@ def single_run(config, run_id, timestamp_str, training_schedule):
         plt.xlim(config['IN_parameter1'])
         plt.ylim(config['IN_parameter1'])
         plt.title(training_schedule)
-        plt.xlabel('Pole Mass (parameter 1)')
-        plt.ylabel('Pole Length (parameter 2)')
+        if config["game"]=="CartPoleEnv":
+            plt.xlabel('Pole Mass (parameter 1)')
+            plt.ylabel('Pole Length (parameter 2)')
+        else:
+            plt.xlabel('Mass1 (parameter 1)')
+            plt.ylabel('Mass2 (parameter 2)')
         save_plot_path = os.path.join(path, "Variations_generated_" + training_schedule + ".png")
         plt.savefig(save_plot_path)
 
@@ -60,7 +64,7 @@ def single_run(config, run_id, timestamp_str, training_schedule):
 
     run = Algo(game=config['game'], path=run_path, xml_path=config['xml'], variations=variations,
                config=config, generation=generations, run_id=run_id, cluster_id=cluster_count,
-               validation_set=get_set(config, 'IN'), gauss_mean=mean, gauss_cov=cov)
+               validation_set=get_set(config, 'Validation'), training_schedule=training_schedule, gauss_mean=mean, gauss_cov=cov)
     generation, _ = run.main()
 
 def experiment_run_parallel(config):

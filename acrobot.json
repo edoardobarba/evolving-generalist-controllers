@@ -10,13 +10,14 @@
     "xml": "None",
     "runs": 8,
     "//comment1": "Parameter1 is MASS1, IN SET range",
-    "IN_parameter1": [0.75, 1.25],
+    "IN_parameter1": [0.3, 0.8],
     "//comment2": "Parameter1 is MASS2",
-    "IN_parameter2": [0.75, 1.25],
-    "OUT_parameter1": [0.5, 1.5],
-    "OUT_parameter2": [0.5, 1.5],
-    "incremental_step_sizes": [0.2, 0.2],
-    "testing_step_sizes": [0.2, 0.2],
+    "IN_parameter2": [0.3, 0.8],
+    "OUT_parameter1": [0.1, 1],
+    "OUT_parameter2": [0.1, 1],
+    "incremental_step_sizes": [0.1, 0.1],
+    "testing_step_sizes": [0.1, 0.1],
+    "validation_step_sizes": [0.2, 0.2],
     "actors": 1,
-    "training_schedule": ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform"]
+    "training_schedule": ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "RL"]
 }

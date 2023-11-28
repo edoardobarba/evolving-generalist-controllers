@@ -23,14 +23,15 @@ import gymnasium as gym
 import joblib
 
 
-train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy1/20231124114220"
-train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy2/20231124114220"
-train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian1/20231124114220"
-train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian2/20231124114220"
-train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/incremental/20231124114220"
-train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/uniform/20231124114220"
-all_train_folders = [train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_incremental_path, train_uniform_path]
-
+train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy1/20231127163539"
+train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy2/20231127163539"
+train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian1/20231127163539"
+train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231127163539"
+train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/incremental/20231127163539"
+train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/uniform/20231127163539"
+train_RL_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/RL/20231127172931"
+all_train_folders = [train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_incremental_path, train_uniform_path, train_RL_path]
+#all_train_folders = [train_RL_path]
 ACTORS = -1
 
 
@@ -105,6 +106,8 @@ def gym_render_testing(game, agent, xml_path, parameters, topology, steps):
 
         done = terminated or truncated
 
+    # print(-total_reward)
+
     env.close()
     return -total_reward
 
@@ -149,17 +152,19 @@ def get_NN(file):
     return nn, weights
 
 
-def set_test(game, nn, weights, topology, max_steps, max_fitness, testing_set, step_sizes): 
-
+def set_test(config, nn, weights, max_steps, max_fitness, testing_set): 
+    game = config["game"]
+    topology = config["NN-struc"]
     print("testing ", testing_set, "...")
-    all_variations = utils.get_set(game, testing_set, step_sizes=step_sizes)
+    all_variations = utils.get_set(config, testing_set)
+
 
     if game!="AcrobotEnv":
         game = eval(game)
 
     history_reward = []    
 
-    history_reward = joblib.Parallel(n_jobs=-1)(joblib.delayed(comparison)(game = game, agent=nn, i=i, test_set=all_variations, topology=topology, max_steps = max_steps)
+    history_reward = joblib.Parallel(n_jobs=ACTORS)(joblib.delayed(comparison)(game = game, agent=nn, i=i, test_set=all_variations, topology=topology, max_steps = max_steps)
                                                               for i in range(len(all_variations)))
 
     return history_reward, all_variations
@@ -209,9 +214,9 @@ if __name__ == '__main__':
             nn, weights = get_NN(file_generalist_ANN_weights)
             file_generalist_ANN_weights.close()
 
-            history_reward_IN, all_var_IN = set_test(game=game, nn = nn, weights=weights, topology=topology, max_steps=max_steps, max_fitness=max_fitness, testing_set="IN", step_sizes=step_sizes)      
-            history_reward_OUT, all_var_OUT = set_test(game=game, nn = nn, weights=weights, topology=topology, max_steps=max_steps, max_fitness=max_fitness,  testing_set="OUT", step_sizes=step_sizes)
-            history_reward_INOUT, all_var_INOUT = set_test(game=game, nn = nn, weights=weights, topology=topology, max_steps=max_steps, max_fitness=max_fitness, testing_set="INOUT", step_sizes=step_sizes)
+            history_reward_IN, all_var_IN = set_test(config, nn = nn, weights=weights, max_steps=max_steps, max_fitness=max_fitness, testing_set="IN")      
+            history_reward_OUT, all_var_OUT = set_test(config, nn = nn, weights=weights, max_steps=max_steps, max_fitness=max_fitness, testing_set="OUT")  
+            history_reward_INOUT, all_var_INOUT = set_test(config, nn = nn, weights=weights, max_steps=max_steps, max_fitness=max_fitness, testing_set="INOUT")  
 
             all_history_rewards_IN.append(np.array(history_reward_IN))
             all_history_rewards_OUT.append(np.array(history_reward_OUT))

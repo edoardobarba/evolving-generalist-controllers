@@ -8,6 +8,7 @@ from cartpole_modified import CartPoleEnv
 import os
 from scipy.stats import cauchy
 import gymnasium as gym
+import matplotlib.pyplot as plt
 
 
 # CARTPOLE_IN_LOWER_MASSPOLE = 0.05
@@ -53,6 +54,11 @@ import gymnasium as gym
     
 # #         return generate_morphologies(parameter1_range, parameter2_range, [0.1, 0.1])  
 
+
+def softmax(x):
+    e_x = np.exp(x - np.max(x))  # Subtracting np.max(x) for numerical stability
+    return e_x / e_x.sum()
+
 def get_mean(parameter1_range, parameter2_range):
     mean_par1 = (parameter1_range[1] + parameter1_range[0]) / 2
     mean_par2 = (parameter2_range[1] + parameter2_range[0]) / 2
@@ -97,7 +103,7 @@ def get_std(parameter1_range, parameter2_range, distr):
 #     morphologies[:, 1] = np.clip(morphologies[:, 1], parameter2_range[0], parameter2_range[1])
 #     return morphologies
 
-def generate_samples(parameter1_range, parameter2_range, num_samples, distr = "Gaussian1"):
+def generate_samples(parameter1_range, parameter2_range, num_samples, distr):
     morphologies = []
     if distr=="gaussian1" or distr == "gaussian2":
         mean_p1, mean_p2 = get_mean(parameter1_range, parameter2_range)
@@ -130,7 +136,7 @@ def generate_samples(parameter1_range, parameter2_range, num_samples, distr = "G
 
 
             morphologies.append([p1[0], p2[0]])
-            
+           
         return np.array(morphologies)
     
     elif distr == "uniform": 
@@ -162,15 +168,18 @@ def get_set(config, test_set):
         IN_parameter1_range = config["IN_parameter1"]
         IN_parameter2_range = config["IN_parameter2"]
 
-        OUT_parameter1_range = config["OUT_parameter1"]
-        OUT_parameter2_range = config["OUT_parameter2"]
 
-        if game=="CartPoleEnv": 
-            for element in INOUT_set:
-                if (element[0] < IN_parameter1_range[0] or element[0] > IN_parameter1_range[1]) and (element[1] < IN_parameter2_range[0] or element[1] > IN_parameter2_range[1]):
-                    OUT_set.append(element)
+        for element in INOUT_set:
+            if (element[0] < IN_parameter1_range[0] or element[0] > IN_parameter1_range[1]) and (element[1] < IN_parameter2_range[0] or element[1] > IN_parameter2_range[1]):
+                OUT_set.append(element)
 
         return np.array(OUT_set)
+    
+    if test_set == "Validation": 
+        parameter1_range = config["IN_parameter1"]
+        parameter2_range = config["IN_parameter1"]
+        step_sizes = config["validation_step_sizes"]
+        return generate_morphologies(parameter1_range, parameter2_range, step_sizes) 
 
 
 def generate_morphologies(parameter1_range, parameter2_range, step_sizes):

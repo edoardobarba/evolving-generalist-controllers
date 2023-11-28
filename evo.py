@@ -7,7 +7,7 @@ import torch
 import pandas as pd
 import numpy as np
 from nn import NeuralNetwork
-from utils import gym_render, save_dataframes
+from utils import gym_render, save_dataframes, softmax
 from ant_v4_modified import AntEnv
 from walker2d_v4_modified import Walker2dEnv
 from bipedal_walker_modified import BipedalWalker
@@ -16,7 +16,7 @@ from utils import generate_samples
 import seaborn as sns
 import matplotlib.pyplot as plt
 import gymnasium as gym
-
+import time
 
 # class Eval(Problem):
 #     def __init__(self, game, variations, topology, xml_path, steps, initial_bounds, counter):
@@ -28,7 +28,7 @@ import gymnasium as gym
 
         
 class Algo:
-    def __init__(self, game, path, xml_path, variations, config, run_id, cluster_id, generation, validation_set, gauss_mean = None, gauss_cov = None):
+    def __init__(self, game, path, xml_path, variations, config, run_id, cluster_id, generation, validation_set, training_schedule, gauss_mean = None, gauss_cov = None):
         if game=="AcrobotEnv":
             self.game = game
         else:
@@ -52,7 +52,16 @@ class Algo:
         self.gauss_cov = gauss_cov
         self.par1_range = config['IN_parameter1']
         self.par2_range = config['IN_parameter1']
-        self.training_schedule = config['training_schedule']
+        self.training_schedule = training_schedule
+        self.V = np.empty((len(variations), generation+1))
+        self.alfa = 0.1 
+        if game == "AcrobotEnv":
+            self.worst_score = 100
+            self.best__score = 0
+        elif game == "CartPoleEnv":
+            self.worst_score = 0
+            self.best__score = -1000
+
 
     def evaluate(self, agent: torch.Tensor) -> torch.Tensor:
 
@@ -154,10 +163,26 @@ class Algo:
         print('Number of Environments in Training Set: ', len(self.variations))
         print('Number of Environments in Validation Set: ', len(self.validation_set))
         logger = StdOutLogger(searcher, interval=50)
-
+        if self.training_schedule == "RL":
+            self.V[:, :] = 1
+            
+            G_diff = 0
+            G_avg_score = None
+        iter = 1
         while generation < self.max_eval:
 
+            if self.training_schedule == "RL":
+                #print(iter)
+                softmax_values = softmax(self.V[:, iter-1])
+                #print("len softmax values: ", len(softmax_values))
+                #print("len variations: ", len(self.variations))
+                #print("len self.V[iter, :]", len(self.V[:, iter]))
+                sampled_index = np.random.choice(len(self.variations), p=softmax_values)
+                self.parameters = self.variations[sampled_index]
+                #print("PARAMETERS: ", self.parameters)
+
             searcher.step()
+            #iter = searcher.status.get('iter')
             #print("STEP ", searcher.status.get('iter'))
             index_best = searcher.population.argbest()
             xbest_weights = searcher.population[index_best].values
@@ -174,6 +199,32 @@ class Algo:
                 generalist_fitness_scores = np.array(compare)
 
                 new_generalist_average_fitness = np.mean(generalist_fitness_scores)
+
+                #RL 
+                if self.training_schedule == "RL":
+                    G_score = new_generalist_average_fitness
+                    old_Gscore = generalist_average_fitness_history[-1] if generalist_average_fitness_history else self.worst_score
+                    G_diff = G_score - old_Gscore
+                    r = 1 if G_diff<0 else 0 #r=1 if improved            
+                    self.V[:, iter] = self.V[:, iter-1]
+                    # if iter%50==0:
+                    #     print(self.V[:, iter])
+                    # print(self.V[:, 0])        
+                    # print("G_score:", G_score)
+                    # print("old_Gscore:", old_Gscore)
+                    # print("G_diff:", G_diff)
+                    # print("r:", r)
+                    # print("V:", self.V[sampled_index, iter-1])
+                    self.V[sampled_index, iter] = self.V[sampled_index, iter-1] + self.alfa*(r-self.V[sampled_index, iter-1])
+
+                    if self.V[sampled_index, iter] < 0:
+                        self.V[sampled_index, iter] = 0
+
+                    # print("Updated V:", self.V[sampled_index, iter])
+
+
+
+
                 #print("new_generalist_average_fitness: ", new_generalist_average_fitness)
                 generalist_average_fitness_history.append(new_generalist_average_fitness)
                 generalist_new_dev = np.std(generalist_fitness_scores)
@@ -253,11 +304,18 @@ class Algo:
 
                 #         print(' no_envs : ', len(self.validation_set))
 
-                env_counter += 1
-                if env_counter >= len(self.variations):
-                    env_counter = 0
-                    
-                self.parameters = self.variations[env_counter] #INCREMENTAL TRAINING SCHEDULE 
+
+                if self.training_schedule == "incremental":
+                    env_counter += 1
+                    if env_counter >= len(self.variations):
+                        env_counter = 0
+                    self.parameters = self.variations[env_counter] #INCREMENTAL TRAINING SCHEDULE 
+
+                elif self.training_schedule != "RL":
+                    self.parameters = self.variations[iter-1]
+
+                iter+=1
+                
 
             elif len(self.variations) == 1:
                 #print("current_pop_best_fitness: ", current_pop_best_fitness)
@@ -268,7 +326,8 @@ class Algo:
             number_environments.append(len(self.validation_set))
             generation = searcher.status.get('iter')
 
-            if generalist_average_fitness < self.max_fitness or generation > self.max_eval:
+            # if generalist_average_fitness < self.max_fitness or generation > self.max_eval:
+            if generation > self.max_eval:
                 print("terzo break")
                 break
 
