@@ -154,12 +154,12 @@ def get_set(config, test_set):
 
     if test_set == "IN": 
         parameter1_range = config["IN_parameter1"]
-        parameter2_range = config["IN_parameter1"]
+        parameter2_range = config["IN_parameter2"]
         return generate_morphologies(parameter1_range, parameter2_range, step_sizes) 
     
     if test_set == "INOUT": 
         parameter1_range = config["OUT_parameter1"]
-        parameter2_range = config["OUT_parameter1"]
+        parameter2_range = config["OUT_parameter2"]
         return generate_morphologies(parameter1_range, parameter2_range, step_sizes)
     
     if test_set == "OUT": 
@@ -170,21 +170,21 @@ def get_set(config, test_set):
 
 
         for element in INOUT_set:
-            if (element[0] < IN_parameter1_range[0] or element[0] > IN_parameter1_range[1]) and (element[1] < IN_parameter2_range[0] or element[1] > IN_parameter2_range[1]):
+            if (element[0] < IN_parameter1_range[0] or element[0] > IN_parameter1_range[1]) or (element[1] < IN_parameter2_range[0] or element[1] > IN_parameter2_range[1]):
                 OUT_set.append(element)
 
         return np.array(OUT_set)
     
     if test_set == "Validation": 
         parameter1_range = config["IN_parameter1"]
-        parameter2_range = config["IN_parameter1"]
+        parameter2_range = config["IN_parameter2"]
         step_sizes = config["validation_step_sizes"]
         return generate_morphologies(parameter1_range, parameter2_range, step_sizes) 
 
 
 def generate_morphologies(parameter1_range, parameter2_range, step_sizes):
-    parameter1_values = np.arange(parameter1_range[0], parameter1_range[1] + step_sizes[0], step_sizes[0])
-    parameter2_values = np.arange(parameter2_range[0], parameter2_range[1] + step_sizes[1], step_sizes[1])
+    parameter1_values = np.arange(parameter1_range[0], parameter1_range[1] + 0.001, step_sizes[0])
+    parameter2_values = np.arange(parameter2_range[0], parameter2_range[1] + 0.001, step_sizes[1])
 
     morphologies = np.array(np.meshgrid(parameter1_values, parameter2_values)).T.reshape(-1, 2)
 

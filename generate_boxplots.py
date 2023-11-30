@@ -18,17 +18,17 @@ from scipy.stats import ttest_ind
 
 training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "RL"]
 
-train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy1/20231127163539"
-train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy2/20231127163539"
-train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian1/20231127163539"
-train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231127163539"
-train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/incremental/20231127163539"
-train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/uniform/20231127163539"
-train_RL_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/RL/20231127172931"
+train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy1/20231129151559"
+train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy2/20231129151559"
+train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian1/20231129151559"
+train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian2/20231129151559"
+train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/incremental/20231129151559"
+train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/uniform/20231129151559"
+train_RL_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/RL/20231129151559"
 all_train_folders = [train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_incremental_path, train_uniform_path, train_RL_path]
 
 
-save_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/"
+save_path = "/home/edo/THESIS/evolving-generalist-controllers/"
 
 def plot(game, incremental_history_rewards, gaussian1_history_rewards, gaussian2_history_rewards, 
          cauchy1_history_rewards, cauchy2_history_rewards, uniform_history_rewards, RL_history_rewards,
@@ -58,8 +58,10 @@ def plot(game, incremental_history_rewards, gaussian1_history_rewards, gaussian2
     ax.set_ylabel('Reward')
     if game == "CartPoleEnv":
         ax.set_ylim(-1001, 0)
+        ax.axhline(y=-500, color='r', linestyle='--', label='Threshold')
     elif game == "AcrobotEnv":
         ax.set_ylim(50, 70)
+        ax.axhline(y=-500, color='r', linestyle='--', label='Threshold')
 
     plt.tight_layout()
     
@@ -185,6 +187,12 @@ cauchy1_history_rewards_INOUT = cauchy1_data['avg_rewards_INOUT']
 cauchy2_history_rewards_INOUT = cauchy2_data['avg_rewards_INOUT']
 uniform_history_rewards_INOUT = uniform_data['avg_rewards_INOUT']
 RL_history_rewards_INOUT = RL_data['avg_rewards_INOUT']
+
+if game == "CartPoleEnv":
+    save_path = save_path + "Results_Cart/"
+
+elif game == "Acrobot":
+    save_path = save_path + "Results_Acrobot/"
 
 # Plotting
 plot(game, incremental_history_rewards_IN, gaussian1_history_rewards_IN, gaussian2_history_rewards_IN, cauchy1_history_rewards_IN, cauchy2_history_rewards_IN, uniform_history_rewards_IN, RL_history_rewards_IN, test="IN", save_path=save_path)

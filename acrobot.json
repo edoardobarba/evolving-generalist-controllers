@@ -1,14 +1,14 @@
 {
     "game": "AcrobotEnv",
     "maxFitness": 0,
-    "nStep": 100,
+    "nStep": 200,
     "NN-struc": [6, 20, 3, 1],
     "stdev_init": 0.1,
     "initial_bounds": [-0.00001, 0.00001],
     "generations": 500,
     "filename": "Results_Acrobot",
     "xml": "None",
-    "runs": 8,
+    "runs": 1,
     "//comment1": "Parameter1 is MASS1, IN SET range",
     "IN_parameter1": [0.3, 0.8],
     "//comment2": "Parameter1 is MASS2",
@@ -18,6 +18,6 @@
     "incremental_step_sizes": [0.1, 0.1],
     "testing_step_sizes": [0.1, 0.1],
     "validation_step_sizes": [0.2, 0.2],
-    "actors": 1,
+    "actors": -1,
     "training_schedule": ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "RL"]
 }

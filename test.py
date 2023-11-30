@@ -23,15 +23,17 @@ import gymnasium as gym
 import joblib
 
 
-train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy1/20231127163539"
-train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy2/20231127163539"
-train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian1/20231127163539"
-train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231127163539"
-train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/incremental/20231127163539"
-train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/uniform/20231127163539"
-train_RL_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/RL/20231127172931"
+train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy1/20231129151559"
+train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy2/20231129151559"
+train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian1/20231129151559"
+train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian2/20231129151559"
+train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/incremental/20231129151559"
+train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/uniform/20231129151559"
+train_RL_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/RL/20231129151559"
 all_train_folders = [train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_incremental_path, train_uniform_path, train_RL_path]
-#all_train_folders = [train_RL_path]
+
+
+
 ACTORS = -1
 
 
@@ -217,6 +219,12 @@ if __name__ == '__main__':
             history_reward_IN, all_var_IN = set_test(config, nn = nn, weights=weights, max_steps=max_steps, max_fitness=max_fitness, testing_set="IN")      
             history_reward_OUT, all_var_OUT = set_test(config, nn = nn, weights=weights, max_steps=max_steps, max_fitness=max_fitness, testing_set="OUT")  
             history_reward_INOUT, all_var_INOUT = set_test(config, nn = nn, weights=weights, max_steps=max_steps, max_fitness=max_fitness, testing_set="INOUT")  
+
+            print("all_var_IN")
+            print(all_var_IN)
+            print("all_var_OUT")
+            print(all_var_OUT)
+
 
             all_history_rewards_IN.append(np.array(history_reward_IN))
             all_history_rewards_OUT.append(np.array(history_reward_OUT))

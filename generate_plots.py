@@ -17,14 +17,15 @@ import os
 from scipy import stats
 import matplotlib.patches as patches
 
-train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy1/20231127163539"
-train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/cauchy2/20231127163539"
-train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian1/20231127163539"
-train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/gaussian2/20231127163539"
-train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/incremental/20231127163539"
-train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/uniform/20231127163539"
-train_RL_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Cart/RL/20231127172931"
+train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy1/20231129151559"
+train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy2/20231129151559"
+train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian1/20231129151559"
+train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian2/20231129151559"
+train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/incremental/20231129151559"
+train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/uniform/20231129151559"
+train_RL_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/RL/20231129151559"
 all_train_folders = [train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_incremental_path, train_uniform_path, train_RL_path]
+
 
 SEED=0
 
@@ -40,9 +41,11 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
 
     plt.figure(figsize=(10, 7))
     if game=="CartPoleEnv":
-        sns.heatmap(pivot_df, vmin=-1000, vmax=0, annot=True)
+        sns.heatmap(pivot_df, vmin=-1000, vmax=0, annot=True, fmt=".0f")
         plt.xlabel('Pole Mass')
         plt.ylabel('Pole Length')
+        rect = patches.Rectangle((1, 2), 4, 5, linewidth=3, edgecolor='red', facecolor='none')
+        plt.gca().add_patch(rect)
     elif game=="AcrobotEnv":
         sns.heatmap(pivot_df, vmin=0, vmax=100, annot=True)        
         plt.xlabel('MASS1')

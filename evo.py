@@ -326,8 +326,8 @@ class Algo:
             number_environments.append(len(self.validation_set))
             generation = searcher.status.get('iter')
 
-            # if generalist_average_fitness < self.max_fitness or generation > self.max_eval:
-            if generation > self.max_eval:
+            if generalist_average_fitness < self.max_fitness or generation > self.max_eval:
+            #if generation > self.max_eval:
                 print("terzo break")
                 break
 
