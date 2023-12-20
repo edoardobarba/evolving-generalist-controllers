@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
 from nn import NeuralNetwork
-from ant_v4_modified import AntEnv
-from walker2d_v4_modified import Walker2dEnv
+# from ant_v4_modified import AntEnv
+# from walker2d_v4_modified import Walker2dEnv
 from bipedal_walker_modified import BipedalWalker
 from cartpole_modified import CartPoleEnv
 import os
 from scipy.stats import cauchy
-import gymnasium as gym
+import gym
 import matplotlib.pyplot as plt
 
 
@@ -103,11 +103,28 @@ def get_std(parameter1_range, parameter2_range, distr):
 #     morphologies[:, 1] = np.clip(morphologies[:, 1], parameter2_range[0], parameter2_range[1])
 #     return morphologies
 
-def generate_samples(parameter1_range, parameter2_range, num_samples, distr):
+def generate_samples(parameter1_range, parameter2_range, num_samples, distr, samples_per_cycle = 20):
     morphologies = []
     if distr=="gaussian1" or distr == "gaussian2":
         mean_p1, mean_p2 = get_mean(parameter1_range, parameter2_range)
         std_dev_p1, std_dev_p2 = get_std(parameter1_range, parameter2_range, distr)
+        for _ in range(num_samples):
+            p1 = np.random.normal(loc=mean_p1, scale=std_dev_p1)
+            while(p1 < parameter1_range[0] or p1 > parameter1_range[1]):
+                p1 = np.random.normal(loc=mean_p1, scale=std_dev_p1)
+
+            p2 = np.random.normal(loc=mean_p2, scale=std_dev_p2)
+            while(p2 < parameter2_range[0] or p2 > parameter2_range[1]):
+                p2 = np.random.normal(loc=mean_p2, scale=std_dev_p2)
+
+            morphologies.append([p1, p2])
+        return np.array(morphologies)
+    
+    if distr=="gauss_dec":
+        mean_p1 = parameter1_range[1]
+        mean_p2 = parameter2_range[1]
+
+        std_dev_p1, std_dev_p2 = get_std(parameter1_range, parameter2_range, "gaussian1")
         for _ in range(num_samples):
             p1 = np.random.normal(loc=mean_p1, scale=std_dev_p1)
             while(p1 < parameter1_range[0] or p1 > parameter1_range[1]):
@@ -138,6 +155,38 @@ def generate_samples(parameter1_range, parameter2_range, num_samples, distr):
             morphologies.append([p1[0], p2[0]])
            
         return np.array(morphologies)
+
+    elif distr=="beta01" or distr =="beta02": 
+        if distr == "beta01":
+            a = b = 0.1
+        if distr == "beta02":
+            a = b = 0.2
+
+        lower_bound_p1 = parameter1_range[0]
+        upper_bound_p1 = parameter1_range[1]
+
+        lower_bound_p2 = parameter2_range[0]
+        upper_bound_p2 = parameter2_range[1]
+
+        
+        for _ in range(num_samples):
+            sample1 = np.random.beta(a=a, b=b)
+            p1 = lower_bound_p1 + (upper_bound_p1 - lower_bound_p1) * sample1
+
+            while(p1 < parameter1_range[0] or p1 > parameter1_range[1]):
+                sample1 = np.random.beta(a=a, b=b)
+                p1 = lower_bound_p1 + (upper_bound_p1 - lower_bound_p1) * sample1
+
+            sample2 = np.random.beta(a=a, b=b)
+            p2 = lower_bound_p2 + (upper_bound_p2 - lower_bound_p2) * sample2
+
+            while(p2 < parameter2_range[0] or p2 > parameter2_range[1]):
+                sample2 = np.random.beta(a=a, b=b)
+                p2 = lower_bound_p2 + (upper_bound_p2 - lower_bound_p2) * sample2
+
+            morphologies.append([p1, p2])
+        return np.array(morphologies)     
+
     
     elif distr == "uniform": 
         for _ in range(num_samples): 
@@ -146,7 +195,38 @@ def generate_samples(parameter1_range, parameter2_range, num_samples, distr):
             morphologies.append([p1, p2])
                 
         return np.array(morphologies)
-    
+
+    elif distr == "betawalk01" or distr == "betawalk02":
+        
+        all_samples = []
+        first_cycle = True
+        while len(all_samples) < num_samples:
+
+            if distr == "betawalk01":
+                cycle_samples = generate_samples(parameter1_range, parameter2_range, samples_per_cycle, "beta01")
+            elif distr == "betawalk02":
+                cycle_samples = generate_samples(parameter1_range, parameter2_range, samples_per_cycle, "beta02")
+            
+            if first_cycle:
+                random_element_idx = np.random.randint(0, len(cycle_samples))
+                current = cycle_samples[random_element_idx]
+                all_samples.append(current)
+                cycle_samples = np.delete(cycle_samples, random_element_idx, axis=0)
+                first_cycle = False
+
+            while cycle_samples.size > 0:
+                distances = np.linalg.norm(cycle_samples - current, axis=1)
+                min_distance_index = np.argmin(distances)
+                closest_element = cycle_samples[min_distance_index]
+                all_samples.append(closest_element)
+                cycle_samples = np.delete(cycle_samples, min_distance_index, axis=0)
+
+                current = closest_element
+
+                if len(all_samples) == num_samples: 
+                    break
+        
+        return np.array(all_samples)
 
 def get_set(config, test_set):
     game = config["game"]
@@ -195,13 +275,13 @@ def gym_render(game, agent, xml_path, parameters, topology, steps):
     s = 0
     total_reward = 0
 
-    if game == AntEnv:
-        xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(xml_path, parameters[0], parameters[1])
-        env = game(xml_file, render_mode=None, healthy_reward=0)
-    elif game == Walker2dEnv:
-        xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
-        env = game(xml_file, render_mode=None, healthy_reward=0)
-    elif game == "AcrobotEnv":
+    # if game == AntEnv:
+    #     xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(xml_path, parameters[0], parameters[1])
+    #     env = game(xml_file, render_mode=None, healthy_reward=0)
+    # elif game == Walker2dEnv:
+    #     xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
+    #     env = game(xml_file, render_mode=None, healthy_reward=0)
+    if game == "AcrobotEnv":
         env = gym.make('Acrobot-v1', render_mode = None).unwrapped
         env.LINK_MASS_1 = parameters[0]  #: [kg] mass of link 1
         env.LINK_MASS_2 = parameters[1]  #: [kg] mass of link 2

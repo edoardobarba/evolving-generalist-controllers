@@ -17,14 +17,43 @@ import os
 from scipy import stats
 import matplotlib.patches as patches
 
-train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy1/20231129151559"
-train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy2/20231129151559"
-train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian1/20231129151559"
-train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian2/20231129151559"
-train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/incremental/20231129151559"
-train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/uniform/20231129151559"
-train_RL_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/RL/20231129151559"
-all_train_folders = [train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_incremental_path, train_uniform_path, train_RL_path]
+
+# #training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "RL", "beta1", "beta2", "betawalk1", "betawalk2"]
+
+# #training_schedules = ["cauchy1", "cauchy2", "gaussian1", "gaussian2", "incremental",]
+
+# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231208165916"
+# train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231208165916"
+# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231208165916"
+# train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231208165916"
+# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231208165916"
+# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231208165916"
+# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20231208165916"
+# train_beta1 = "/home/edoardo.barba/Results_Biped/beta1/20231208165916"
+# train_beta2 = "/home/edoardo.barba/Results_Biped/beta2/20231208165916"
+# train_betawalk1 = "/home/edoardo.barba/Results_Biped/betawalk1/20231208165916"
+# train_betawalk2 = "/home/edoardo.barba/Results_Biped/betawalk2/20231208165916"
+
+# #all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path,   train_uniform_path, train_RL_path, train_beta1, train_beta2, train_betawalk1, train_betawalk2]
+
+
+train_cauchy1_path = "/home/edoardo.barba/Results_Biped_old/cauchy1/20231215114621"
+train_cauchy2_path = "/home/edoardo.barba/Results_Biped_old/cauchy2/20231215114621"
+train_gaussian1_path = "/home/edoardo.barba/Results_Biped_old/gaussian1/20231215114440"
+train_gaussian2_path = "/home/edoardo.barba/Results_Biped_old/gaussian2/20231215114440"
+train_incremental_path = "/home/edoardo.barba/Results_Biped_old/incremental/20231215114440"
+train_uniform_path = "/home/edoardo.barba/Results_Biped_old/uniform/20231215114653"
+train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+train_beta1 = "/home/edoardo.barba/Results_Biped_old/beta1/20231215114653"
+train_beta2 = "/home/edoardo.barba/Results_Biped_old/beta2/20231215114653"
+train_betawalk1 = "/home/edoardo.barba/Results_Biped_old/betawalk1/20231215114907" 
+train_betawalk2 = "/home/edoardo.barba/Results_Biped_old/betawalk2/20231215114907" 
+train_gauss_dec = "/home/edoardo.barba/Results_Biped_old/gauss_dec/20231215114907"
+
+
+training_schedules = ["incremental", "gaussian1", "gaussian2","cauchy1","cauchy2","uniform", "RL", "beta1", "beta2", "betawalk1", "betawalk2", "gauss_dec"]
+all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_RL_path, train_beta1, train_beta2, train_betawalk1, train_betawalk2, train_gauss_dec]
+                           
 
 
 SEED=0
@@ -37,7 +66,9 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
     avg_scores = np.mean(scores, axis=0)
     data = {'Parameter 1': rounded_param1_values, 'Parameter 2': rounded_param2_values, 'Reward': avg_scores}
     df = pd.DataFrame(data)
+    #print(df)
     pivot_df = df.pivot(index='Parameter 2', columns='Parameter 1', values='Reward')
+    pivot_df = pivot_df[::-1]
 
     plt.figure(figsize=(10, 7))
     if game=="CartPoleEnv":
@@ -54,6 +85,16 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
         rect = patches.Rectangle((2, 2), 6, 6, linewidth=2, edgecolor='black', facecolor='none')
         plt.gca().add_patch(rect)
 
+    elif game=="BipedalWalker":
+        sns.heatmap(pivot_df, vmin=-300, vmax=300, annot=True, fmt=".0f")        
+        plt.xlabel('Leg Width')
+        plt.ylabel('Leg Height')
+        rect = patches.Rectangle((1, 2), 6, 6, linewidth=3, edgecolor='red', facecolor='none')
+        plt.gca().add_patch(rect)
+        # Add the red square
+        #rect = patches.Rectangle((2, 2), 6, 6, linewidth=2, edgecolor='black', facecolor='none')
+        #plt.gca().add_patch(rect)
+        
     plt.title(title)
 
     #plt.axvline(x=0.05, color='red', linestyle='--', linewidth=2)  # Adjust color, linestyle, and linewidth as needed
@@ -71,13 +112,14 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
 
         # Loop through the path parts
         for part in save_path_parts:
-
-            if part.lower() in ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "rl"]:
+            #print(part.lower())
+            if part.lower() in ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "rl", "beta1", "beta2", "betawalk1", "betawalk2", "gauss_dec"]:
                 training_schedule = part
                 break
 
         save_path = os.path.join(save_path, "HeatMap_" + training_schedule + "_" + title + ".png")
-        plt.savefig(save_path)
+        plt.savefig(save_path, dpi=300)
+        plt.close()
     else:
         plt.show()
 
@@ -96,18 +138,18 @@ if __name__ == "__main__":
         os.makedirs(plots_path, exist_ok=True)
         print()
 
-        all_history_rewards_IN = data['all_history_rewards_IN']
-        all_history_rewards_OUT = data['avg_rewards_OUT']
+        # all_history_rewards_IN = data['all_history_rewards_IN']
+        # all_history_rewards_OUT = data['avg_rewards_OUT']
         all_history_rewards_INOUT = data['avg_rewards_INOUT']
 
-        all_avgs_IN = [np.mean(run_rewards) for run_rewards in all_history_rewards_IN]
-        all_ts_avgs_IN.append(all_avgs_IN)
+        # all_avgs_IN = [np.mean(run_rewards) for run_rewards in all_history_rewards_IN]
+        # all_ts_avgs_IN.append(all_avgs_IN)
         
-        print("Mean reward IN: ", np.mean(all_avgs_IN))
+        # print("Mean reward IN: ", np.mean(all_avgs_IN))
 
-        all_avgs_OUT = [np.mean(run_rewards) for run_rewards in all_history_rewards_OUT]
+        # all_avgs_OUT = [np.mean(run_rewards) for run_rewards in all_history_rewards_OUT]
         
-        print("Mean reward OUT: ", np.mean(all_avgs_OUT))
+        # print("Mean reward OUT: ", np.mean(all_avgs_OUT))
 
         all_avgs_INOUT = [np.mean(run_rewards) for run_rewards in all_history_rewards_INOUT]
         
@@ -117,26 +159,26 @@ if __name__ == "__main__":
         original_stdout = sys.stdout
         output_file_path = os.path.dirname(datafile_path) + "/results.txt"
         with open(output_file_path, 'w') as f:
-            sys.stdout = f  
-            print("Mean reward IN: ", np.mean(all_avgs_IN))
-            print("std IN: ", np.std(all_avgs_IN))
+            # sys.stdout = f  
+            # print("Mean reward IN: ", np.mean(all_avgs_IN))
+            # print("std IN: ", np.std(all_avgs_IN))
 
-            print("Mean reward OUT: ", np.mean(all_avgs_OUT))
-            print("std OUT: ", np.std(all_avgs_OUT))
+            # print("Mean reward OUT: ", np.mean(all_avgs_OUT))
+            # print("std OUT: ", np.std(all_avgs_OUT))
 
             print("Mean reward INOUT: ", np.mean(all_avgs_INOUT))
             print("std INOUT: ", np.std(all_avgs_INOUT))
             
         sys.stdout = original_stdout
 
-        IN_variations = utils.get_set(config, test_set="IN")
-        OUT_variations = utils.get_set(config, test_set="OUT")
+        # IN_variations = utils.get_set(config, test_set="IN")
+        # OUT_variations = utils.get_set(config, test_set="OUT")
         INOUT_variations = utils.get_set(config, test_set="INOUT")
 
-        plot_heatmap(game, IN_variations, all_history_rewards_IN, title='IN', save_path=plots_path)
-        plot_heatmap(game, OUT_variations, all_history_rewards_OUT, title='OUT', save_path=plots_path)
-        plot_heatmap(game, INOUT_variations, all_history_rewards_INOUT, title='INOUT', save_path=plots_path)
+        #plot_heatmap(game, IN_variations, all_history_rewards_IN, title='IN', save_path=plots_path)
+        #plot_heatmap(game, OUT_variations, all_history_rewards_OUT, title='OUT', save_path=plots_path)
+        plot_heatmap(game, INOUT_variations, all_history_rewards_INOUT, title='TRAIN+TEST', save_path=plots_path)
 
-    print(stats.kruskal(all_ts_avgs_IN[0], all_ts_avgs_IN[1], all_ts_avgs_IN[2], all_ts_avgs_IN[3], all_ts_avgs_IN[4], all_ts_avgs_IN[5]))
+    #print(stats.kruskal(all_ts_avgs_IN[0], all_ts_avgs_IN[1], all_ts_avgs_IN[2], all_ts_avgs_IN[3], all_ts_avgs_IN[4], all_ts_avgs_IN[5]))
     
     

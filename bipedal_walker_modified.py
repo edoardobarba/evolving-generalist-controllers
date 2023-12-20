@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, List, Optional
 
 import numpy as np
 
+import gym
 import gymnasium as gym
 from gymnasium import error, spaces
 from gymnasium.error import DependencyNotInstalled

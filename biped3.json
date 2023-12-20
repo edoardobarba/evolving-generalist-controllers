@@ -8,7 +8,7 @@
     "generations": 4000,
     "filename": "Results_Biped",
     "xml": "None",
-    "runs": 1,
+    "runs": 30,
     "//comment": "Parameter1 is leg width",
     "old_IN_parameter1": [7, 12],
     "old_IN_parameter2": [26, 36],
@@ -23,8 +23,8 @@
     "incremental_step_sizes": [2, 4],
     "testing_step_sizes": [2, 4],
     "validation_step_sizes": [2, 4],
-    "actors": -1,
+    "actors": 1,
     "parallel_runs_actors": 4,
     "samples_per_cycle": 50,
-    "training_schedule": ["gauss_dec"]
+    "training_schedule": ["beta01", "beta02", "betawalk02"]
 }

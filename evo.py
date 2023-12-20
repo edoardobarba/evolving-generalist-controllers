@@ -8,8 +8,8 @@ import pandas as pd
 import numpy as np
 from nn import NeuralNetwork
 from utils import gym_render, save_dataframes, softmax
-from ant_v4_modified import AntEnv
-from walker2d_v4_modified import Walker2dEnv
+# from ant_v4_modified import AntEnv
+# from walker2d_v4_modified import Walker2dEnv
 from bipedal_walker_modified import BipedalWalker
 from cartpole_modified import CartPoleEnv
 from utils import generate_samples
@@ -17,6 +17,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import gymnasium as gym
 import time
+import os
+import sys
 
 # class Eval(Problem):
 #     def __init__(self, game, variations, topology, xml_path, steps, initial_bounds, counter):
@@ -54,7 +56,7 @@ class Algo:
         self.par2_range = config['IN_parameter1']
         self.training_schedule = training_schedule
         self.V = np.empty((len(variations), generation+1))
-        self.alfa = 0.1 
+        self.alfa = 0.1  
         if game == "AcrobotEnv":
             self.worst_score = 100
             self.best__score = 0
@@ -62,21 +64,25 @@ class Algo:
             self.worst_score = 0
             self.best__score = -1000
 
+        elif game == "BipedalWalker":
+            self.worst_score = 300
+            self.best__score = -300
+
 
     def evaluate(self, agent: torch.Tensor) -> torch.Tensor:
 
         s = 0
         total_reward = 0
 
-        if self.game == AntEnv:
-            xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(self.xml_path, self.parameters[0],
-                                                                   self.parameters[1])
-            env = self.game(xml_file, render_mode=None, healthy_reward=0)
-        elif self.game == Walker2dEnv:
-            xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(self.xml_path, self.parameters[0],
-                                                                      self.parameters[1])
-            env = self.game(xml_file, render_mode=None, healthy_reward=0)
-        elif self.game == "AcrobotEnv":
+        # if self.game == AntEnv:
+        #     xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(self.xml_path, self.parameters[0],
+        #                                                            self.parameters[1])
+        #     env = self.game(xml_file, render_mode=None, healthy_reward=0)
+        # elif self.game == Walker2dEnv:
+        #     xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(self.xml_path, self.parameters[0],
+        #                                                               self.parameters[1])
+        #     env = self.game(xml_file, render_mode=None, healthy_reward=0)
+        if self.game == "AcrobotEnv":
             env = gym.make('Acrobot-v1', render_mode = None).unwrapped
             env.LINK_MASS_1 = self.parameters[0]  #: [kg] mass of link 1
             env.LINK_MASS_2 = self.parameters[1]  #: [kg] mass of link 2
@@ -105,30 +111,26 @@ class Algo:
 
             done = terminated or truncated
 
-        env.close()
+        #env.close()
 
         return -total_reward
 
     def problem(self):
-
+        #print("here1")
         problem = Problem(
             "min",  # minimize the fitness,
             objective_func=self.evaluate,  # evaluation function
             solution_length=NeuralNetwork.calculate_total_connections(self.topology),
             # NN topology determines the solution_length
-            initial_bounds=(self.initial_bounds[0], self.initial_bounds[1]),
+            initial_bounds=(self.initial_bounds[0], self.initial_bounds[1]))
             # initial bounds limit the initial solutions
-            num_actors=self.actors)  
-
+            #num_actors=self.actors)  
+        #print("here2")
         searcher = XNES(problem, stdev_init=self.initial_stdev)
-
+        #print("here3")
         return searcher
 
-    def comparison(self, agent, mode, i):
-        if mode == 1:
-            fitness = gym_render(self.game, agent, self.xml_path, self.validation_set[i], self.topology, self.steps)
-            return fitness
-        else:
+    def comparison(self, agent, i):
             fitness = gym_render(self.game, agent, self.xml_path, self.validation_set[i], self.topology, self.steps)
             return fitness
 
@@ -142,7 +144,7 @@ class Algo:
         generalist_weights = 0  # Stores the weights of the generalist individual.
         generation = 0  # Tracks the current generation or iteration of the evolutionary algorithm.
         current_pop_best_fitness = self.max_eval  # Stores the best fitness in the current population.
-        generalist_average_fitness = self.max_eval  # Represents the average fitness of the generalist individual across different environments.
+        generalist_average_fitness = 1000000  # Represents the average fitness of the generalist individual across different environments.
         env_counter = 0  # Counts the current environment iteration in the loop.
         generalist_fitness_scores = np.zeros(len(self.validation_set))  # An array to store fitness scores of the generalist individual across different environments.
         good_fitness_scores = np.zeros(len(self.validation_set))  # Stores fitness scores for environments that are considered "good" based on certain criteria.
@@ -152,38 +154,45 @@ class Algo:
         fitness_std_deviation_history = []  # Records the history of standard deviation of fitness scores across different environments for the generalist individual.
         generalist_min_fitness_history = []  # Records the history of the minimum fitness of the generalist individual across iterations.
         generalist_max_fitness_history = []  # Records the history of the maximum fitness of the generalist individual across iterations.
+        generalization_capability_history = []
 
         n_changed_gaussian_variance = 1
         fitness_step = self.max_fitness/3 
-
+        #print("RUN searcher")
 
         searcher = self.problem()
+        #print("here5")
         pandas_logger = PandasLogger(searcher)
 
         print('Number of Environments in Training Set: ', len(self.variations))
         print('Number of Environments in Validation Set: ', len(self.validation_set))
         logger = StdOutLogger(searcher, interval=50)
         if self.training_schedule == "RL":
-            self.V[:, :] = 1
+            self.V[:, :] = 0.5
             
             G_diff = 0
             G_avg_score = None
         iter = 1
-        while generation < self.max_eval:
 
+        used_env = [0 for env in self.variations]
+        while generation < self.max_eval:
+            print("ITER: ", iter)
             if self.training_schedule == "RL":
-                #print(iter)
-                softmax_values = softmax(self.V[:, iter-1])
-                #print("len softmax values: ", len(softmax_values))
-                #print("len variations: ", len(self.variations))
-                #print("len self.V[iter, :]", len(self.V[:, iter]))
-                sampled_index = np.random.choice(len(self.variations), p=softmax_values)
+                epsilon = 0.1  # Set your epsilon value here
+                
+                # With probability (1 - epsilon), choose the best action
+                if np.random.rand() > epsilon:
+                    max_indices = np.where(self.V[:, iter-1] == np.max(self.V[:, iter-1]))[0]
+                    sampled_index = np.random.choice(max_indices)
+                else:
+                    # With probability epsilon, explore a random action
+                    sampled_index = np.random.choice(len(self.variations))
+
+                used_env[sampled_index] += 1
                 self.parameters = self.variations[sampled_index]
-                #print("PARAMETERS: ", self.parameters)
+
 
             searcher.step()
-            #iter = searcher.status.get('iter')
-            #print("STEP ", searcher.status.get('iter'))
             index_best = searcher.population.argbest()
             xbest_weights = searcher.population[index_best].values
 
@@ -193,19 +202,32 @@ class Algo:
                 improved = searcher.status.get('iter')
 
             if len(self.validation_set) > 1:
-                compare = joblib.Parallel(n_jobs=self.actors)(joblib.delayed(self.comparison)(xbest_weights, 1, i)
+                compare = joblib.Parallel(n_jobs=1)(joblib.delayed(self.comparison)(xbest_weights, i)
                                                               for i in range(len(generalist_fitness_scores)))
+
+                #compare = [self.comparison(xbest_weights, i) for i in range(len(generalist_fitness_scores))] 
 
                 generalist_fitness_scores = np.array(compare)
 
                 new_generalist_average_fitness = np.mean(generalist_fitness_scores)
 
+                generalist_average_fitness_history.append(new_generalist_average_fitness)
+                generalist_new_dev = np.std(generalist_fitness_scores)
+
+                fitness_std_deviation_history.append(generalist_new_dev)
+                generalist_min_fitness_history.append(np.min(generalist_fitness_scores))
+                generalist_max_fitness_history.append(np.max(generalist_fitness_scores))
+
                 #RL 
                 if self.training_schedule == "RL":
                     G_score = new_generalist_average_fitness
-                    old_Gscore = generalist_average_fitness_history[-1] if generalist_average_fitness_history else self.worst_score
-                    G_diff = G_score - old_Gscore
-                    r = 1 if G_diff<0 else 0 #r=1 if improved            
+                    #old_Gscore = generalization_capability_history[-1] if generalization_capability_history else self.worst_score
+
+                    last_Gscores_mean = np.mean(np.array(generalist_average_fitness_history[-10:]))
+                    #G_diff = G_score - old_Gscore
+                    G_diff = G_score - last_Gscores_mean
+                    r = 1 if G_diff<=0 else 0 #r=1 if improved
+
                     self.V[:, iter] = self.V[:, iter-1]
                     # if iter%50==0:
                     #     print(self.V[:, iter])
@@ -222,25 +244,23 @@ class Algo:
 
                     # print("Updated V:", self.V[sampled_index, iter])
 
-
-
-
                 #print("new_generalist_average_fitness: ", new_generalist_average_fitness)
-                generalist_average_fitness_history.append(new_generalist_average_fitness)
-                generalist_new_dev = np.std(generalist_fitness_scores)
 
-                fitness_std_deviation_history.append(generalist_new_dev)
-                generalist_min_fitness_history.append(np.min(generalist_fitness_scores))
-                generalist_max_fitness_history.append(np.max(generalist_fitness_scores))
 
                 #print("generalist_average_fitness: ", generalist_average_fitness)
 
                 if new_generalist_average_fitness <= generalist_average_fitness:
+                    generalization_capability_history.append(new_generalist_average_fitness)
                     generalist_average_fitness = new_generalist_average_fitness
                     generalist_old_dev = generalist_new_dev
 
                     good_fitness_scores = generalist_fitness_scores.copy()
                     generalist_weights = xbest_weights.detach().clone()
+
+                else:
+                    generalization_capability_history.append(generalization_capability_history[-1])
+
+                
 
                 # if self.training_schedule == 'dynamic_gaussian':
                 #     # Check if we have to increase gaussian variance
@@ -312,9 +332,11 @@ class Algo:
                     self.parameters = self.variations[env_counter] #INCREMENTAL TRAINING SCHEDULE 
 
                 elif self.training_schedule != "RL":
-                    self.parameters = self.variations[iter-1]
+                    self.parameters = self.variations[iter-1] #iter-1 because iter starts from 1
 
                 iter+=1
+                #if iter%10==0:
+                # print("ITER: ", iter)
                 
 
             elif len(self.variations) == 1:
@@ -326,24 +348,104 @@ class Algo:
             number_environments.append(len(self.validation_set))
             generation = searcher.status.get('iter')
 
-            if generalist_average_fitness < self.max_fitness or generation > self.max_eval:
-            #if generation > self.max_eval:
+            #if generalist_average_fitness < self.max_fitness or generation > self.max_eval:
+            if generation > self.max_eval:
                 print("terzo break")
                 break
 
-        evals = pandas_logger.to_dataframe()
+            if generation%50==0:
+                original_stdout = sys.stdout
+                # print(self.path)
+                output_file_path = os.path.join(self.path, "training.txt")
+                with open(output_file_path, 'w') as f:
+                    sys.stdout = f  
+                    print("Generation: ", iter)
+                    sys.stdout = original_stdout
+
+            if generation%1000==0:
+                print("Saving data...")
+                evals = pandas_logger.to_dataframe()
+                evals['no_envs'] = number_environments
+
+                save_path = os.path.join(self.path, str(generation)) 
+
+                generalist_evals = pd.DataFrame(
+                    {'Mean': generalist_average_fitness_history, 'STD': fitness_std_deviation_history,
+                    'Best': generalist_min_fitness_history, 'Worst': generalist_max_fitness_history, 'Gen_capability': generalization_capability_history})
+
+                info = '{}_{}_{}'.format(self.run_id, self.cluster_id, self.seed)
+
+                save_dataframes(evals, xbest_weights, generalist_weights, generalist_evals, info, save_path)
+
 
         if len(number_environments) != len(evals):
             number_environments.append(len(self.variations))
 
-        evals['no_envs'] = number_environments
+        if self.training_schedule == "RL":
+            n_variations = len(self.V[:, 0])
+            n_generations = len(self.V[0, :])
+            x_axis = np.arange(0, n_generations)  # Assuming x-axis represents evaluations 1, 2, ..., n_evaluations
 
-        generalist_evals = pd.DataFrame(
-            {'Mean': generalist_average_fitness_history, 'STD': fitness_std_deviation_history,
-             'Best': generalist_min_fitness_history, 'Worst': generalist_max_fitness_history})
+            plt.figure(figsize=(10, 6))
 
-        info = '{}_{}_{}'.format(self.run_id, self.cluster_id, self.seed)
+            # Create a heatmap using imshow
+            heatmap = plt.imshow(self.V, aspect='auto', extent=[0, n_generations, 1, n_variations + 1], interpolation = "none", vmin=1, vmax=0)
 
-        save_dataframes(evals, xbest_weights, generalist_weights, generalist_evals, info, self.path)
+            # Add colorbar
+            cbar = plt.colorbar(heatmap, orientation='vertical')
+
+            # Customize y-axis ticks
+            custom_y_ticks = np.arange(1, len(self.variations) + 1)
+            plt.yticks(custom_y_ticks, labels=[str(vec) for vec in self.variations])
+
+            # Add horizontal lines
+            for i in range(int(np.min(self.V)), int(np.max(self.V)) + 1):
+                plt.axhline(y=i, linestyle='--', color='gray', linewidth=0.5)
+
+            plt.xlabel('Evaluation')
+            plt.ylabel('Values')
+            plt.title('Values of Each Sample Across Evaluations')
+            plt.tight_layout()
+            # Save the heatmap plot
+            filename = "Heatmap.png"
+            plt.savefig(os.path.join(self.path, filename))
+            plt.close()
+            # Create a DataFrame to store the values
+            values_df = pd.DataFrame(self.V.T, columns=[f'Env {vec}' for vec in self.variations])
+
+            # Save the DataFrame to a CSV file
+            csv_filename = 'values_data.csv'
+            csv_path = os.path.join(self.path, csv_filename)
+            values_df.to_csv(csv_path, index=False, float_format='%.2f')
+
+            print(f'Values data saved to {csv_path}')
+
+            for i in range(n_variations):
+                self.V[i,:] = self.V[i, :] + i
+
+            plt.figure(figsize=(10, 6))
+            for i in range(n_variations):
+                plt.plot(x_axis, self.V[i, :], label=f'{self.variations[i]}')
+
+            custom_y_ticks = np.arange(1, len(self.variations)+1)
+            plt.yticks(custom_y_ticks, labels=[str(vec) for vec in self.variations])
+
+            for i in range(int(np.min(self.V)), int(np.max(self.V)) + 1):
+                plt.axhline(y=i, linestyle='--', color='gray', linewidth=0.5)
+
+            # Customize y-axis ticks
+            # custom_y_ticks = [variation for variation in self.variations]
+            # plt.yticks(custom_y_ticks)
+
+            plt.xlabel('Evaluation')
+            plt.ylabel('Values')
+            plt.title('Values of Each Sample Across Evaluations')
+            #plt.legend()
+            figure_name = "Values.png"
+            plt.savefig(os.path.join(self.path, figure_name))
+            plt.close()
+            # "heatmap"
+
+
 
         return generation, self.variations#np.array(bad_environments)

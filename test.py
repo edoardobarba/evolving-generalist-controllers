@@ -14,8 +14,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import os
-from ant_v4_modified import AntEnv
-from walker2d_v4_modified import Walker2dEnv
+# from ant_v4_modified import AntEnv
+# from walker2d_v4_modified import Walker2dEnv
 from bipedal_walker_modified import BipedalWalker
 from cartpole_modified import CartPoleEnv
 import gymnasium as gym
@@ -23,16 +23,22 @@ import gymnasium as gym
 import joblib
 
 
-train_cauchy1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy1/20231129151559"
-train_cauchy2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/cauchy2/20231129151559"
-train_gaussian1_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian1/20231129151559"
-train_gaussian2_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/gaussian2/20231129151559"
-train_incremental_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/incremental/20231129151559"
-train_uniform_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/uniform/20231129151559"
-train_RL_path = "/home/edo/THESIS/evolving-generalist-controllers/Results_Acrobot/RL/20231129151559"
-all_train_folders = [train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_incremental_path, train_uniform_path, train_RL_path]
+train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231215114621"
+train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231215114621"
+train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231215114440"
+train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231215114440"
+train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231215114440"
+train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231215114653"
+train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20231215114621" 
+train_beta1 = "/home/edoardo.barba/Results_Biped/beta1/20231215114653"
+train_beta2 = "/home/edoardo.barba/Results_Biped/beta2/20231215114653"
+train_betawalk1 = "/home/edoardo.barba/Results_Biped/betawalk1/20231215114907" 
+train_betawalk2 = "/home/edoardo.barba/Results_Biped/betawalk2/20231215114907" 
+train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231215114907"
 
 
+training_schedules = ["incremental", "gaussian1", "gaussian2","cauchy1","cauchy2","uniform", "RL", "beta1", "beta2", "betawalk1", "betawalk2", "gauss_dec"]
+all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_RL_path, train_beta1, train_beta2, train_betawalk1, train_betawalk2, train_gauss_dec]
 
 ACTORS = -1
 
@@ -73,13 +79,13 @@ def gym_render_testing(game, agent, xml_path, parameters, topology, steps):
     s = 0
     total_reward = 0
 
-    if game == AntEnv:
-        xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(xml_path, parameters[0], parameters[1])
-        env = game(xml_file, render_mode=None, healthy_reward=0)
-    elif game == Walker2dEnv:
-        xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
-        env = game(xml_file, render_mode=None, healthy_reward=0)
-    elif game == "AcrobotEnv":
+    # if game == AntEnv:
+    #     xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(xml_path, parameters[0], parameters[1])
+    #     env = game(xml_file, render_mode=None, healthy_reward=0)
+    # elif game == Walker2dEnv:
+    #     xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
+    #     env = game(xml_file, render_mode=None, healthy_reward=0)
+    if game == "AcrobotEnv":
         env = gym.make('Acrobot-v1', render_mode = None).unwrapped
         env.LINK_MASS_1 = parameters[0]  #: [kg] mass of link 1
         env.LINK_MASS_2 = parameters[1]  #: [kg] mass of link 2
@@ -90,7 +96,7 @@ def gym_render_testing(game, agent, xml_path, parameters, topology, steps):
     done = False
  
     nn = agent
-    weights = nn.reshape_layers(topology)
+    weights = nn.reshape_layers(topology) 
 
     while not done:
         action = nn.feedforward(weights, topology, obs)
@@ -157,7 +163,7 @@ def get_NN(file):
 def set_test(config, nn, weights, max_steps, max_fitness, testing_set): 
     game = config["game"]
     topology = config["NN-struc"]
-    print("testing ", testing_set, "...")
+    #print("testing ", testing_set, "...")
     all_variations = utils.get_set(config, testing_set)
 
 
@@ -166,9 +172,10 @@ def set_test(config, nn, weights, max_steps, max_fitness, testing_set):
 
     history_reward = []    
 
+    
     history_reward = joblib.Parallel(n_jobs=ACTORS)(joblib.delayed(comparison)(game = game, agent=nn, i=i, test_set=all_variations, topology=topology, max_steps = max_steps)
-                                                              for i in range(len(all_variations)))
-
+                                                                for i in range(len(all_variations)))
+    
     return history_reward, all_variations
 
 def list_folders(path):
@@ -207,39 +214,53 @@ if __name__ == '__main__':
         all_history_rewards_OUT = []
         all_history_rewards_INOUT = []
 
+        #generations = 3000
+        #print("Testing ", generations, "generations")
         for i, run_number in enumerate(runs_folders):
-            print("Testing run number", i+1, "..." )
             run_path = os.path.join(runs_folder_path, run_number)
-            generalist_folder_path = os.path.join(run_path, "generalist")
+            training_txt_path = os.path.join(run_path,"training.txt")
+            with open(training_txt_path, 'r') as file:
+                content = file.read()
+                generations_number = int(content[13:-1])
+                print("gen_number: ", generations_number)
+
+            #if generations_number>=generations:
+            #    continue
+
+            print("Testing run number", i+1, "..." )
+            
+            generalist_folder_path = os.path.join(run_path, "evals")
             path_generalist_ANN_weights = os.path.join(generalist_folder_path, os.listdir(generalist_folder_path)[0])
             file_generalist_ANN_weights = open(path_generalist_ANN_weights)
             nn, weights = get_NN(file_generalist_ANN_weights)
             file_generalist_ANN_weights.close()
 
-            history_reward_IN, all_var_IN = set_test(config, nn = nn, weights=weights, max_steps=max_steps, max_fitness=max_fitness, testing_set="IN")      
-            history_reward_OUT, all_var_OUT = set_test(config, nn = nn, weights=weights, max_steps=max_steps, max_fitness=max_fitness, testing_set="OUT")  
+            # history_reward_IN, all_var_IN = set_test(config, nn = nn, weights=weights, max_steps=max_steps, max_fitness=max_fitness, testing_set="IN")      
+            # history_reward_OUT, all_var_OUT = set_test(config, nn = nn, weights=weights, max_steps=max_steps, max_fitness=max_fitness, testing_set="OUT")  
             history_reward_INOUT, all_var_INOUT = set_test(config, nn = nn, weights=weights, max_steps=max_steps, max_fitness=max_fitness, testing_set="INOUT")  
 
-            print("all_var_IN")
-            print(all_var_IN)
-            print("all_var_OUT")
-            print(all_var_OUT)
+            # print("all_var_IN")
+            # print(all_var_IN)
+            # print("all_var_OUT")
+            # print(all_var_OUT)
 
-
-            all_history_rewards_IN.append(np.array(history_reward_IN))
-            all_history_rewards_OUT.append(np.array(history_reward_OUT))
+            # all_history_rewards_IN.append(np.array(history_reward_IN))
+            # all_history_rewards_OUT.append(np.array(history_reward_OUT))
             all_history_rewards_INOUT.append(np.array(history_reward_INOUT))
 
 
+        print("number of runs: ")
+        print(len(all_history_rewards_IN))
         print("Results for ", train_folder_path)
-        all_avgs_IN = [np.mean(run_rewards) for run_rewards in all_history_rewards_IN]
-        print("Mean reward IN: ", np.mean(all_avgs_IN))
+        # all_avgs_IN = [np.mean(run_rewards) for run_rewards in all_history_rewards_IN]
+        # print("Mean reward IN: ", np.mean(all_avgs_IN))
 
-        all_avgs_OUT = [np.mean(run_rewards) for run_rewards in all_history_rewards_OUT]
-        print("Mean reward OUT: ", np.mean(all_avgs_OUT))
+        # all_avgs_OUT = [np.mean(run_rewards) for run_rewards in all_history_rewards_OUT]
+        # print("Mean reward OUT: ", np.mean(all_avgs_OUT))
 
         all_avgs_INOUT = [np.mean(run_rewards) for run_rewards in all_history_rewards_INOUT]
         print("Mean reward INOUT: ", np.mean(all_avgs_INOUT))
 
         save_path = os.path.join(save_path, "all_history_rewards_data.npz")
-        np.savez(save_path, all_history_rewards_IN=np.array(all_history_rewards_IN), avg_rewards_OUT=np.array(all_history_rewards_OUT), avg_rewards_INOUT=np.array(all_history_rewards_INOUT))
+        #np.savez(save_path, all_history_rewards_IN=np.array(all_history_rewards_IN), avg_rewards_OUT=np.array(all_history_rewards_OUT), avg_rewards_INOUT=np.array(all_history_rewards_INOUT))
+        np.savez(save_path, avg_rewards_INOUT=np.array(all_history_rewards_INOUT))
