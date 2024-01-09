@@ -23,22 +23,29 @@ import gymnasium as gym
 import joblib
 
 
-train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231215114621"
-train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231215114621"
-train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231215114440"
-train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231215114440"
-train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231215114440"
-train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231215114653"
-train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20231215114621" 
-train_beta1 = "/home/edoardo.barba/Results_Biped/beta1/20231215114653"
-train_beta2 = "/home/edoardo.barba/Results_Biped/beta2/20231215114653"
-train_betawalk1 = "/home/edoardo.barba/Results_Biped/betawalk1/20231215114907" 
-train_betawalk2 = "/home/edoardo.barba/Results_Biped/betawalk2/20231215114907" 
-train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231215114907"
+train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
+train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
+train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
+train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
+train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
+#train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+train_beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
+train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
+train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
+train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+
+#training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec"]
+#all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02, train_gauss_dec]
+all_train_folders = [train_random_path]
+#all_train_folders = [train_default_path, train_borderincr_path]
 
 
-training_schedules = ["incremental", "gaussian1", "gaussian2","cauchy1","cauchy2","uniform", "RL", "beta1", "beta2", "betawalk1", "betawalk2", "gauss_dec"]
-all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_RL_path, train_beta1, train_beta2, train_betawalk1, train_betawalk2, train_gauss_dec]
+save_path = "/home/edoardo.barba/Results_Biped"
 
 ACTORS = -1
 
@@ -92,7 +99,7 @@ def gym_render_testing(game, agent, xml_path, parameters, topology, steps):
     else:
         env = game(parameters)
 
-    obs, info = env.reset(seed=s)
+    obs, info = env.reset(seed=SEED)
     done = False
  
     nn = agent
@@ -222,14 +229,15 @@ if __name__ == '__main__':
             with open(training_txt_path, 'r') as file:
                 content = file.read()
                 generations_number = int(content[13:-1])
-                print("gen_number: ", generations_number)
+                #print("gen_number: ", generations_number)
 
             #if generations_number>=generations:
             #    continue
 
             print("Testing run number", i+1, "..." )
-            
-            generalist_folder_path = os.path.join(run_path, "evals")
+            generations = 3000
+            generations_path = os.path.join(run_path, str(generations))
+            generalist_folder_path = os.path.join(generations_path, "evals")
             path_generalist_ANN_weights = os.path.join(generalist_folder_path, os.listdir(generalist_folder_path)[0])
             file_generalist_ANN_weights = open(path_generalist_ANN_weights)
             nn, weights = get_NN(file_generalist_ANN_weights)

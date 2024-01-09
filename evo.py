@@ -8,8 +8,8 @@ import pandas as pd
 import numpy as np
 from nn import NeuralNetwork
 from utils import gym_render, save_dataframes, softmax
-# from ant_v4_modified import AntEnv
-# from walker2d_v4_modified import Walker2dEnv
+from ant_v4_modified import AntEnv
+from walker2d_v4_modified import Walker2dEnv
 from bipedal_walker_modified import BipedalWalker
 from cartpole_modified import CartPoleEnv
 from utils import generate_samples
@@ -202,14 +202,19 @@ class Algo:
                 improved = searcher.status.get('iter')
 
             if len(self.validation_set) > 1:
-                compare = joblib.Parallel(n_jobs=1)(joblib.delayed(self.comparison)(xbest_weights, i)
-                                                              for i in range(len(generalist_fitness_scores)))
+                if iter > 2000 and self.training_schedule != "RL":
+                    compare = joblib.Parallel(n_jobs=-1)(joblib.delayed(self.comparison)(xbest_weights, i)
+                                                                for i in range(len(generalist_fitness_scores)))
 
-                #compare = [self.comparison(xbest_weights, i) for i in range(len(generalist_fitness_scores))] 
+                    #compare = [self.comparison(xbest_weights, i) for i in range(len(generalist_fitness_scores))] 
 
-                generalist_fitness_scores = np.array(compare)
+                    generalist_fitness_scores = np.array(compare)
 
-                new_generalist_average_fitness = np.mean(generalist_fitness_scores)
+                    new_generalist_average_fitness = np.mean(generalist_fitness_scores)
+
+
+                else: 
+                    new_generalist_average_fitness = 0
 
                 generalist_average_fitness_history.append(new_generalist_average_fitness)
                 generalist_new_dev = np.std(generalist_fitness_scores)
@@ -241,6 +246,8 @@ class Algo:
 
                     if self.V[sampled_index, iter] < 0:
                         self.V[sampled_index, iter] = 0
+                    if self.V[sampled_index, iter] > 1:
+                        self.V[sampled_index, iter] = 1
 
                     # print("Updated V:", self.V[sampled_index, iter])
 
@@ -325,11 +332,15 @@ class Algo:
                 #         print(' no_envs : ', len(self.validation_set))
 
 
-                if self.training_schedule == "incremental":
+                if self.training_schedule == "incremental" or self.training_schedule == "default" or self.training_schedule == "border_incr":
                     env_counter += 1
                     if env_counter >= len(self.variations):
                         env_counter = 0
                     self.parameters = self.variations[env_counter] #INCREMENTAL TRAINING SCHEDULE 
+
+                elif self.training_schedule == "random":
+                    env_counter = random.randint(0, len(self.variations)-1)
+                    self.parameters = self.variations[env_counter]
 
                 elif self.training_schedule != "RL":
                     self.parameters = self.variations[iter-1] #iter-1 because iter starts from 1

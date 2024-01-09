@@ -37,24 +37,27 @@ import matplotlib.patches as patches
 # #all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path,   train_uniform_path, train_RL_path, train_beta1, train_beta2, train_betawalk1, train_betawalk2]
 
 
-train_cauchy1_path = "/home/edoardo.barba/Results_Biped_old/cauchy1/20231215114621"
-train_cauchy2_path = "/home/edoardo.barba/Results_Biped_old/cauchy2/20231215114621"
-train_gaussian1_path = "/home/edoardo.barba/Results_Biped_old/gaussian1/20231215114440"
-train_gaussian2_path = "/home/edoardo.barba/Results_Biped_old/gaussian2/20231215114440"
-train_incremental_path = "/home/edoardo.barba/Results_Biped_old/incremental/20231215114440"
-train_uniform_path = "/home/edoardo.barba/Results_Biped_old/uniform/20231215114653"
-train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-train_beta1 = "/home/edoardo.barba/Results_Biped_old/beta1/20231215114653"
-train_beta2 = "/home/edoardo.barba/Results_Biped_old/beta2/20231215114653"
-train_betawalk1 = "/home/edoardo.barba/Results_Biped_old/betawalk1/20231215114907" 
-train_betawalk2 = "/home/edoardo.barba/Results_Biped_old/betawalk2/20231215114907" 
-train_gauss_dec = "/home/edoardo.barba/Results_Biped_old/gauss_dec/20231215114907"
+cauchy1 = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
+cauchy2 = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
+gaussian1 = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+gaussian2 = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
+incremental = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
+uniform = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
+#train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
+beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+default = "/home/edoardo.barba/Results_Biped/default/20240103141803"
+borderincr = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
+random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+
+all_train_folders = [incremental, gaussian1, gaussian2, cauchy1, cauchy2, uniform, beta01, beta02, betawalk01, betawalk02, gauss_dec, borderincr, default]
+training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec", "border_incr", "default"]
 
 
-training_schedules = ["incremental", "gaussian1", "gaussian2","cauchy1","cauchy2","uniform", "RL", "beta1", "beta2", "betawalk1", "betawalk2", "gauss_dec"]
-all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_RL_path, train_beta1, train_beta2, train_betawalk1, train_betawalk2, train_gauss_dec]
-                           
-
+all_train_folders = [default]
 
 SEED=0
 
@@ -64,6 +67,7 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
     rounded_param1_values = [round(num, 2) for num in param1_values]
     rounded_param2_values = [round(num, 2) for num in param2_values]
     avg_scores = np.mean(scores, axis=0)
+    #print(np.shape(avg_scores))
     data = {'Parameter 1': rounded_param1_values, 'Parameter 2': rounded_param2_values, 'Reward': avg_scores}
     df = pd.DataFrame(data)
     #print(df)
@@ -89,7 +93,7 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
         sns.heatmap(pivot_df, vmin=-300, vmax=300, annot=True, fmt=".0f")        
         plt.xlabel('Leg Width')
         plt.ylabel('Leg Height')
-        rect = patches.Rectangle((1, 2), 6, 6, linewidth=3, edgecolor='red', facecolor='none')
+        rect = patches.Rectangle((4, 4), 11, 11, linewidth=3, edgecolor='red', facecolor='none')
         plt.gca().add_patch(rect)
         # Add the red square
         #rect = patches.Rectangle((2, 2), 6, 6, linewidth=2, edgecolor='black', facecolor='none')
@@ -113,7 +117,7 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
         # Loop through the path parts
         for part in save_path_parts:
             #print(part.lower())
-            if part.lower() in ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "rl", "beta1", "beta2", "betawalk1", "betawalk2", "gauss_dec"]:
+            if part.lower() in ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "rl", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec", "border_incr", "default", "random"]:
                 training_schedule = part
                 break
 

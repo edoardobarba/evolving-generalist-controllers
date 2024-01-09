@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from nn import NeuralNetwork
-# from ant_v4_modified import AntEnv
-# from walker2d_v4_modified import Walker2dEnv
+#from ant_v4_modified import AntEnv
+#from walker2d_v4_modified import Walker2dEnv
 from bipedal_walker_modified import BipedalWalker
 from cartpole_modified import CartPoleEnv
 import os
@@ -103,7 +103,7 @@ def get_std(parameter1_range, parameter2_range, distr):
 #     morphologies[:, 1] = np.clip(morphologies[:, 1], parameter2_range[0], parameter2_range[1])
 #     return morphologies
 
-def generate_samples(parameter1_range, parameter2_range, num_samples, distr, samples_per_cycle = 20):
+def generate_samples(parameter1_range, parameter2_range, num_samples, distr, samples_per_cycle):
     morphologies = []
     if distr=="gaussian1" or distr == "gaussian2":
         mean_p1, mean_p2 = get_mean(parameter1_range, parameter2_range)
@@ -203,9 +203,9 @@ def generate_samples(parameter1_range, parameter2_range, num_samples, distr, sam
         while len(all_samples) < num_samples:
 
             if distr == "betawalk01":
-                cycle_samples = generate_samples(parameter1_range, parameter2_range, samples_per_cycle, "beta01")
+                cycle_samples = generate_samples(parameter1_range, parameter2_range, samples_per_cycle, "beta01", None)
             elif distr == "betawalk02":
-                cycle_samples = generate_samples(parameter1_range, parameter2_range, samples_per_cycle, "beta02")
+                cycle_samples = generate_samples(parameter1_range, parameter2_range, samples_per_cycle, "beta02", None)
             
             if first_cycle:
                 random_element_idx = np.random.randint(0, len(cycle_samples))
@@ -227,10 +227,20 @@ def generate_samples(parameter1_range, parameter2_range, num_samples, distr, sam
                     break
         
         return np.array(all_samples)
+    
+    elif distr == "default":
+        return np.array([[8,34]])
+    
 
 def get_set(config, test_set):
     game = config["game"]
     step_sizes = config["testing_step_sizes"]
+
+    if test_set == "VALIDATION":
+        step_sizes = config["validation_step_sizes"]
+        parameter1_range = config["IN_parameter1"]
+        parameter2_range = config["IN_parameter2"]
+        return generate_morphologies(parameter1_range, parameter2_range, step_sizes) 
 
     if test_set == "IN": 
         parameter1_range = config["IN_parameter1"]
@@ -269,6 +279,24 @@ def generate_morphologies(parameter1_range, parameter2_range, step_sizes):
     morphologies = np.array(np.meshgrid(parameter1_values, parameter2_values)).T.reshape(-1, 2)
 
     return morphologies
+
+def generate_border_morphologies(parameter1_range, parameter2_range, step_sizes):
+    parameter1_values = np.arange(parameter1_range[0], parameter1_range[1] + 0.001, step_sizes[0])
+    parameter2_values = np.arange(parameter2_range[0], parameter2_range[1] + 0.001, step_sizes[1])
+
+    border_morphologies = []
+
+    # Add the top and bottom borders
+    for p1 in parameter1_values:
+        border_morphologies.append([p1, parameter2_range[0]])
+        border_morphologies.append([p1, parameter2_range[1]])
+
+    # Add the left and right borders
+    for p2 in parameter2_values:
+        border_morphologies.append([parameter1_range[0], p2])
+        border_morphologies.append([parameter1_range[1], p2])
+
+    return np.array(border_morphologies)
 
 
 def gym_render(game, agent, xml_path, parameters, topology, steps):

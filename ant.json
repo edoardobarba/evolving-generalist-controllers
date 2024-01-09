@@ -10,9 +10,15 @@
     "xml": "Path/Ants",
     "runs": 1,
     "//comment1": "Parameter1 is upper leg length",
-    "parameter1": [0.2, 0.6],
+    "IN_parameter1": [0.2, 0.6],
     "//comment2": "Parameter2 is lower leg length",
-    "parameter2": [0.4, 0.7],
+    "IN_parameter2": [0.4, 0.7],
     "step_sizes": [0.1, 0.1],
-    "actors": 4
+    "incremental_step_sizes": [0.1, 0.1],
+    "testing_step_sizes": [0.1, 0.1],
+    "validation_step_sizes": [0.1, 0.1],
+    "actors": -1,
+    "parallel_runs_actors": 4,
+    "samples_per_cycle": 50,
+    "training_schedule": ["random"]
 }

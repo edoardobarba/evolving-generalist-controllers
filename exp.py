@@ -1,5 +1,6 @@
 import json
 from utils import generate_morphologies
+from utils import generate_border_morphologies
 from utils import generate_samples
 from utils import get_set
 from evo import Algo
@@ -24,16 +25,16 @@ def single_run(config, run_id, timestamp_str, training_schedule):
     #training_schedule = config['training_schedule']
 
     samples_per_cycle = None
-    if training_schedule == "betawalk1" or training_schedule == "betawalk2":
+    if training_schedule == "betawalk01" or training_schedule == "betawalk02":
         samples_per_cycle = config["samples_per_cycle"]
 
-    print("RUN id: ", run_id)
-    
-    if training_schedule == "incremental" or training_schedule == "RL":
+    print("RUN id: ", run_id) 
+    if training_schedule == "incremental" or training_schedule == "RL" or training_schedule == "random":
         variations = generate_morphologies(config['IN_parameter1'], config['IN_parameter2'], config['incremental_step_sizes'])
+    elif training_schedule == "border_incr": 
+        variations = generate_border_morphologies(config['IN_parameter1'], config['IN_parameter2'], config['incremental_step_sizes'])
     else:
         variations = generate_samples(config['IN_parameter1'], config['IN_parameter2'], num_samples=config['generations'], distr=training_schedule, samples_per_cycle = samples_per_cycle)
-
     folder_name = config['filename']
     path = folder_name
     path = os.path.join(path, training_schedule)
@@ -45,7 +46,7 @@ def single_run(config, run_id, timestamp_str, training_schedule):
 
 
     if run_id==0:
-        if training_schedule == "betawalk1" or training_schedule == "betawalk2": 
+        if training_schedule == "betawalk01" or training_schedule == "betawalk02": 
             indices = np.arange(len(variations))
             hue_values = indices // samples_per_cycle
             sns.scatterplot(x=variations[:, 0], y=variations[:, 1], hue=hue_values, legend=False)
@@ -88,7 +89,7 @@ def single_run(config, run_id, timestamp_str, training_schedule):
 
     run = Algo(game=config['game'], path=run_path, xml_path=config['xml'], variations=variations,
                config=config, generation=generations, run_id=run_id, cluster_id=cluster_count,
-               validation_set=get_set(config, 'IN'), training_schedule=training_schedule, gauss_mean=mean, gauss_cov=cov)
+               validation_set=get_set(config, 'VALIDATION'), training_schedule=training_schedule, gauss_mean=mean, gauss_cov=cov)
     generation, _ = run.main()
 
 
