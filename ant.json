@@ -7,7 +7,7 @@
     "initial_bounds": [-0.00001, 0.00001],
     "generations": 5000,
     "filename": "Results_Walker",
-    "xml": "Path/Ants",
+    "xml": "/home/edo/THESIS/evolving-generalist-controllers/Ants",
     "runs": 1,
     "//comment1": "Parameter1 is upper leg length",
     "IN_parameter1": [0.2, 0.6],

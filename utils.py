@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from nn import NeuralNetwork
-#from ant_v4_modified import AntEnv
-#from walker2d_v4_modified import Walker2dEnv
+from ant_v4_modified import AntEnv
+from walker2d_v4_modified import Walker2dEnv
 from bipedal_walker_modified import BipedalWalker
 from cartpole_modified import CartPoleEnv
 import os
@@ -303,12 +303,12 @@ def gym_render(game, agent, xml_path, parameters, topology, steps):
     s = 0
     total_reward = 0
 
-    # if game == AntEnv:
-    #     xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(xml_path, parameters[0], parameters[1])
-    #     env = game(xml_file, render_mode=None, healthy_reward=0)
-    # elif game == Walker2dEnv:
-    #     xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
-    #     env = game(xml_file, render_mode=None, healthy_reward=0)
+    if game == AntEnv:
+        xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(xml_path, parameters[0], parameters[1])
+        env = game(xml_file, render_mode=None, healthy_reward=0)
+    elif game == Walker2dEnv:
+        xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
+        env = game(xml_file, render_mode=None, healthy_reward=0)
     if game == "AcrobotEnv":
         env = gym.make('Acrobot-v1', render_mode = None).unwrapped
         env.LINK_MASS_1 = parameters[0]  #: [kg] mass of link 1

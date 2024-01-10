@@ -10,10 +10,13 @@
     "xml": "/home/edo/THESIS/evolving-generalist-controllers/Walkers",
     "runs": 1,
     "//comment1": "Parameter1 is upper leg length",
-    "parameter1": [0.225, 0.230],
+    "IN_parameter1": [0.225, 0.235],
     "//comment2": "Parameter2 is lower leg length",
-    "parameter2": [0.25, 0.3],
+    "IN_parameter2": [0.25, 0.35],
     "step_sizes": [0.025, 0.05],
+    "incremental_step_sizes": [0.025, 0.05],
+    "testing_step_sizes": [0.025, 0.05],
+    "validation_step_sizes": [0.025, 0.05],
     "actors": 4,
-    "training_schedule": "incremental"
+    "training_schedule": ["incremental"]
 }

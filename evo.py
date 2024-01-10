@@ -73,16 +73,15 @@ class Algo:
 
         s = 0
         total_reward = 0
-
-        # if self.game == AntEnv:
-        #     xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(self.xml_path, self.parameters[0],
-        #                                                            self.parameters[1])
-        #     env = self.game(xml_file, render_mode=None, healthy_reward=0)
-        # elif self.game == Walker2dEnv:
-        #     xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(self.xml_path, self.parameters[0],
-        #                                                               self.parameters[1])
-        #     env = self.game(xml_file, render_mode=None, healthy_reward=0)
-        if self.game == "AcrobotEnv":
+        if self.game == AntEnv:
+            xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(self.xml_path, self.parameters[0],
+                                                                   self.parameters[1])
+            env = self.game(xml_file, render_mode=None, healthy_reward=0)
+        elif self.game == Walker2dEnv:
+            xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(self.xml_path, self.parameters[0],
+                                                                      self.parameters[1])
+            env = self.game(xml_file, render_mode=None, healthy_reward=0)
+        elif self.game == "AcrobotEnv":
             env = gym.make('Acrobot-v1', render_mode = None).unwrapped
             env.LINK_MASS_1 = self.parameters[0]  #: [kg] mass of link 1
             env.LINK_MASS_2 = self.parameters[1]  #: [kg] mass of link 2
