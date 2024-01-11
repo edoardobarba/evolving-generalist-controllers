@@ -309,7 +309,7 @@ def gym_render(game, agent, xml_path, parameters, topology, steps):
     elif game == Walker2dEnv:
         xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
         env = game(xml_file, render_mode=None, healthy_reward=0)
-    if game == "AcrobotEnv":
+    elif game == "AcrobotEnv":
         env = gym.make('Acrobot-v1', render_mode = None).unwrapped
         env.LINK_MASS_1 = parameters[0]  #: [kg] mass of link 1
         env.LINK_MASS_2 = parameters[1]  #: [kg] mass of link 2

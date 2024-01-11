@@ -7,16 +7,16 @@
     "initial_bounds": [-0.00001, 0.00001],
     "generations": 5000,
     "filename": "Results_Walker",
-    "xml": "/home/edo/THESIS/evolving-generalist-controllers/Walkers",
+    "xml": "/home/edoardo.barba/evolving-generalist-controllers/Walkers",
     "runs": 1,
     "//comment1": "Parameter1 is upper leg length",
-    "IN_parameter1": [0.225, 0.235],
+    "IN_parameter1": [0.225, 0.35],
     "//comment2": "Parameter2 is lower leg length",
-    "IN_parameter2": [0.25, 0.35],
+    "IN_parameter2": [0.25, 0.5],
     "step_sizes": [0.025, 0.05],
     "incremental_step_sizes": [0.025, 0.05],
     "testing_step_sizes": [0.025, 0.05],
     "validation_step_sizes": [0.025, 0.05],
     "actors": 4,
-    "training_schedule": ["incremental"]
+    "training_schedule": ["random", "incremental"]
 }

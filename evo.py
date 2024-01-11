@@ -175,7 +175,7 @@ class Algo:
 
         used_env = [0 for env in self.variations]
         while generation < self.max_eval:
-            print("ITER: ", iter)
+            # print("ITER: ", iter)
             if self.training_schedule == "RL":
                 epsilon = 0.1  # Set your epsilon value here
                 
@@ -201,7 +201,7 @@ class Algo:
                 improved = searcher.status.get('iter')
 
             if len(self.validation_set) > 1:
-                if iter > 2000 and self.training_schedule != "RL":
+                if (iter > self.max_eval-1000) or self.training_schedule == "RL":
                     compare = joblib.Parallel(n_jobs=-1)(joblib.delayed(self.comparison)(xbest_weights, i)
                                                                 for i in range(len(generalist_fitness_scores)))
 
