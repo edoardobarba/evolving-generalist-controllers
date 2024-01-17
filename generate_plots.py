@@ -37,28 +37,46 @@ import matplotlib.patches as patches
 # #all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path,   train_uniform_path, train_RL_path, train_beta1, train_beta2, train_betawalk1, train_betawalk2]
 
 
-cauchy1 = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
-cauchy2 = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-gaussian1 = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
-gaussian2 = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
-incremental = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
-uniform = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
-#train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
-beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
-betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
-gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
-default = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-borderincr = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
-random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
+# train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
+# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+# train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
+train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
+# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
+# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240112131225" 
+# train_beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
+# train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+# train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+# train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+# train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
+borderincr = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
+random_path = "/home/edoardo.barba/Results_Walker/random/20240115180512"
 
-all_train_folders = [incremental, gaussian1, gaussian2, cauchy1, cauchy2, uniform, beta01, beta02, betawalk01, betawalk02, gauss_dec, borderincr, default]
-training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec", "border_incr", "default"]
+# all_train_folders = [random_path, incremental, borderincr, gaussian1, gaussian2, cauchy1, cauchy2, uniform, beta01, beta02, betawalk01, betawalk02, train_RL_path]
+# training_schedules = ["random", "incremental", "border_incr", "gauss1", "gauss2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betaWalk01", "betaWalk02", "RL"]
 
 
-all_train_folders = [default]
+# all_train_folders = [incremental, beta01, borderincr]
+# training_schedules = ["incremental", "beta01", "border_incr"]
 
+##WALKWEr
+# random_path = "/home/edoardo.barba/Results_Walker/random/20240112123557"
+# incremental = "/home/edoardo.barba/Results_Walker/incremental/20240112123557"
+
+
+all_train_folders = [train_incremental_path, random_path, borderincr]
+training_schedules = ["incremental", "random", "border_incr"]
+# #all_train_folders = [train_default_path, train_borderincr_path]
+
+# train_random_path = "/home/edoardo.barba/Results_Walker/random/20240112123557"
+# # train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240112123557"
+
+# all_train_folders = [train_random_path]
+
+#save_path = "/home/edoardo.barba/Results_Biped"
+
+save_path = "/home/edoardo.barba/Results_Walker"
 SEED=0
 
 def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
@@ -98,6 +116,12 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
         # Add the red square
         #rect = patches.Rectangle((2, 2), 6, 6, linewidth=2, edgecolor='black', facecolor='none')
         #plt.gca().add_patch(rect)
+    elif game=="Walker2dEnv":
+        sns.heatmap(pivot_df, vmin=-1500, vmax=0, annot=True, fmt=".0f")    
+        plt.xlabel('Upper leg length')
+        plt.ylabel('Lower leg length')
+        rect = patches.Rectangle((3, 3), 6, 6, linewidth=3, edgecolor='red', facecolor='none')
+        plt.gca().add_patch(rect)
         
     plt.title(title)
 
@@ -156,22 +180,25 @@ if __name__ == "__main__":
         # print("Mean reward OUT: ", np.mean(all_avgs_OUT))
 
         all_avgs_INOUT = [np.mean(run_rewards) for run_rewards in all_history_rewards_INOUT]
+
         
-        print("Mean reward INOUT: ", np.mean(all_avgs_INOUT))
+        print("Mean reward TRAIN+TEST: ", np.mean(all_avgs_INOUT))
+        print("Median reward TRAIN+TEST: ", np.median(all_avgs_INOUT))
+        print("standard deviation TRAIN+TEST: ", np.std(all_avgs_INOUT))
 
         # Specify the file path for the text file
         original_stdout = sys.stdout
         output_file_path = os.path.dirname(datafile_path) + "/results.txt"
-        with open(output_file_path, 'w') as f:
-            # sys.stdout = f  
-            # print("Mean reward IN: ", np.mean(all_avgs_IN))
-            # print("std IN: ", np.std(all_avgs_IN))
+        # with open(output_file_path, 'w') as f:
+        #     # sys.stdout = f  
+        #     # print("Mean reward IN: ", np.mean(all_avgs_IN))
+        #     # print("std IN: ", np.std(all_avgs_IN))
 
-            # print("Mean reward OUT: ", np.mean(all_avgs_OUT))
-            # print("std OUT: ", np.std(all_avgs_OUT))
+        #     # print("Mean reward OUT: ", np.mean(all_avgs_OUT))
+        #     # print("std OUT: ", np.std(all_avgs_OUT))
 
-            print("Mean reward INOUT: ", np.mean(all_avgs_INOUT))
-            print("std INOUT: ", np.std(all_avgs_INOUT))
+        #     print("Mean reward TRAIN+TEST: ", np.mean(all_avgs_INOUT))
+        #     print("standard deviation TRAIN+TEST: ", np.std(all_avgs_INOUT))
             
         sys.stdout = original_stdout
 

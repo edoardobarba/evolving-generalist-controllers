@@ -33,7 +33,7 @@ def count_decrease(column):
     return increases
 
 
-train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20231215114621"
+train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
 
 
 all_data_changes = []

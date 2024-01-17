@@ -8,7 +8,7 @@
     "generations": 500,
     "filename": "Results_Acrobot",
     "xml": "None",
-    "runs": 30,
+    "runs": 1,
     "//comment1": "Parameter1 is MASS1, IN SET range",
     "IN_parameter1": [0.3, 0.8],
     "//comment2": "Parameter1 is MASS2",
@@ -21,5 +21,5 @@
     "actors": -1,
     "parallel_runs_actors": -1,
     "samples_per_cycle": 50,
-    "training_schedule": ["beta2", "betawalk1", "betawalk2"]
+    "training_schedule": ["beta01"]
 }

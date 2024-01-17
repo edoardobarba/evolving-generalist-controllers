@@ -14,8 +14,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import os
-# from ant_v4_modified import AntEnv
-# from walker2d_v4_modified import Walker2dEnv
+from ant_v4_modified import AntEnv
+from walker2d_v4_modified import Walker2dEnv
 from bipedal_walker_modified import BipedalWalker
 from cartpole_modified import CartPoleEnv
 import gymnasium as gym
@@ -23,30 +23,38 @@ import gymnasium as gym
 import joblib
 
 
-train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
-train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
-train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
-train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
-train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
-#train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-train_beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
-train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
-train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
-train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
-train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
-train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
+# train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
+# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+# train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
+# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
+# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
+# train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+# train_beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
+# train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+# train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+# train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+# train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
+train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
+# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
 
-#training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec"]
-#all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02, train_gauss_dec]
-all_train_folders = [train_random_path]
-#all_train_folders = [train_default_path, train_borderincr_path]
+# #training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec"]
+# #all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02, train_gauss_dec]
+# all_train_folders = [train_random_path]
+# #all_train_folders = [train_default_path, train_borderincr_path]
+
+#train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
+train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240115180512"
+# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
 
 
-save_path = "/home/edoardo.barba/Results_Biped"
+all_train_folders = [train_borderincr_path]
 
+save_path = "/home/edoardo.barba/Results_Walker"
+
+#save_path = "/home/edoardo.barba/Results_Walker"
 ACTORS = -1
 
 
@@ -86,13 +94,13 @@ def gym_render_testing(game, agent, xml_path, parameters, topology, steps):
     s = 0
     total_reward = 0
 
-    # if game == AntEnv:
-    #     xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(xml_path, parameters[0], parameters[1])
-    #     env = game(xml_file, render_mode=None, healthy_reward=0)
-    # elif game == Walker2dEnv:
-    #     xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
-    #     env = game(xml_file, render_mode=None, healthy_reward=0)
-    if game == "AcrobotEnv":
+    if game == AntEnv:
+        xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(xml_path, parameters[0], parameters[1])
+        env = game(xml_file, render_mode=None, healthy_reward=0)
+    elif game == Walker2dEnv:
+        xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(xml_path, parameters[0], parameters[1])
+        env = game(xml_file, render_mode=None, healthy_reward=0)
+    elif game == "AcrobotEnv":
         env = gym.make('Acrobot-v1', render_mode = None).unwrapped
         env.LINK_MASS_1 = parameters[0]  #: [kg] mass of link 1
         env.LINK_MASS_2 = parameters[1]  #: [kg] mass of link 2
@@ -110,7 +118,9 @@ def gym_render_testing(game, agent, xml_path, parameters, topology, steps):
 
         if game == "AcrobotEnv":
             action = np.argmax(action)
-
+        
+        if game == Walker2dEnv:
+            action = action.tolist()
         obs, reward, terminated, truncated, info = env.step(action)
 
         s += 1
@@ -173,6 +183,7 @@ def set_test(config, nn, weights, max_steps, max_fitness, testing_set):
     #print("testing ", testing_set, "...")
     all_variations = utils.get_set(config, testing_set)
 
+    xml_path = config["xml"]
 
     if game!="AcrobotEnv":
         game = eval(game)
@@ -180,7 +191,7 @@ def set_test(config, nn, weights, max_steps, max_fitness, testing_set):
     history_reward = []    
 
     
-    history_reward = joblib.Parallel(n_jobs=ACTORS)(joblib.delayed(comparison)(game = game, agent=nn, i=i, test_set=all_variations, topology=topology, max_steps = max_steps)
+    history_reward = joblib.Parallel(n_jobs=ACTORS)(joblib.delayed(comparison)(game = game, agent=nn, i=i, test_set=all_variations, topology=topology, max_steps = max_steps, xml_path=xml_path)
                                                                 for i in range(len(all_variations)))
     
     return history_reward, all_variations
@@ -223,6 +234,8 @@ if __name__ == '__main__':
 
         #generations = 3000
         #print("Testing ", generations, "generations")
+        generations = 5000
+        print("Generations: ", generations)
         for i, run_number in enumerate(runs_folders):
             run_path = os.path.join(runs_folder_path, run_number)
             training_txt_path = os.path.join(run_path,"training.txt")
@@ -235,7 +248,7 @@ if __name__ == '__main__':
             #    continue
 
             print("Testing run number", i+1, "..." )
-            generations = 3000
+            
             generations_path = os.path.join(run_path, str(generations))
             generalist_folder_path = os.path.join(generations_path, "evals")
             path_generalist_ANN_weights = os.path.join(generalist_folder_path, os.listdir(generalist_folder_path)[0])

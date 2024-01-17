@@ -8,7 +8,7 @@
     "generations": 3000,
     "filename": "Results_Biped",
     "xml": "None",
-    "runs": 1,
+    "runs": 30,
     "//comment": "Parameter1 is leg width",
     "old_IN_parameter1": [7, 12],
     "old_IN_parameter2": [26, 36],

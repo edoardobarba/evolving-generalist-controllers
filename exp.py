@@ -35,6 +35,7 @@ def single_run(config, run_id, timestamp_str, training_schedule):
         variations = generate_border_morphologies(config['IN_parameter1'], config['IN_parameter2'], config['incremental_step_sizes'])
     else:
         variations = generate_samples(config['IN_parameter1'], config['IN_parameter2'], num_samples=config['generations'], distr=training_schedule, samples_per_cycle = samples_per_cycle)
+    
     folder_name = config['filename']
     path = folder_name
     path = os.path.join(path, training_schedule)

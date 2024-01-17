@@ -329,7 +329,6 @@ def gym_render(game, agent, xml_path, parameters, topology, steps):
 
         if game == "AcrobotEnv":
             action = np.argmax(action)
-
         obs, reward, terminated, truncated, info = env.step(action)
 
         s += 1

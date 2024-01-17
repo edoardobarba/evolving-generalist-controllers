@@ -1,5 +1,6 @@
 from cartpole_modified import CartPoleEnv
 from bipedal_walker_modified import BipedalWalker
+from walker2d_v4_modified import Walker2dEnv
 import utils
 import numpy as np
 from time import sleep
@@ -22,45 +23,36 @@ from scipy import stats
 
 
 # NEW
-cauchy1 = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
-cauchy2 = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-gaussian1 = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
-gaussian2 = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
-incremental = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
-uniform = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
-#train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
-beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
-betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
-gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
-default = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-borderincr = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
-random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+# cauchy1 = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
+# cauchy2 = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
+# gaussian1 = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+# gaussian2 = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
+incremental = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
+# uniform = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
+# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240112131225" 
+# beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
+# beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+# betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+# betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+# gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+# default = "/home/edoardo.barba/Results_Biped/default/20240103141803"
+borderincr = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
+random_path = "/home/edoardo.barba/Results_Walker/random/20240115180512"
 
-# all_train_folders = [random_path, incremental, borderincr, gaussian1, gaussian2, cauchy1, cauchy2, uniform, beta01, beta02, betawalk01, betawalk02]
-# training_schedules = ["random", "incremental", "border_incr", "gauss1", "gauss2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betaWalk01", "betaWalk02"]
+# all_train_folders = [random_path, incremental, borderincr, gaussian1, gaussian2, cauchy1, cauchy2, uniform, beta01, beta02, betawalk01, betawalk02, train_RL_path]
+# training_schedules = ["random", "incremental", "border_incr", "gauss1", "gauss2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betaWalk01", "betaWalk02", "RL"]
 
 
-all_train_folders = [incremental, beta01, borderincr]
-training_schedules = ["incremental", "beta01", "border_incr"]
+# all_train_folders = [incremental, beta01, borderincr]
+# training_schedules = ["incremental", "beta01", "border_incr"]
 
-# ##OLD
-# cauchy1 = "/home/edoardo.barba/Results_Biped_old/cauchy1/20231215114621"
-# cauchy2 = "/home/edoardo.barba/Results_Biped_old/cauchy2/20231215114621"
-# gaussian1 = "/home/edoardo.barba/Results_Biped_old/gaussian1/20231215114440"
-# gaussian2 = "/home/edoardo.barba/Results_Biped_old/gaussian2/20231215114440"
-# incremental = "/home/edoardo.barba/Results_Biped_old/incremental/20231215114440"
-# uniform = "/home/edoardo.barba/Results_Biped_old/uniform/20231215114653"
-# train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-# beta1 = "/home/edoardo.barba/Results_Biped_old/beta1/20231215114653"
-# beta2 = "/home/edoardo.barba/Results_Biped_old/beta2/20231215114653"
-# betawalk1 = "/home/edoardo.barba/Results_Biped_old/betawalk1/20231215114907" 
-# betawalk2 = "/home/edoardo.barba/Results_Biped_old/betawalk2/20231215114907" 
-# gauss_dec = "/home/edoardo.barba/Results_Biped_old/gauss_dec/20231215114907"
+##WALKWEr
+# random_path = "/home/edoardo.barba/Results_Walker/random/20240112123557"
+# incremental = "/home/edoardo.barba/Results_Walker/incremental/20240112123557"
 
-# all_train_folders = [incremental, gaussian1, gaussian2, cauchy1, cauchy2, uniform, beta1, beta2, betawalk1, betawalk2, gauss_dec]
-# training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta1", "beta2", "betawalk1", "betawalk2", "gauss_dec"]
+
+all_train_folders = [incremental, random_path, borderincr]
+training_schedules = ["incremental", "random", "border_incr"]
 
 
 
@@ -95,6 +87,11 @@ def get_significant_combinations(data, save_path, title, significance_levels=[0.
 def plot(game, all_history_rewards, test, save_path):
 
     avg_scores = [np.mean(history_rewards, axis=1) for history_rewards in all_history_rewards]
+
+    print(np.shape(np.array(avg_scores)))
+
+    print(np.mean(avg_scores[0]))
+    print(np.mean(avg_scores[1]))
 
     data=avg_scores
 
@@ -149,6 +146,15 @@ def plot(game, all_history_rewards, test, save_path):
         else:
             ax.set_ylim(-150, 0)
         #ax.axhline(y=100, color='r', linestyle='--', label='Threshold')
+            
+    # elif game == Walker2dEnv:
+    #     if test == "IN":
+    #         ax.set_ylim(-250,-100)
+    #     elif test == "OUT":
+    #         ax.set_ylim(-100,20)
+    #     else:
+    #         ax.set_ylim(-150, 0)
+    #     #ax.axhline(y=100, color='r', linestyle='--', label='Threshold')
 
 
     plt.tight_layout()
@@ -320,6 +326,9 @@ elif game == "Acrobot":
 elif game == "BipedalWalker":
     save_path = save_path + "Results_Biped/"
 
+elif game == "Walker2dEnv":
+    save_path = save_path + "Results_Walker/"
+
 # print(np.mean(np.mean(all_history_rewards_IN[0], axis=1)))
 # print(np.shape(np.mean(all_history_rewards_IN[0], axis=1)))
 # print(np.shape(all_history_rewards_IN[0]))
@@ -372,9 +381,21 @@ ranks_INOUT = get_rankings(all_history_rewards_INOUT, "INOUT")
 
 
 original_stdout = sys.stdout
-output_file_path = os.path.dirname(save_path) + "/rankings.txt"
+output_file_path = os.path.dirname(save_path) + "/Results.txt"
 with open(output_file_path, 'w') as f:
     sys.stdout = f  
+    print("TRAIN SET: ")
+    all_avg_scores_IN = [np.mean(history_rewards, axis=1) for history_rewards in all_history_rewards_IN]
+    medians_IN = [np.median(avg_scores) for avg_scores in all_avg_scores_IN]
+    avgs_IN = [np.mean(avg_scores) for avg_scores in all_avg_scores_IN]
+    print("Medians")
+    for i, schedule in enumerate(training_schedules):
+        print(schedule, medians_IN[i])
+
+    print("Averages")
+    for i, schedule in enumerate(training_schedules):
+        print(schedule, avgs_IN[i])
+
     print("RANKING BASED ON MEDIAN")
     print("RANKING TRAIN:")
     for rank in ranks_IN: 
