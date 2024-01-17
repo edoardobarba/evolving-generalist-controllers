@@ -372,20 +372,37 @@ class Algo:
                     print("Generation: ", iter)
                     sys.stdout = original_stdout
 
-            if generation%1000==0:
-                print("Saving data...")
-                evals = pandas_logger.to_dataframe()
-                evals['no_envs'] = number_environments
+            if self.game == CartPoleEnv:
+                if generation%100==0:
+                    print("Saving data...")
+                    evals = pandas_logger.to_dataframe()
+                    evals['no_envs'] = number_environments
 
-                save_path = os.path.join(self.path, str(generation)) 
+                    save_path = os.path.join(self.path, str(generation)) 
 
-                generalist_evals = pd.DataFrame(
-                    {'Mean': generalist_average_fitness_history, 'STD': fitness_std_deviation_history,
-                    'Best': generalist_min_fitness_history, 'Worst': generalist_max_fitness_history, 'Gen_capability': generalization_capability_history})
+                    generalist_evals = pd.DataFrame(
+                        {'Mean': generalist_average_fitness_history, 'STD': fitness_std_deviation_history,
+                        'Best': generalist_min_fitness_history, 'Worst': generalist_max_fitness_history, 'Gen_capability': generalization_capability_history})
 
-                info = '{}_{}_{}'.format(self.run_id, self.cluster_id, self.seed)
+                    info = '{}_{}_{}'.format(self.run_id, self.cluster_id, self.seed)
 
-                save_dataframes(evals, xbest_weights, generalist_weights, generalist_evals, info, save_path)
+                    save_dataframes(evals, xbest_weights, generalist_weights, generalist_evals, info, save_path)
+
+            else:
+                if generation%1000==0:
+                    print("Saving data...")
+                    evals = pandas_logger.to_dataframe()
+                    evals['no_envs'] = number_environments
+
+                    save_path = os.path.join(self.path, str(generation)) 
+
+                    generalist_evals = pd.DataFrame(
+                        {'Mean': generalist_average_fitness_history, 'STD': fitness_std_deviation_history,
+                        'Best': generalist_min_fitness_history, 'Worst': generalist_max_fitness_history, 'Gen_capability': generalization_capability_history})
+
+                    info = '{}_{}_{}'.format(self.run_id, self.cluster_id, self.seed)
+
+                    save_dataframes(evals, xbest_weights, generalist_weights, generalist_evals, info, save_path)
 
 
         if len(number_environments) != len(evals):
