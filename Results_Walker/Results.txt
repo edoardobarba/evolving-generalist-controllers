@@ -1,0 +1,28 @@
+TRAIN SET: 
+Medians
+incremental -812.1035063222965
+random -908.0201138656115
+border_incr -1264.1602970841118
+Averages
+incremental -802.7186318398379
+random -1030.5395014177977
+border_incr -1213.0960970446001
+RANKING BASED ON MEDIAN
+RANKING TRAIN:
+   border_incr
+   random
+   incremental
+
+
+RANKING TEST:
+   border_incr
+   random
+   incremental
+
+
+RANKING TRAIN+TEST:
+   border_incr
+   random
+   incremental
+
+
