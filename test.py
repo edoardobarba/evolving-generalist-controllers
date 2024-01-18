@@ -25,18 +25,18 @@ import joblib
 
 # train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
 # train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+# train_gaussian1_path = "/home/edoardo.barba/Results_Cart/gaussian1/20240117115209"
 # train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
 # train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
 # train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
 # train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-# train_beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
+# train_beta01 = "/home/edoardo.barba/Results_Cart/beta01/20240117115209"
 # train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
 # train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
 # train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
 # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
 # train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
+# train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117024008"
 # train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
 
 # #training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec"]
@@ -45,12 +45,12 @@ train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117
 # #all_train_folders = [train_default_path, train_borderincr_path]
 
 #train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
-train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
-train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240115180512"
+train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240118020055"
+train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240118020055"
 # train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
 
 
-all_train_folders = [train_borderincr_path]
+all_train_folders = [train_incremental_path, train_random_path]
 
 save_path = "/home/edoardo.barba/Results_Walker"
 

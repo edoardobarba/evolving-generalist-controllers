@@ -174,8 +174,10 @@ class Algo:
         iter = 1
 
         used_env = [0 for env in self.variations]
+        start_time = time.time()
         while generation < self.max_eval:
-            print("ITER: ", iter)
+            
+            # print("ITER: ", iter)
             if self.training_schedule == "RL":
                 epsilon = 0.1  # Set your epsilon value here
                 
@@ -405,6 +407,8 @@ class Algo:
                     save_dataframes(evals, xbest_weights, generalist_weights, generalist_evals, info, save_path)
 
 
+        end_time = time.time()
+        print("Total execution time: ", end_time - start_time)
         if len(number_environments) != len(evals):
             number_environments.append(len(self.variations))
 

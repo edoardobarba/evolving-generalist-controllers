@@ -39,35 +39,37 @@ import matplotlib.patches as patches
 
 # train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
 # train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+# train_gaussian1_path = "/home/edoardo.barba/Results_Cart/gaussian1/20240117115209"
 # train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
-train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
+# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
 # train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
-# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240112131225" 
-# train_beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
+# train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+# train_beta01 = "/home/edoardo.barba/Results_Cart/beta01/20240117115209"
 # train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
 # train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
 # train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
 # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
 # train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-borderincr = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
-random_path = "/home/edoardo.barba/Results_Walker/random/20240115180512"
+train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
+# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
 
-# all_train_folders = [random_path, incremental, borderincr, gaussian1, gaussian2, cauchy1, cauchy2, uniform, beta01, beta02, betawalk01, betawalk02, train_RL_path]
-# training_schedules = ["random", "incremental", "border_incr", "gauss1", "gauss2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betaWalk01", "betaWalk02", "RL"]
-
-
-# all_train_folders = [incremental, beta01, borderincr]
-# training_schedules = ["incremental", "beta01", "border_incr"]
-
-##WALKWEr
-# random_path = "/home/edoardo.barba/Results_Walker/random/20240112123557"
-# incremental = "/home/edoardo.barba/Results_Walker/incremental/20240112123557"
-
-
-all_train_folders = [train_incremental_path, random_path, borderincr]
-training_schedules = ["incremental", "random", "border_incr"]
+# #training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec"]
+# #all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02, train_gauss_dec]
+# all_train_folders = [train_random_path]
 # #all_train_folders = [train_default_path, train_borderincr_path]
+
+#train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+# train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
+# train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240115180512"
+# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
+
+
+train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240118020055"
+train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240118020055"
+# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
+
+
+all_train_folders = [train_random_path, train_incremental_path, train_borderincr_path]
 
 # train_random_path = "/home/edoardo.barba/Results_Walker/random/20240112123557"
 # # train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240112123557"
@@ -84,8 +86,8 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
     param2_values = all_variations[:, 1]
     rounded_param1_values = [round(num, 2) for num in param1_values]
     rounded_param2_values = [round(num, 2) for num in param2_values]
+
     avg_scores = np.mean(scores, axis=0)
-    #print(np.shape(avg_scores))
     data = {'Parameter 1': rounded_param1_values, 'Parameter 2': rounded_param2_values, 'Reward': avg_scores}
     df = pd.DataFrame(data)
     #print(df)
@@ -117,7 +119,7 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
         #rect = patches.Rectangle((2, 2), 6, 6, linewidth=2, edgecolor='black', facecolor='none')
         #plt.gca().add_patch(rect)
     elif game=="Walker2dEnv":
-        sns.heatmap(pivot_df, vmin=-1500, vmax=0, annot=True, fmt=".0f")    
+        sns.heatmap(pivot_df, vmin=-1700, vmax=0, annot=True, fmt=".0f")    
         plt.xlabel('Upper leg length')
         plt.ylabel('Lower leg length')
         rect = patches.Rectangle((3, 3), 6, 6, linewidth=3, edgecolor='red', facecolor='none')
@@ -205,6 +207,7 @@ if __name__ == "__main__":
         # IN_variations = utils.get_set(config, test_set="IN")
         # OUT_variations = utils.get_set(config, test_set="OUT")
         INOUT_variations = utils.get_set(config, test_set="INOUT")
+        print(np.shape(all_history_rewards_INOUT))
 
         #plot_heatmap(game, IN_variations, all_history_rewards_IN, title='IN', save_path=plots_path)
         #plot_heatmap(game, OUT_variations, all_history_rewards_OUT, title='OUT', save_path=plots_path)

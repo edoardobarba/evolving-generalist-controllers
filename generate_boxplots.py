@@ -22,37 +22,52 @@ from scipy import stats
 
 
 
-# NEW
-# cauchy1 = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
-# cauchy2 = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-# gaussian1 = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
-# gaussian2 = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
-incremental = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
-# uniform = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
-# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240112131225" 
-# beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
-# beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-# betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
-# betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
-# gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
-# default = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-borderincr = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
-random_path = "/home/edoardo.barba/Results_Walker/random/20240115180512"
+# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
+# train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
+#train_gaussian1_path = "/home/edoardo.barba/Results_Cart/gaussian1/20240117115209"
+# train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
+# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
+# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
+# train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+#train_beta01 = "/home/edoardo.barba/Results_Cart/beta01/20240117115209"
+# train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+# train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+# train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+# train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
+# train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117024008"
+# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
 
-# all_train_folders = [random_path, incremental, borderincr, gaussian1, gaussian2, cauchy1, cauchy2, uniform, beta01, beta02, betawalk01, betawalk02, train_RL_path]
-# training_schedules = ["random", "incremental", "border_incr", "gauss1", "gauss2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betaWalk01", "betaWalk02", "RL"]
+# #training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec"]
+# #all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02, train_gauss_dec]
+# all_train_folders = [train_random_path]
+# #all_train_folders = [train_default_path, train_borderincr_path]
+
+#train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+# train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
+# train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240115180512"
+# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
+train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
+# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+
+# #training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec"]
+# #all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02, train_gauss_dec]
+# all_train_folders = [train_random_path]
+# #all_train_folders = [train_default_path, train_borderincr_path]
+
+#train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+# train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
+# train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240115180512"
+# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
 
 
-# all_train_folders = [incremental, beta01, borderincr]
-# training_schedules = ["incremental", "beta01", "border_incr"]
-
-##WALKWEr
-# random_path = "/home/edoardo.barba/Results_Walker/random/20240112123557"
-# incremental = "/home/edoardo.barba/Results_Walker/incremental/20240112123557"
+train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240118020055"
+train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240118020055"
+# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
 
 
-all_train_folders = [incremental, random_path, borderincr]
-training_schedules = ["incremental", "random", "border_incr"]
+all_train_folders = [train_random_path, train_incremental_path, train_borderincr_path]
+training_schedules = ["random", "incremental", "border incremental"]
 
 
 
@@ -185,14 +200,20 @@ def plot(game, all_history_rewards, test, save_path):
 
     # Set axis labels and title
     plt.xticks(np.arange(len(training_schedules)) + 0.5, training_schedules, rotation=45, ha='right')
-    plt.yticks(np.arange(len(training_schedules)) + 0.5, training_schedules)
+    plt.yticks(np.arange(len(training_schedules)) + 0.5, training_schedules, va='center')
 
     # Add grid with a 0.5 offset
     plt.grid(True, which='major', linestyle='-', linewidth=0.5, color='black', axis='both', alpha=0.5)
-
+    # Add p-values to each cell
+    for i in range(len(training_schedules)):
+        for j in range(len(training_schedules)):
+            if p_values[i, j] != 1:  # Only add p-values not equal to 1
+                plt.text(j, i, round(p_values[i, j], 2), ha='center', va='center', color='black')
+                
     plt.title('Heatmap of p-values (< 0.05)')
 
     plt.savefig(os.path.join(save_path, "significant_heatmap_" + title + ".png"), dpi=300)
+    plt.close()
 
 
 
@@ -385,17 +406,47 @@ output_file_path = os.path.dirname(save_path) + "/Results.txt"
 with open(output_file_path, 'w') as f:
     sys.stdout = f  
     print("TRAIN SET: ")
+    print(np.array([np.std(history_rewards, axis=1) for history_rewards in all_history_rewards_IN]))
+
     all_avg_scores_IN = [np.mean(history_rewards, axis=1) for history_rewards in all_history_rewards_IN]
     medians_IN = [np.median(avg_scores) for avg_scores in all_avg_scores_IN]
     avgs_IN = [np.mean(avg_scores) for avg_scores in all_avg_scores_IN]
-    print("Medians")
+    std_IN = np.mean(np.array([np.std(history_rewards, axis=1) for history_rewards in all_history_rewards_IN]), axis=1)
+    print("shape stss")
+    print(np.shape(std_IN))
+    print(std_IN)
+    print("MEDIANS")
     for i, schedule in enumerate(training_schedules):
         print(schedule, medians_IN[i])
 
-    print("Averages")
+    print("AVGS")
     for i, schedule in enumerate(training_schedules):
         print(schedule, avgs_IN[i])
 
+    print("STD")
+    for i, schedule in enumerate(training_schedules):
+        print(schedule, std_IN[i])
+
+    print("")
+    print("TEST SET: ")
+    all_avg_scores_OUT = [np.mean(history_rewards, axis=1) for history_rewards in all_history_rewards_OUT]
+    medians_OUT = [np.median(avg_scores) for avg_scores in all_avg_scores_OUT]
+    avgs_OUT = [np.mean(avg_scores) for avg_scores in all_avg_scores_OUT]
+    std_OUT = np.mean(np.array([np.std(history_rewards, axis=1) for history_rewards in all_history_rewards_OUT]), axis=1)
+    print("MEDIANS")
+    for i, schedule in enumerate(training_schedules):
+        print(schedule, medians_OUT[i])
+
+    print("AVGS")
+    for i, schedule in enumerate(training_schedules):
+        print(schedule, avgs_OUT[i])
+
+
+    print("STD")
+    for i, schedule in enumerate(training_schedules):
+        print(schedule, std_OUT[i])
+
+    print("")
     print("RANKING BASED ON MEDIAN")
     print("RANKING TRAIN:")
     for rank in ranks_IN: 

@@ -8,7 +8,7 @@
     "generations": 100,
     "filename": "Results_Cart",
     "xml": "None",
-    "runs": 30,
+    "runs": 1,
     "//comment1": "Parameter1 is mass",
     "IN_parameter1": [0.1, 0.5],
     "//comment2": "Parameter1 is pole lenght",
@@ -19,5 +19,5 @@
     "testing_step_sizes": [0.1, 0.1],
     "validation_step_sizes": [0.1, 0.1],
     "actors": 1,
-    "training_schedule": ["gaussian1", "beta01"]
+    "training_schedule": ["gaussian1"]
 }
