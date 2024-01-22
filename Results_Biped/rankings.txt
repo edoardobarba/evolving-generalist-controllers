@@ -1,0 +1,49 @@
+RANKING BASED ON MEDIAN
+RANKING TRAIN:
+   incremental
+   uniform
+   betaWalk02
+   gauss1
+   random
+   cauchy2
+   border_incr
+   gauss2
+   beta01
+   betaWalk01
+   cauchy1
+   beta02
+   RL
+
+
+RANKING TEST:
+   border_incr
+   incremental
+   beta01
+   beta02
+   uniform
+   betaWalk02
+   random
+   betaWalk01
+   cauchy2
+   gauss1
+   gauss2
+   RL
+   cauchy1
+
+
+RANKING TRAIN+TEST:
+   incremental
+   border_incr
+   uniform
+   beta01
+   cauchy2
+   random
+   betaWalk01
+   betaWalk02
+   gauss1
+   gauss2
+   beta02
+   RL
+   cauchy1
+
+

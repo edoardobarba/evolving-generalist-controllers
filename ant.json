@@ -20,5 +20,5 @@
     "actors": -1,
     "parallel_runs_actors": 4,
     "samples_per_cycle": 50,
-    "training_schedule": ["random", "incremental"]
+    "training_schedule": ["random", "incremental", "border_incremental"]
 }

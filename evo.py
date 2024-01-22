@@ -203,7 +203,7 @@ class Algo:
                 improved = searcher.status.get('iter')
 
             if len(self.validation_set) > 1:
-                if (iter > self.max_eval-100) or self.training_schedule == "RL":
+                if (iter > self.max_eval-1000) or self.training_schedule == "RL":
                     compare = joblib.Parallel(n_jobs=-1)(joblib.delayed(self.comparison)(xbest_weights, i)
                                                                 for i in range(len(generalist_fitness_scores)))
 

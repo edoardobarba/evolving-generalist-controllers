@@ -20,54 +20,41 @@ import statsmodels.stats.api as sms
 from scipy import stats
 
 
+# BIPEDAL WALKER 
 
-
-# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
-# train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-#train_gaussian1_path = "/home/edoardo.barba/Results_Cart/gaussian1/20240117115209"
-# train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
-# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
-# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
-# train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-#train_beta01 = "/home/edoardo.barba/Results_Cart/beta01/20240117115209"
-# train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
-# train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
+train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
+train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
+train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
+train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
+train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+train_beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
+train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
 # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
-# train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-# train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117024008"
-# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
+train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
+train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
 
-# #training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec"]
-# #all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02, train_gauss_dec]
-# all_train_folders = [train_random_path]
-# #all_train_folders = [train_default_path, train_borderincr_path]
-
-#train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
-# train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
-# train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240115180512"
-# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
-train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
-# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
-
-# #training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec"]
-# #all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02, train_gauss_dec]
-# all_train_folders = [train_random_path]
-# #all_train_folders = [train_default_path, train_borderincr_path]
-
-#train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
-# train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
-# train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240115180512"
-# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
+# training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
+# all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
 
 
-train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240118020055"
-train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240118020055"
-# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
+
+# WALKER 2D
+
+# train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
+
+train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240120035256"
+train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240120035256"
 
 
-all_train_folders = [train_random_path, train_incremental_path, train_borderincr_path]
-training_schedules = ["random", "incremental", "border incremental"]
+
+all_train_folders = [train_random_path, train_incremental_path]
+training_schedules = ["random", "incremental"]
+# all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path]
 
 
 
@@ -100,8 +87,9 @@ def get_significant_combinations(data, save_path, title, significance_levels=[0.
 #          test, save_path):
     
 def plot(game, all_history_rewards, test, save_path):
-
-    avg_scores = [np.mean(history_rewards, axis=1) for history_rewards in all_history_rewards]
+    print("qui")
+    print(np.shape(np.array(all_history_rewards)))
+    avg_scores = [np.median(history_rewards, axis=1) for history_rewards in all_history_rewards]
 
     print(np.shape(np.array(avg_scores)))
 
@@ -110,7 +98,9 @@ def plot(game, all_history_rewards, test, save_path):
 
     data=avg_scores
 
-    #print(data)
+
+
+    print(np.shape(data))
 
 
     labels = training_schedules
@@ -146,21 +136,21 @@ def plot(game, all_history_rewards, test, save_path):
     if game == "CartPoleEnv":
         ax.set_ylim(-1001, 0)
         ax.axhline(y=-500, color='r', linestyle='--', label='Threshold')
-    elif game == "AcrobotEnv":
-        if test == "IN":
-            ax.set_ylim(50, 100)
-        else:
-            ax.set_ylim(50, 140)
-        ax.axhline(y=100, color='r', linestyle='--', label='Threshold')
+    # elif game == "AcrobotEnv":
+    #     if test == "IN":
+    #         ax.set_ylim(50, 100)
+    #     else:
+    #         ax.set_ylim(50, 90)
+    #     ax.axhline(y=100, color='r', linestyle='--', label='Threshold')
 
     elif game == "BipedalWalker":
         if test == "IN":
-            ax.set_ylim(-250,-100)
-        elif test == "OUT":
-            ax.set_ylim(-100,20)
-        else:
-            ax.set_ylim(-150, 0)
-        #ax.axhline(y=100, color='r', linestyle='--', label='Threshold')
+            ax.set_ylim(-280,-125)
+        # elif test == "OUT":
+        #     ax.set_ylim(-100,20)
+        # else:
+        #     ax.set_ylim(-150, 0)
+        # ax.axhline(y=100, color='r', linestyle='--', label='Threshold')
             
     # elif game == Walker2dEnv:
     #     if test == "IN":
@@ -337,11 +327,11 @@ all_data_load = [np.load(npz_path) for npz_path in npz_paths]
 # all_history_rewards_OUT = [data['avg_rewards_OUT'] for data in all_data_load]
 all_history_rewards_INOUT = [data['avg_rewards_INOUT'] for data in all_data_load]
 
-        
+print(game)    
 if game == "CartPoleEnv":
     save_path = save_path + "Results_Cart/"
 
-elif game == "Acrobot":
+elif game == "AcrobotEnv":
     save_path = save_path + "Results_Acrobot/"
 
 elif game == "BipedalWalker":
@@ -381,6 +371,8 @@ for i in range(len(INOUT_variations)):
     else: 
         indices_to_delete_OUT.append(i)
 
+#print(len(all_history_rewards_IN))
+#print(indices_to_delete_IN)
 all_history_rewards_IN = np.delete(all_history_rewards_IN, indices_to_delete_IN, axis=2)
 all_history_rewards_OUT = np.delete(all_history_rewards_OUT, indices_to_delete_OUT, axis=2)
             

@@ -45,8 +45,8 @@ import joblib
 # #all_train_folders = [train_default_path, train_borderincr_path]
 
 #train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
-train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240118020055"
-train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240118020055"
+train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240120035256"
+train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240120035256"
 # train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
 
 
