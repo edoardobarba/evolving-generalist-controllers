@@ -90,7 +90,7 @@ def single_run(config, run_id, timestamp_str, training_schedule):
 
     run = Algo(game=config['game'], path=run_path, xml_path=config['xml'], variations=variations,
                config=config, generation=generations, run_id=run_id, cluster_id=cluster_count,
-               validation_set=get_set(config, 'VALIDATION'), training_schedule=training_schedule, gauss_mean=mean, gauss_cov=cov)
+               validation_set=get_set(config, 'VALIDATION'), training_schedule=training_schedule, gauss_mean=mean, gauss_cov=cov, test_set = get_set(config, 'OUT'))
     generation, _ = run.main()
 
 

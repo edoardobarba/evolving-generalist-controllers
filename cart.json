@@ -9,6 +9,7 @@
     "filename": "Results_Cart",
     "xml": "None",
     "runs": 1,
+    "gscore_test": 100,
     "//comment1": "Parameter1 is mass",
     "IN_parameter1": [0.1, 0.5],
     "//comment2": "Parameter1 is pole lenght",
@@ -18,6 +19,6 @@
     "incremental_step_sizes": [0.1, 0.1],
     "testing_step_sizes": [0.1, 0.1],
     "validation_step_sizes": [0.1, 0.1],
-    "actors": 1,
+    "actors": -1,
     "training_schedule": ["gaussian1"]
 }

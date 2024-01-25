@@ -30,13 +30,14 @@ import sys
 
         
 class Algo:
-    def __init__(self, game, path, xml_path, variations, config, run_id, cluster_id, generation, validation_set, training_schedule, gauss_mean = None, gauss_cov = None):
+    def __init__(self, game, path, xml_path, variations, config, run_id, cluster_id, generation, validation_set, training_schedule, test_set, gauss_mean = None, gauss_cov = None):
         if game=="AcrobotEnv":
             self.game = game
         else:
             self.game = eval(game)
         self.variations = variations
         self.validation_set = validation_set
+        self.test_set = test_set
         self.path = path
         self.xml_path = xml_path
         self.max_eval = generation
@@ -53,10 +54,11 @@ class Algo:
         self.gauss_mean = gauss_mean
         self.gauss_cov = gauss_cov
         self.par1_range = config['IN_parameter1']
-        self.par2_range = config['IN_parameter1']
+        self.par2_range = config['IN_parameter2']
         self.training_schedule = training_schedule
         self.V = np.empty((len(variations), generation+1))
         self.alfa = 0.1  
+        self.gscore_test = config["gscore_test"]
         if game == "AcrobotEnv":
             self.worst_score = 100
             self.best__score = 0
@@ -123,14 +125,17 @@ class Algo:
             # NN topology determines the solution_length
             initial_bounds=(self.initial_bounds[0], self.initial_bounds[1]))
             # initial bounds limit the initial solutions
-            #num_actors=self.actors)  
+            # num_actors=self.actors)  
         #print("here2")
         searcher = XNES(problem, stdev_init=self.initial_stdev)
         #print("here3")
         return searcher
 
-    def comparison(self, agent, i):
-            fitness = gym_render(self.game, agent, self.xml_path, self.validation_set[i], self.topology, self.steps)
+    def comparison(self, agent, i, test = False):
+            if not test: 
+                fitness = gym_render(self.game, agent, self.xml_path, self.validation_set[i], self.topology, self.steps)
+            else: 
+                fitness = gym_render(self.game, agent, self.xml_path, self.test_set[i], self.topology, self.steps)
             return fitness
 
     # main function to run the evolution
@@ -154,6 +159,8 @@ class Algo:
         generalist_min_fitness_history = []  # Records the history of the minimum fitness of the generalist individual across iterations.
         generalist_max_fitness_history = []  # Records the history of the maximum fitness of the generalist individual across iterations.
         generalization_capability_history = []
+        generalization_capability_test_history = []
+        std_history =  []
 
         n_changed_gaussian_variance = 1
         fitness_step = self.max_fitness/3 
@@ -177,7 +184,7 @@ class Algo:
         start_time = time.time()
         while generation < self.max_eval:
             
-            # print("ITER: ", iter)
+            #print("ITER: ", iter)
             if self.training_schedule == "RL":
                 epsilon = 0.1  # Set your epsilon value here
                 
@@ -203,7 +210,11 @@ class Algo:
                 improved = searcher.status.get('iter')
 
             if len(self.validation_set) > 1:
-                if (iter > self.max_eval-1000) or self.training_schedule == "RL":
+                if self.game == "AcrobotEnv": 
+                    gen_compute_Gscore = 50
+                else: 
+                    gen_compute_Gscore = self.gscore_test
+                if ((iter > self.max_eval-gen_compute_Gscore) or self.training_schedule == "RL") and iter%10 == 0:
                     compare = joblib.Parallel(n_jobs=-1)(joblib.delayed(self.comparison)(xbest_weights, i)
                                                                 for i in range(len(generalist_fitness_scores)))
 
@@ -212,10 +223,12 @@ class Algo:
                     generalist_fitness_scores = np.array(compare)
 
                     new_generalist_average_fitness = np.mean(generalist_fitness_scores)
+                    new_std = np.std(generalist_fitness_scores)
 
 
                 else: 
                     new_generalist_average_fitness = 0
+                    new_std = 100000
 
                 generalist_average_fitness_history.append(new_generalist_average_fitness)
                 generalist_new_dev = np.std(generalist_fitness_scores)
@@ -257,8 +270,19 @@ class Algo:
 
                 #print("generalist_average_fitness: ", generalist_average_fitness)
 
-                if new_generalist_average_fitness <= generalist_average_fitness:
+                if new_generalist_average_fitness < generalist_average_fitness:
+                    # test on test set 
+                    test_set_scores = joblib.Parallel(n_jobs=-1)(joblib.delayed(self.comparison)(xbest_weights, i, test=True)
+                                                                for i in range(len(self.test_set)))
+                    
+                    generalist_fitness_test_scores = np.array(test_set_scores)
+                    new_generalist_average_test_fitness = np.mean(generalist_fitness_test_scores)
+                    generalization_capability_test_history.append(new_generalist_average_test_fitness)
+
+
+
                     generalization_capability_history.append(new_generalist_average_fitness)
+                    std_history.append(new_std)
                     generalist_average_fitness = new_generalist_average_fitness
                     generalist_old_dev = generalist_new_dev
 
@@ -267,6 +291,8 @@ class Algo:
 
                 else:
                     generalization_capability_history.append(generalization_capability_history[-1])
+                    generalization_capability_test_history.append(generalization_capability_test_history[-1])
+                    std_history.append(std_history[-1])
 
                 
 
@@ -348,7 +374,7 @@ class Algo:
 
                 iter+=1
                 #if iter%10==0:
-                # print("ITER: ", iter)
+                print("ITER: ", iter)
                 
 
             elif len(self.variations) == 1:
@@ -367,14 +393,15 @@ class Algo:
 
             if generation%50==0:
                 original_stdout = sys.stdout
-                # print(self.path)
                 output_file_path = os.path.join(self.path, "training.txt")
                 with open(output_file_path, 'w') as f:
                     sys.stdout = f  
                     print("Generation: ", iter)
                     sys.stdout = original_stdout
+                    f.close()
 
-            if self.game == CartPoleEnv:
+            
+            if self.game == CartPoleEnv or self.game == "AcrobotEnv":
                 if generation%100==0:
                     print("Saving data...")
                     evals = pandas_logger.to_dataframe()
@@ -384,7 +411,7 @@ class Algo:
 
                     generalist_evals = pd.DataFrame(
                         {'Mean': generalist_average_fitness_history, 'STD': fitness_std_deviation_history,
-                        'Best': generalist_min_fitness_history, 'Worst': generalist_max_fitness_history, 'Gen_capability': generalization_capability_history})
+                        'Best': generalist_min_fitness_history, 'Worst': generalist_max_fitness_history, 'Gen_capability': generalization_capability_history, 'Gen_std': std_history, 'Gen_test_capability': generalization_capability_test_history})
 
                     info = '{}_{}_{}'.format(self.run_id, self.cluster_id, self.seed)
 
@@ -400,7 +427,7 @@ class Algo:
 
                     generalist_evals = pd.DataFrame(
                         {'Mean': generalist_average_fitness_history, 'STD': fitness_std_deviation_history,
-                        'Best': generalist_min_fitness_history, 'Worst': generalist_max_fitness_history, 'Gen_capability': generalization_capability_history})
+                        'Best': generalist_min_fitness_history, 'Worst': generalist_max_fitness_history, 'Gen_capability': generalization_capability_history, 'Gen_std': std_history})
 
                     info = '{}_{}_{}'.format(self.run_id, self.cluster_id, self.seed)
 
