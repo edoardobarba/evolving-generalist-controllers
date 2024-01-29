@@ -23,34 +23,70 @@ import gymnasium as gym
 import joblib
 
 
+
+# # ANT 
+# train_incremental_path = "/home/edoardo.barba/Results_Ant/incremental/20240119201533"
+# train_random_path = "/home/edoardo.barba/Results_Ant/random/20240119201533"
+
+# training_schedules = ["random", "incremental"]
+# all_train_folders = [train_random_path, train_incremental_path]
+
+
+
+
+
+# BIPEDAL WALKER 
+
 # train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
 # train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-# train_gaussian1_path = "/home/edoardo.barba/Results_Cart/gaussian1/20240117115209"
+# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
 # train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
 # train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
 # train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
-# train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-# train_beta01 = "/home/edoardo.barba/Results_Cart/beta01/20240117115209"
+train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+train_beta01 = "/home/edoardo.barba/Results_Biped_old/beta1"
 # train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
 # train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
 # train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
-# train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+# # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
 # train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-# train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117024008"
-# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+# train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
+train_random_path = "/home/edoardo.barba/Results_Biped/random/20240125170701"
+train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20240127034215"
 
-# #training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec"]
-# #all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02, train_gauss_dec]
-# all_train_folders = [train_random_path]
-# #all_train_folders = [train_default_path, train_borderincr_path]
-
-#train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
-train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240120035256"
-train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240120035256"
-# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
-
-
+# training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
+# all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
+training_schedules = ["incremental", "random"]
 all_train_folders = [train_incremental_path, train_random_path]
+
+
+
+# WALKER 2D
+
+# # train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
+
+# train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240120035256"
+# train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240120035256"
+
+
+
+# all_train_folders = [train_random_path, train_incremental_path]
+# training_schedules = ["random", "incremental"]
+# # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path]
+
+
+# ACROBOT
+
+# train_cauchy1_path = "/home/edoardo.barba/Results_Acrobot/cauchy1/20231130173608"
+# train_cauchy2_path = "/home/edoardo.barba/Results_Acrobot/cauchy2/20231130173608"
+# train_gaussian1_path = "/home/edoardo.barba/Results_Acrobot/gaussian1/20231130171943"
+# train_gaussian2_path = "/home/edoardo.barba/Results_Acrobot/gaussian2/20231130173608"
+# train_incremental_path = "/home/edoardo.barba/Results_Acrobot/incremental/20231130171943"
+
+
+# training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2"]
+# all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path]
+
 
 save_path = "/home/edoardo.barba/Results_Walker"
 
@@ -121,6 +157,10 @@ def gym_render_testing(game, agent, xml_path, parameters, topology, steps):
         
         if game == Walker2dEnv:
             action = action.tolist()
+
+        if game == AntEnv:
+            action = action.tolist()
+            
         obs, reward, terminated, truncated, info = env.step(action)
 
         s += 1
@@ -234,7 +274,7 @@ if __name__ == '__main__':
 
         #generations = 3000
         #print("Testing ", generations, "generations")
-        generations = 5000
+        generations = 1000
         print("Generations: ", generations)
         for i, run_number in enumerate(runs_folders):
             run_path = os.path.join(runs_folder_path, run_number)

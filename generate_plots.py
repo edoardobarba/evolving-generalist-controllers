@@ -18,69 +18,73 @@ from scipy import stats
 import matplotlib.patches as patches
 
 
-# #training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "RL", "beta1", "beta2", "betawalk1", "betawalk2"]
-
-# #training_schedules = ["cauchy1", "cauchy2", "gaussian1", "gaussian2", "incremental",]
-
-# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231208165916"
-# train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231208165916"
-# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231208165916"
-# train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231208165916"
-# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231208165916"
-# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231208165916"
-# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20231208165916"
-# train_beta1 = "/home/edoardo.barba/Results_Biped/beta1/20231208165916"
-# train_beta2 = "/home/edoardo.barba/Results_Biped/beta2/20231208165916"
-# train_betawalk1 = "/home/edoardo.barba/Results_Biped/betawalk1/20231208165916"
-# train_betawalk2 = "/home/edoardo.barba/Results_Biped/betawalk2/20231208165916"
-
-# #all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path,   train_uniform_path, train_RL_path, train_beta1, train_beta2, train_betawalk1, train_betawalk2]
 
 
-train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
-train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
-train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
-train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
-train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
-train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-train_beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
-train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
-train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
-# train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+# ANT 
+train_incremental_path = "/home/edoardo.barba/Results_Ant/incremental/20240119201533"
+train_random_path = "/home/edoardo.barba/Results_Ant/random/20240119201533"
+
+training_schedules = ["random", "incremental"]
+all_train_folders = [train_random_path, train_incremental_path]
+
+
+
+
+
+# BIPEDAL WALKER 
+
+# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
+# train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
+# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+# train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
+# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
+# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
+# train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+# train_beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
+# train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+# train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+# # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
 # train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
-train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+# train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
+# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240123041607"
+# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20240123041607"
 
-training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
-all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
-
-# #all_train_folders = [train_default_path, train_borderincr_path]
-
-#train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
-# train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240115180512"
-# train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240115180512"
-# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
+# # training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
+# # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
+# training_schedules = ["random", "incremental"]
+# all_train_folders = [train_random_path, train_incremental_path]
 
 
-# train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240118020055"
-# train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240118020055"
-# # train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
+
+# WALKER 2D
+
+# # train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
+
+# train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240120035256"
+# train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240120035256"
 
 
-# all_train_folders = [train_random_path, train_incremental_path, train_borderincr_path]
 
-train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240120035256"
-train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240120035256"
-# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20240115165851"
+# all_train_folders = [train_random_path, train_incremental_path]
+# training_schedules = ["random", "incremental"]
+# # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path]
 
 
-all_train_folders = [train_incremental_path, train_random_path]
+# ACROBOT
 
-#save_path = "/home/edoardo.barba/Results_Biped"
+# train_cauchy1_path = "/home/edoardo.barba/Results_Acrobot/cauchy1/20231130173608"
+# train_cauchy2_path = "/home/edoardo.barba/Results_Acrobot/cauchy2/20231130173608"
+# train_gaussian1_path = "/home/edoardo.barba/Results_Acrobot/gaussian1/20231130171943"
+# train_gaussian2_path = "/home/edoardo.barba/Results_Acrobot/gaussian2/20231130173608"
+# train_incremental_path = "/home/edoardo.barba/Results_Acrobot/incremental/20231130171943"
 
-save_path = "/home/edoardo.barba/Results_Walker"
+
+# training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2"]
+# all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path]
+
+
+save_path = "/home/edoardo.barba/Results_Biped"
 SEED=0
 
 def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
@@ -90,6 +94,8 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
     rounded_param2_values = [round(num, 2) for num in param2_values]
 
     avg_scores = np.median(scores, axis=0)
+    print(len(avg_scores))
+    print(len(all_variations))
     data = {'Parameter 1': rounded_param1_values, 'Parameter 2': rounded_param2_values, 'Reward': avg_scores}
     df = pd.DataFrame(data)
     #print(df)
@@ -124,6 +130,13 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
         sns.heatmap(pivot_df, vmin=-1700, vmax=0, annot=True, fmt=".0f")    
         plt.xlabel('Upper leg length')
         plt.ylabel('Lower leg length')
+        rect = patches.Rectangle((1, 1), 10, 10, linewidth=3, edgecolor='red', facecolor='none')
+        plt.gca().add_patch(rect)
+
+    elif game=="AntEnv":
+        sns.heatmap(pivot_df, annot=True, fmt=".0f")    
+        # plt.xlabel('Upper leg length')
+        # plt.ylabel('Lower leg length')
         rect = patches.Rectangle((1, 1), 10, 10, linewidth=3, edgecolor='red', facecolor='none')
         plt.gca().add_patch(rect)
         

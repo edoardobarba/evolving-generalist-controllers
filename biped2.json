@@ -5,10 +5,11 @@
     "NN-struc": [24, 20, 4, 1],
     "stdev_init": 0.1,
     "initial_bounds": [-0.00001, 0.00001],
-    "generations": 4000,
+    "generations": 3000,
     "filename": "Results_Biped",
     "xml": "None",
     "runs": 30,
+    "gscore_test": 3000,
     "//comment": "Parameter1 is leg width",
     "old_IN_parameter1": [7, 12],
     "old_IN_parameter2": [26, 36],
@@ -23,8 +24,8 @@
     "incremental_step_sizes": [2, 4],
     "testing_step_sizes": [2, 4],
     "validation_step_sizes": [2, 4],
-    "actors": 1,
+    "actors": -1,
     "parallel_runs_actors": 4,
     "samples_per_cycle": 50,
-    "training_schedule": ["cauchy1", "cauchy2", "uniform"]
+    "training_schedule": ["default"]
 }

@@ -6,19 +6,23 @@
     "stdev_init": 0.01,
     "initial_bounds": [-0.00001, 0.00001],
     "generations": 5000,
+    "gscore_test": 5000,
     "filename": "Results_Ant",
     "xml": "/home/edoardo.barba/evolving-generalist-controllers/Ants",
-    "runs": 30,
+    "runs": 24,
     "//comment1": "Parameter1 is upper leg length",
-    "IN_parameter1": [0.2, 0.7],
-    "//comment2": "Parameter2 is lower leg length",
-    "IN_parameter2": [0.4, 0.9],
+    "IN_parameter1": [0.5, 1.5],
+    
+    "IN_parameter2": [0.7, 1.7],
+
+    "OUT_parameter1": [0.2, 1.9],
+    "OUT_parameter2": [0.4, 2.1],
     "step_sizes": [0.1, 0.1],
-    "incremental_step_sizes": [0.1, 0.1],
-    "testing_step_sizes": [0.1, 0.1],
-    "validation_step_sizes": [0.1, 0.1],
+    "incremental_step_sizes": [0.2, 0.2],
+    "testing_step_sizes": [0.2, 0.2],
+    "validation_step_sizes": [0.2, 0.2],
     "actors": -1,
     "parallel_runs_actors": 4,
     "samples_per_cycle": 50,
-    "training_schedule": ["random", "incremental", "border_incremental"]
+    "training_schedule": ["random", "incremental"]
 }
