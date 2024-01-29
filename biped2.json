@@ -8,7 +8,7 @@
     "generations": 3000,
     "filename": "Results_Biped",
     "xml": "None",
-    "runs": 10,
+    "runs": 30,
     "gscore_test": 3000,
     "//comment": "Parameter1 is leg width",
     "old_IN_parameter1": [7, 12],
@@ -22,10 +22,10 @@
     "OUT_parameter1": [3, 21],
     "OUT_parameter2": [16, 52],   
     "incremental_step_sizes": [2, 4],
-    "testing_step_sizes": [1, 2],
+    "testing_step_sizes": [2, 4],
     "validation_step_sizes": [2, 4],
     "actors": -1,
     "parallel_runs_actors": 4,
     "samples_per_cycle": 50,
-    "training_schedule": ["incremental", "random"]
+    "training_schedule": ["default"]
 }

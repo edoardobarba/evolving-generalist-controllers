@@ -29,7 +29,7 @@ def single_run(config, run_id, timestamp_str, training_schedule):
         samples_per_cycle = config["samples_per_cycle"]
 
     print("RUN id: ", run_id) 
-    if training_schedule == "incremental" or training_schedule == "RL" or training_schedule == "random":
+    if training_schedule == "incremental" or training_schedule == "RL" or training_schedule == "random" or training_schedule=="MAB":
         variations = generate_morphologies(config['IN_parameter1'], config['IN_parameter2'], config['incremental_step_sizes'])
     elif training_schedule == "border_incr": 
         variations = generate_border_morphologies(config['IN_parameter1'], config['IN_parameter2'], config['incremental_step_sizes'])

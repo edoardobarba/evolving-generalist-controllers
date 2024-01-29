@@ -9,7 +9,7 @@
     "gscore_test": 5000,
     "filename": "Results_Ant",
     "xml": "/home/edoardo.barba/evolving-generalist-controllers/Ants",
-    "runs": 1,
+    "runs": 24,
     "//comment1": "Parameter1 is upper leg length",
     "IN_parameter1": [0.5, 1.5],
     
@@ -24,5 +24,5 @@
     "actors": -1,
     "parallel_runs_actors": 4,
     "samples_per_cycle": 50,
-    "training_schedule": ["random"]
+    "training_schedule": ["random", "incremental"]
 }
