@@ -57,10 +57,11 @@ class Algo:
         self.par2_range = config['IN_parameter2']
         self.training_schedule = training_schedule
         self.V = np.empty((len(variations), generation+1))
-        self.beta_param = np.empty((len(variations), generation+1), dtype=object)
+        self.beta_param = np.empty((len(variations), generation+1, 2))
         self.gamma = 0.01
         self.alfa = 0.1  
         self.gscore_test = config["gscore_test"]
+        self.evaluations = config['evals']
         if game == "AcrobotEnv":
             self.worst_score = 100
             self.best__score = 0
@@ -118,18 +119,76 @@ class Algo:
 
         return -total_reward
 
+    def multi_evaluate(self, agent: torch.Tensor) -> torch.Tensor:
+
+        s = 0
+        all_rewards = []
+        for param in self.validation_set:
+
+            total_reward = 0
+            if self.game == AntEnv:
+                xml_file = '{}/Ant_{:.2f}_hip_{:.2f}_ankle.xml'.format(self.xml_path, param[0],
+                                                                    param[1])
+                env = self.game(xml_file, render_mode=None, healthy_reward=0)
+            elif self.game == Walker2dEnv:
+                xml_file = '{}/Walker_{:.3f}_thigh_{:.3f}_leg.xml'.format(self.xml_path, param[0],
+                                                                        param[1])
+                env = self.game(xml_file, render_mode=None, healthy_reward=0)
+            elif self.game == "AcrobotEnv":
+                env = gym.make('Acrobot-v1', render_mode = None).unwrapped
+                env.LINK_MASS_1 = param[0]  #: [kg] mass of link 1
+                env.LINK_MASS_2 = param[1]  #: [kg] mass of link 2
+            else:
+                env = self.game(param
+                )
+
+            obs, info = env.reset(seed=random.randint(0, 1000000))
+            done = False
+
+            x = agent.cpu()
+            nn = NeuralNetwork(x.numpy())
+            weights = nn.reshape_layers(self.topology)
+
+            while not done:
+                action = nn.feedforward(weights, self.topology, obs)
+                #action = env.action_space.sample()
+                if self.game == "AcrobotEnv":
+                    action = np.argmax(action)
+                obs, reward, terminated, truncated, info = env.step(action)
+
+                s += 1
+                total_reward += reward
+
+                if s > self.steps:
+                    break
+
+                done = terminated or truncated
+
+            #env.close()
+            all_rewards.append(-total_reward)
+
+        print(all_rewards)
+        return all_rewards
+
+
+ 
+
     def problem(self):
         #print("here1")
+        if self.evaluations==1:
+            objective_func=self.evaluate
+        else: 
+            objective_func=self.multi_evaluate
         problem = Problem(
-            "min",  # minimize the fitness,
-            objective_func=self.evaluate,  # evaluation function
+            objective_sense ="min",  # minimize the fitness,
+            objective_func=objective_func,  # evaluation function
             solution_length=NeuralNetwork.calculate_total_connections(self.topology),
             # NN topology determines the solution_length
             initial_bounds=(self.initial_bounds[0], self.initial_bounds[1]))
             # initial bounds limit the initial solutions
             # num_actors=self.actors)  
         #print("here2")
-        searcher = XNES(problem, stdev_init=self.initial_stdev)
+        searcher = XNES(problem, stdev_init=self.initial_stdev)#, obj_index = 0)
         #print("here3")
         return searcher
 
@@ -184,7 +243,7 @@ class Algo:
 
         if self.training_schedule == "MAB":
             for k in range(len(self.variations)):
-                self.beta_param[k, 0] = (1,1)
+                self.beta_param[k, 0] = [1,1]
 
 
         iter = 1
@@ -220,10 +279,12 @@ class Algo:
 
 
             searcher.step()
-            index_best = searcher.population.argbest()
+            index_best = searcher.population.argbest(obj_index=0)
             xbest_weights = searcher.population[index_best].values
+            generation_best = float(searcher.population.evals[index_best][0])
 
             if current_pop_best_fitness > searcher.status.get('best_eval'):
+                #print(searcher.status.get('best_eval'))
                 current_pop_best_fitness = searcher.status.get('best_eval')
                 xbest_weights_copy = xbest_weights.detach().clone()
                 improved = searcher.status.get('iter')
@@ -231,25 +292,32 @@ class Algo:
             if len(self.validation_set) > 1:
                 if self.game == "AcrobotEnv": 
                     gen_compute_Gscore = 50
-                else: 
+                else:  
                     gen_compute_Gscore = self.gscore_test
-                if ((iter > self.max_eval-gen_compute_Gscore) or self.training_schedule == "RL" or self.training_schedule == "MAB"):
-                    compare = joblib.Parallel(n_jobs=-1)(joblib.delayed(self.comparison)(xbest_weights, i)
-                                                                for i in range(len(generalist_fitness_scores)))
 
-                    #compare = [self.comparison(xbest_weights, i) for i in range(len(generalist_fitness_scores))] 
+                if self.evaluations == 1: 
 
-                    generalist_fitness_scores = np.array(compare)
+                    if ((iter > self.max_eval-gen_compute_Gscore) or self.training_schedule == "RL" or self.training_schedule == "MAB"):
+                        compare = joblib.Parallel(n_jobs=-1)(joblib.delayed(self.comparison)(xbest_weights, i)
+                                                                    for i in range(len(generalist_fitness_scores)))
 
-                    new_generalist_average_fitness = np.mean(generalist_fitness_scores)
-                    new_std = np.std(generalist_fitness_scores)
-                    
-                    new_generalist_average_fitness = new_generalist_average_fitness #+ (0.5*new_std)
+                        #compare = [self.comparison(xbest_weights, i) for i in range(len(generalist_fitness_scores))] 
 
+                        generalist_fitness_scores = np.array(compare)
 
-                else: 
-                    new_generalist_average_fitness = 300
-                    new_std = 300
+                        new_generalist_average_fitness = np.mean(generalist_fitness_scores)
+                        new_std = np.std(generalist_fitness_scores)
+                        
+                        #new_generalist_average_fitness = new_generalist_average_fitness #+ (0.5*new_std)
+
+                    else: 
+                        new_generalist_average_fitness = 300
+                        new_std = 300
+
+                else:
+                    new_generalist_average_fitness = generation_best
+                    # print(new_generalist_average_fitness)
+                    new_std = 0
 
                 generalist_average_fitness_history.append(new_generalist_average_fitness)
                 generalist_new_dev = np.std(generalist_fitness_scores)
@@ -296,10 +364,10 @@ class Algo:
                     for k in range(len(self.variations)): 
                         t = self.beta_param[k, iter-1]
                         t_alfa_beta_0 = self.beta_param[k, 0]
-                        updated_alfa = (1-self.gamma)*t[0] + t_alfa_beta_0[0]
-                        updated_beta = (1-self.gamma)*t[1] + t_alfa_beta_0[1]
+                        updated_alfa = (1-self.gamma)*t[0] + t_alfa_beta_0[0]*self.gamma
+                        updated_beta = (1-self.gamma)*t[1] + t_alfa_beta_0[1]*self.gamma
 
-                        self.beta_param[k, iter] = (updated_alfa, updated_beta)
+                        self.beta_param[k, iter] = [updated_alfa, updated_beta]
 
 
                     # UPDATE alfa beta of sampled variation 
@@ -308,17 +376,10 @@ class Algo:
                     updated_alfa = alfa + r 
                     updated_beta = beta + (1-r)
 
-                    self.beta_param[sampled_index, iter] = (updated_alfa, updated_beta)
+                    self.beta_param[sampled_index, iter] = [updated_alfa, updated_beta]
 
-
-
-                    # print("Updated V:", self.V[sampled_index, iter])
-
-                #print("new_generalist_average_fitness: ", new_generalist_average_fitness)
-
-
-                #print("generalist_average_fitness: ", generalist_average_fitness)
-
+                # print("new generalist_average_fitness", new_generalist_average_fitness)
+                # print("generalist_average_fitness", generalist_average_fitness)
                 if new_generalist_average_fitness < generalist_average_fitness:
                     # test on test set 
                     # test_set_scores = joblib.Parallel(n_jobs=-1)(joblib.delayed(self.comparison)(xbest_weights, i, test=True)
@@ -328,12 +389,12 @@ class Algo:
                     # new_generalist_average_test_fitness = np.mean(generalist_fitness_test_scores)
                     # generalization_capability_test_history.append(new_generalist_average_test_fitness)
 
-
-
                     generalization_capability_history.append(new_generalist_average_fitness)
                     std_history.append(new_std)
                     generalist_average_fitness = new_generalist_average_fitness
                     generalist_old_dev = generalist_new_dev
+
+                    
 
                     good_fitness_scores = generalist_fitness_scores.copy()
                     generalist_weights = xbest_weights.detach().clone()
@@ -342,70 +403,6 @@ class Algo:
                     generalization_capability_history.append(generalization_capability_history[-1])
                     # generalization_capability_test_history.append(generalization_capability_test_history[-1])
                     std_history.append(std_history[-1])
-
-                
-
-                # if self.training_schedule == 'dynamic_gaussian':
-                #     # Check if we have to increase gaussian variance
-                #     if generalist_average_fitness < fitness_step * n_changed_gaussian_variance:
-                        
-
-                #         # # Create a plot
-                #         # sns.scatterplot(x=self.variations[:, 0], y=self.variations[:, 1])
-                #         # plt.title('Morphologies set before')
-                #         # plt.xlabel('X-axis')
-                #         # plt.ylabel('Y-axis')
-                #         # plt.show()
-
-                #         self.gauss_cov = [[2*self.gauss_cov[0][0], 0],[0, 2*self.gauss_cov[1][1]]]
-
-                #         self.variations = generate_samples(self.gauss_mean, self.gauss_cov, len(self.variations))
-                        
-
-                #         # # Create a plot
-                #         # sns.scatterplot(x=self.variations[:, 0], y=self.variations[:, 1])
-                #         # plt.title('Morphologies set after')
-                #         # plt.xlabel('X-axis')
-                #         # plt.ylabel('Y-axis')
-                #         # plt.show()
-
-                #         n_changed_gaussian_variance += 1
-
-
-                # if (searcher.status.get('iter') - improved) % int(np.ceil(self.max_eval * 0.06)) == 0:
-
-                #     if current_pop_best_fitness != prev_pop_best_fitness:
-                #         prev_pop_best_fitness = current_pop_best_fitness
-                #     else:
-                #         good_envs = []
-
-                #         for i in range(len(self.validation_set)):
-                #             if good_fitness_scores[i] < (generalist_average_fitness + generalist_old_dev):
-                #                 good_envs.append(self.validation_set[i])
-                #             else:
-                #                 bad_environments.append(self.validation_set[i])
-
-                #         if len(good_envs) == 0:
-                #             print("primo break")
-                #             break
-                #         elif len(good_envs) == len(self.validation_set):
-                #             print("secondo break")
-                #             break
-
-                #         self.validation_set = np.array(good_envs)
-
-                #         compare = joblib.Parallel(n_jobs=self.actors)(
-                #             joblib.delayed(self.comparison)(generalist_weights, 0, i)
-                #             for i in range(len(self.validation_set)))
-
-                #         generalist_fitness_scores = np.array(compare)
-                #         new_generalist_average_fitness = np.mean(generalist_fitness_scores)
-                #         if new_generalist_average_fitness < generalist_average_fitness:
-                #             good_fitness_scores = generalist_fitness_scores.copy()
-                #         env_counter = len(self.validation_set) - 1
-                #         improved = searcher.status.get('iter')
-
-                #         print(' no_envs : ', len(self.validation_set))
 
 
                 if self.training_schedule == "incremental" or self.training_schedule == "default" or self.training_schedule == "border_incr":
@@ -421,16 +418,21 @@ class Algo:
                 elif self.training_schedule != "RL" and self.training_schedule != "MAB":
                     self.parameters = self.variations[iter-1] #iter-1 because iter starts from 1
 
-                iter+=1
-                #if iter%10==0:
-                #print("ITER: ", iter)
-                
 
-            elif len(self.variations) == 1:
-                #print("current_pop_best_fitness: ", current_pop_best_fitness)
-                generalist_average_fitness = current_pop_best_fitness
-                xbest_weights = xbest_weights_copy
-                generalist_weights = xbest_weights
+
+            # elif len(self.variations) == 1 or self.evaluations>1:
+            #     #print("current_pop_best_fitness: ", current_pop_best_fitness)
+            #     generalist_average_fitness = current_pop_best_fitness
+            #     xbest_weights = xbest_weights_copy
+            #     generalist_weights = xbest_weights
+
+            #     generalist_average_fitness_history.append(generalist_average_fitness)
+
+            #     fitness_std_deviation_history.append(0)
+            #     generalist_min_fitness_history.append(0)
+            #     generalist_max_fitness_history.append(0)
+
+            iter+=1
 
             number_environments.append(len(self.validation_set))
             generation = searcher.status.get('iter')
@@ -554,12 +556,19 @@ class Algo:
             # "heatmap"
 
         if self.training_schedule == "MAB":
+            labels = [str(vec) for vec in self.variations]
+
             # Plotting
             plt.figure(figsize=(10, 6))
-            for i in range(9):
+            for i in range(len(self.variations)):
                 x = np.linspace(0, 1, 100)
-                y = x**(self.beta_param[i, -1][0]) * (1-x)**(self.beta_param[i, -1][1])
-                plt.plot(x, y)
+                y = x**(self.beta_param[i, -1][0]) * (1 - x)**(self.beta_param[i, -1][1])
+                plt.plot(x, y, label=f'{labels[i]}')
+
+            plt.legend()
+            plt.title('Beta Distributions for Variations')
+            plt.xlabel('x')
+            plt.ylabel('Probability Density')
 
             figure_name = "Betas.png"
             plt.savefig(os.path.join(self.path, figure_name))
@@ -568,7 +577,7 @@ class Algo:
 
             beta_history_save_path = os.path.join(save_path, "history_beta.npz")
             #np.savez(save_path, all_history_rewards_IN=np.array(all_history_rewards_IN), avg_rewards_OUT=np.array(all_history_rewards_OUT), avg_rewards_INOUT=np.array(all_history_rewards_INOUT))
-            np.savez_compressed(beta_history_save_path, history_beta=self.beta_param, used_env = np.array(used_env))
+            np.savez(beta_history_save_path, history_beta=self.beta_param, used_env = np.array(used_env))
             
             sns.scatterplot(x=self.variations[:, 0], y=self.variations[:, 1], size=used_env, sizes=(10, 200))
             plt.title(self.training_schedule)

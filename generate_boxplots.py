@@ -36,27 +36,35 @@ from scipy import stats
 
 # BIPED 
 
-train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
-train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
-train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
-train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
-train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
-train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-train_beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
-train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
-train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
-# train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
-train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
-train_random_path = "/home/edoardo.barba/Results_Biped/random/20240123041607"
-train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20240123041607"
+# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
+# train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
+# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+# train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
+# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
+# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
+# train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+train_beta01 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\beta01\20231219092337"
+# train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+# train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+# # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+# train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
+# train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
+train_random_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\20240108110555"
+train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20231219025742"
+train_incremental_30_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240205224118"
+train_incremental_50_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240204175622"
+train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\20240130055434"
 
+# train_MAB_path = "/home/edoardo.barba/Results_Biped/MAB/20240130055434"
 # training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
 # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
-training_schedules = ["random", "incremental"]
-all_train_folders = [train_random_path, train_incremental_path]
+training_schedules = ["incremental", "MAB", "beta01"]
+all_train_folders = [train_incremental_path, train_MAB_path, train_beta01]
+
+
+
+
 
 
 
@@ -88,7 +96,7 @@ all_train_folders = [train_random_path, train_incremental_path]
 
 
 
-save_path = "/home/edoardo.barba/"
+save_path = r"C:\Users\edoar\Documents\GitHub"
 
 def get_significant_combinations(data, save_path, title, significance_levels=[0.05]):
     # Initialise a list of combinations of groups that are significantly different
@@ -359,13 +367,13 @@ all_history_rewards_INOUT = [data['avg_rewards_INOUT'] for data in all_data_load
 
 print(game)    
 if game == "CartPoleEnv":
-    save_path = save_path + "Results_Cart/"
+    save_path = os.path.join(save_path, "Results_Cart/")
 
 elif game == "AcrobotEnv":
     save_path = save_path + "Results_Acrobot/"
 
 elif game == "BipedalWalker":
-    save_path = save_path + "Results_Biped/"
+    save_path = os.path.join(save_path, "Results_Biped")
 
 elif game == "Walker2dEnv":
     save_path = save_path + "Results_Walker/"
@@ -424,7 +432,7 @@ ranks_INOUT = get_rankings(all_history_rewards_INOUT, "INOUT")
 
 
 original_stdout = sys.stdout
-output_file_path = os.path.dirname(save_path) + "/Results.txt"
+output_file_path = os.path.join(os.path.dirname(save_path), "/Results.txt")
 with open(output_file_path, 'w') as f:
     sys.stdout = f  
     print("TRAIN SET: ")

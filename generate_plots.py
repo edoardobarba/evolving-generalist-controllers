@@ -21,11 +21,11 @@ import matplotlib.patches as patches
 
 
 # ANT 
-train_incremental_path = "/home/edoardo.barba/Results_Ant/incremental/20240119201533"
-train_random_path = "/home/edoardo.barba/Results_Ant/random/20240119201533"
+# train_incremental_path = "/home/edoardo.barba/Results_Ant/incremental/20240119201533"
+# train_random_path = "/home/edoardo.barba/Results_Ant/random/20240119201533"
 
-training_schedules = ["random", "incremental"]
-all_train_folders = [train_random_path, train_incremental_path]
+# training_schedules = ["random", "incremental"]
+# all_train_folders = [train_random_path, train_incremental_path]
 
 
 
@@ -48,12 +48,24 @@ all_train_folders = [train_random_path, train_incremental_path]
 # train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
 # train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
 # train_random_path = "/home/edoardo.barba/Results_Biped/random/20240123041607"
-# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20240123041607"
+# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20240130055816"
+train_beta01 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\beta01\20231219092337"
+# train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+# train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+# # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+# train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
+# train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
+# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240125170701"
+train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20231219025742"
+train_incremental_new_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240127034215"
+train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\20240130055434"
 
-# # training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
-# # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
-# training_schedules = ["random", "incremental"]
-# all_train_folders = [train_random_path, train_incremental_path]
+# train_MAB_path = "/home/edoardo.barba/Results_Biped/MAB/20240130055434"
+# training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
+# all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
+training_schedules = ["beta01"]
+all_train_folders = [train_beta01]
 
 
 
@@ -121,7 +133,7 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
         sns.heatmap(pivot_df, vmin=-300, vmax=300, annot=True, fmt=".0f")        
         plt.xlabel('Leg Width')
         plt.ylabel('Leg Height')
-        rect = patches.Rectangle((4, 4), 11, 11, linewidth=3, edgecolor='red', facecolor='none')
+        rect = patches.Rectangle((2, 2), 6, 6, linewidth=3, edgecolor='red', facecolor='none')
         plt.gca().add_patch(rect)
         # Add the red square
         #rect = patches.Rectangle((2, 2), 6, 6, linewidth=2, edgecolor='black', facecolor='none')
@@ -147,8 +159,8 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
 
     if save_path:
         # Split the path by "/"
-        save_path_parts = save_path.split("/")
-
+        save_path_parts = save_path.split("\\")
+        print(save_path)
         # Remove empty strings from the split
         save_path_parts = [part for part in save_path_parts if part]
 
@@ -157,11 +169,11 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
 
         # Loop through the path parts
         for part in save_path_parts:
-            #print(part.lower())
-            if part.lower() in ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "rl", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec", "border_incr", "default", "random"]:
+            print(part.lower())
+            if part.lower() in ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2", "uniform", "rl", "beta01", "beta02", "betawalk01", "betawalk02", "gauss_dec", "border_incr", "default", "random", "mab"]:
                 training_schedule = part
                 break
-
+                
         save_path = os.path.join(save_path, "HeatMap_" + training_schedule + "_" + title + ".png")
         plt.savefig(save_path, dpi=300)
         plt.close()

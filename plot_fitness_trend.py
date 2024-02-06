@@ -20,7 +20,7 @@ from scipy import stats
 
 
 
-# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231213105259"
+train_cauchy1_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\cauchy1\20231219091844"
 # train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231213105259"
 # train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231212113730"
 # train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231212113730"
@@ -35,31 +35,35 @@ from scipy import stats
 
 #NEW TRAIN SET: 
 
-train_random_path = "/home/edoardo.barba/Results_Biped/random/20240123041607"
-train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20240123041607"
+train_random_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\20240108110555"
+train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20231219025742"
+train_incremental_30_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240205224118"
+train_incremental_50_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240204175622"
+train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\20240130055434"
 
+# train_MAB_path = "/home/edoardo.barba/Results_Biped/MAB/20240130055434"
 # training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
 # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
-training_schedules = ["random", "incremental"]
-all_train_folders = [train_random_path, train_incremental_path]
-
-save_path = "/home/edoardo.barba/Results_Biped/fitness_trends1000"
+training_schedules = ["20 neurons", "30 neurons", "50 neurons"]
+all_train_folders = [train_incremental_path, train_incremental_30_path, train_incremental_50_path]
 
 
+
+save_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped"
 
 #print(np.shape(all_data))
 arr_generations = [1000, 2000, 3000, 4000]
 for generations in arr_generations:
     all_data = []
     for train_folder in all_train_folders:
-        runs_folder = train_folder + "/runs/"
+        runs_folder = os.path.join(train_folder, "runs")
         all_runs = os.listdir(runs_folder)
 
         all_train_trends = []
 
         for run in all_runs:
 
-            directory_path = runs_folder + run + "/" + str(generations) + "/generalist_evals"  
+            directory_path = os.path.join(runs_folder, str(run),  str(generations), "generalist_evals")  
 
             if os.path.exists(directory_path):
                 all_files = os.listdir(directory_path)
@@ -97,6 +101,7 @@ for generations in arr_generations:
             plt.tight_layout()
             plt.grid()
 
+
             fig_save_path = all_train_folders[i] + "/fitness_trends" + str(generations) + ".png"
             # Show the plot
             plt.savefig(fig_save_path)
@@ -117,7 +122,7 @@ for generations in arr_generations:
 
 
     line_colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', '#FFA500', '#800080', '#00FFFF', '#FF00FF', 'purple']
-
+    
     # Plot each row of the array
     for i in range(all_means.shape[0]):
         #print("all_means[i]")
@@ -132,10 +137,11 @@ for generations in arr_generations:
     plt.title('Generalization capability over generations')
     plt.tight_layout()
     plt.grid()
+    
+    plt.ylim(-300, 10)
 
     fig_save_path = save_path + "/fitness_trends" + str(generations) + ".png"
     # Show the plot
     plt.savefig(fig_save_path, dpi=300)
     plt.close()
     print("plot saved in ", fig_save_path)
-

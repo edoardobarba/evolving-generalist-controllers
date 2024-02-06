@@ -36,6 +36,9 @@ def single_run(config, run_id, timestamp_str, training_schedule):
     else:
         variations = generate_samples(config['IN_parameter1'], config['IN_parameter2'], num_samples=config['generations'], distr=training_schedule, samples_per_cycle = samples_per_cycle)
     
+    evals = config ['evals']
+
+
     folder_name = config['filename']
     path = folder_name
     path = os.path.join(path, training_schedule)
@@ -87,10 +90,40 @@ def single_run(config, run_id, timestamp_str, training_schedule):
 
     # print("validation set:")
     # print(get_set(config, 'Validation'))
+    if evals == 4:
+        validation_set = []
+        validation_set.append([config['IN_parameter1'][0], config['IN_parameter2'][0]])
+        validation_set.append([config['IN_parameter1'][1], config['IN_parameter2'][0]])
+        validation_set.append([config['IN_parameter1'][0], config['IN_parameter2'][1]])
+        validation_set.append([config['IN_parameter1'][1], config['IN_parameter2'][1]])
+        validation_set=(np.array(validation_set))
+
+        sns.scatterplot(x=validation_set[:, 0], y=validation_set[:, 1], s=200)
+        plt.title("validation set")
+        plt.xlim(config['IN_parameter1'])
+        plt.ylim(config['IN_parameter2'])
+        if config["game"]=="CartPoleEnv":
+            plt.xlabel('Pole Mass (parameter 1)')
+            plt.ylabel('Pole Length (parameter 2)')
+        elif config["game"]=="BipedalWalker":
+            plt.xlabel('Leg Width')
+            plt.ylabel('Leg Height')
+
+        elif config["game"]=="AcrobotEnv":
+            plt.xlabel('Mass1 (parameter 1)')
+            plt.ylabel('Mass2 (parameter 2)')
+        save_plot_path = os.path.join(path, "Validation_set_" + training_schedule + ".png")
+        plt.savefig(save_plot_path)
+        plt.close()
+    else:
+        validation_set=get_set(config, 'VALIDATION')
+
+    print("validation set:")
+    print(validation_set)
 
     run = Algo(game=config['game'], path=run_path, xml_path=config['xml'], variations=variations,
                config=config, generation=generations, run_id=run_id, cluster_id=cluster_count,
-               validation_set=get_set(config, 'VALIDATION'), training_schedule=training_schedule, gauss_mean=mean, gauss_cov=cov, test_set = get_set(config, 'OUT'))
+               validation_set=validation_set, training_schedule=training_schedule, gauss_mean=mean, gauss_cov=cov, test_set = get_set(config, 'OUT'))
     generation, _ = run.main()
 
 
