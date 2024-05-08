@@ -40,10 +40,10 @@ train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601"
 # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
 train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
 train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
-train_random_path = "/home/edoardo.barba/Results_Biped/random/20240108110555"
+train_random_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\ORIGINAL"
 
-training_schedules = ["gaussian1", "beta01"]
-all_train_folders = [train_gaussian1_path, train_beta01]
+training_schedules = ["random"]
+all_train_folders = [train_random_path]
 
 
 ACTORS = -1
@@ -172,7 +172,7 @@ if __name__ == '__main__':
         all_history_rewards_OUT = []
         all_history_rewards_INOUT = []
 
-        generations = 4000
+        generations = 3000
         print("Testing ", generations, "generations")
         for i, run_number in enumerate(runs_folders):
             

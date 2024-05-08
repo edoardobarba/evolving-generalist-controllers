@@ -11,16 +11,17 @@
     "xml": "C:\\Users\\edoar\\Documents\\GitHub\\evolving-generalist-controllers\\Walkers",
     "runs": 1,
     "//comment1": "Parameter1 is upper leg length",
-    "IN_parameter1": [0.25, 0.48],
+    "IN_parameter1": [0.3, 0.425],
     "//comment2": "Parameter2 is lower leg length",
-    "IN_parameter2": [0.3, 0.75],
+    "IN_parameter2": [0.4, 0.65],
     "OUT_parameter1": [0.225, 0.5],
     "OUT_parameter2": [0.25, 0.8], 
     "step_sizes": [0.025, 0.05],
-    "incremental_step_sizes": [0.05, 0.1],
+    "incremental_step_sizes": [0.025, 0.05],
     "testing_step_sizes": [0.025, 0.05],
-    "validation_step_sizes": [0.05, 0.1],
+    "validation_step_sizes": [0.025, 0.05],
     "actors": 4,
     "evals": 1,
-    "training_schedule": ["MAB"]
+    "training_schedule": ["random"]
 }
+

@@ -2,7 +2,7 @@
     "game": "BipedalWalker",
     "maxFitness": -300,
     "nStep": 1000,
-    "NN-struc": [24, 30, 4, 1],
+    "NN-struc": [24, 20, 4, 1],
     "stdev_init": 0.1,
     "initial_bounds": [-0.00001, 0.00001],
     "generations": 3000,
@@ -28,5 +28,5 @@
     "parallel_runs_actors": 4,
     "samples_per_cycle": 50,
     "evals": 1,  
-    "training_schedule": ["incremental"]
+    "training_schedule": ["random"]
 }

@@ -12,12 +12,14 @@ from utils import generate_morphologies
 import sys
 import random
 import matplotlib.pyplot as plt
+import matplotlib
 import seaborn as sns
 import pandas as pd
 import os
 from scipy.stats import ttest_ind
 import statsmodels.stats.api as sms
 from scipy import stats
+from scipy.stats import mannwhitneyu
 
 
 
@@ -36,50 +38,68 @@ from scipy import stats
 
 # BIPED 
 
-# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
-# train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
-# train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
-# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
-# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
-# train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-train_beta01 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\beta01\20231219092337"
-# train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
-# train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
-# # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
-# train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-# train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
-train_random_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\20240108110555"
-train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20231219025742"
-train_incremental_30_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240205224118"
-train_incremental_50_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240204175622"
-train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\20240130055434"
+# train_cauchy1_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\cauchy1\20231219091844"
+# # train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
+# train_gaussian1_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\gaussian1\20231223120018"
+# # train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
+# # train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
+# train_uniform_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\uniform\Discrete_Continous"
+# # train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+# train_beta01 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\beta01\20231219092337"
+# # train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+# train_betawalk01 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\betawalk01\20231221112601" 
+# # train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+# # # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+# train_default_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\default\def"
+# train_borderincr_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\border_incr\20240103134750"
+# train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Walker\incremental\ORIGINAL"
+train_incremental_path_ant = r"C:\Users\edoar\Documents\GitHub\Results_Ant\incremental\20240311120808"
+# # train_incremental_30_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240205224118"
+# train_incremental_9_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\9_variations"
+# # train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Walker\MAB\20240206155145"
+# train_random_path_walk = r"C:\Users\edoar\Documents\GitHub\Results_Walker\random\ORIGINAL"
+train_random_path_ant = r"C:\Users\edoar\Documents\GitHub\Results_Ant\random\20240228142243"
+# train_random_path_9 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\9_morph"
+# train_MAB_path_walk = r"C:\Users\edoar\Documents\GitHub\Results_Walker\MAB\ORIGINAL"
+# train_MAB_path_ant = r"C:\Users\edoar\Documents\GitHub\Results_Ant\MAB\20240228142251"
+# train_MAB_path_9 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\20240130071104"
+# train_random_path_9 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\9_morph"
+# # training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
+# # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
+# # training_schedules = ["Random", "Incremental", "Uniform", "Gaussian", "Beta", "Cauchy", "MAB"]
+# # all_train_folders = [train_random_path, train_incremental_path, train_uniform_path, train_gaussian1_path, train_beta01, train_cauchy1_path, train_MAB_path]
 
-# train_MAB_path = "/home/edoardo.barba/Results_Biped/MAB/20240130055434"
-# training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
-# all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
-training_schedules = ["incremental", "MAB", "beta01"]
-all_train_folders = [train_incremental_path, train_MAB_path, train_beta01]
+# # training_schedules = ["Random", "Uniform", "Gaussian", "Cauchy", "Beta"]
+# # all_train_folders = [train_random_path, train_uniform_path, train_gaussian1_path, train_cauchy1_path, train_beta01]
 
-
-
-
-
-
-
-# WALKER 2D
-
-# # train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
-
-# train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240120035256"
-# train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240120035256"
+# # training_schedules = ["Random", "Incremental", "MAB"]
+# # all_train_folders = [train_random_path_walk, train_incremental_path, train_MAB_path_walk]
 
 
 
-# all_train_folders = [train_random_path, train_incremental_path]
-# training_schedules = ["random", "incremental"]
-# # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path]
+training_schedules = ["Random",  "Incremental"]
+all_train_folders = [train_random_path_ant,  train_incremental_path_ant]
+
+
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+
+matplotlib.rcParams.update({'font.size': 16})  # Adjust the font size as needed
+
+
+
+#WALKER 2D
+
+# train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
+
+# train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Walker\incremental\ORIGINAL"
+# train_random_path  = r"C:\Users\edoar\Documents\GitHub\Results_Walker\random\ORIGINAL"
+# train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Walker\MAB\ORIGINAL"
+
+
+# all_train_folders = [train_random_path, train_incremental_path, train_MAB_path]
+# training_schedules = ["random", "incremental", "MAB"]
+# all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path]
 
 
 # ACROBOT
@@ -114,7 +134,7 @@ def get_significant_combinations(data, save_path, title, significance_levels=[0.
     
     print(significant_combinations)
     return significant_combinations
-    # path_combinations = os.path.join(save_path, "significant_combinations" + title + ".png")
+    # path_combinations = os.path.join(save_path, "significant_combinations" + title + ".pdf")
     # print(path_combinations)
     # plt.savefig(path_combinations, dpi=300)
 
@@ -128,7 +148,7 @@ def plot(game, all_history_rewards, test, save_path):
     print("qui")
     print(np.shape(np.array(all_history_rewards)))
     avg_scores = [np.median(history_rewards, axis=1) for history_rewards in all_history_rewards]
-
+    print(avg_scores)
     print(np.shape(np.array(avg_scores)))
 
     print(np.mean(avg_scores[0]))
@@ -170,7 +190,7 @@ def plot(game, all_history_rewards, test, save_path):
 
 
     ax.set_title(title + " set")
-    ax.set_ylabel('Reward')
+    ax.set_ylabel('Median Performance') 
     if game == "CartPoleEnv":
         ax.set_ylim(-1001, 0)
         ax.axhline(y=-500, color='r', linestyle='--', label='Threshold')
@@ -181,14 +201,14 @@ def plot(game, all_history_rewards, test, save_path):
     #         ax.set_ylim(50, 90)
     #     ax.axhline(y=100, color='r', linestyle='--', label='Threshold')
 
-    elif game == "BipedalWalker":
-        if test == "IN":
-            ax.set_ylim(-280,-125)
+    # elif game == "BipedalWalker":
+    #     if test == "IN":
+    #         ax.set_ylim(-280,-125)
         # elif test == "OUT":
         #     ax.set_ylim(-100,20)
         # else:
         #     ax.set_ylim(-150, 0)
-        # ax.axhline(y=100, color='r', linestyle='--', label='Threshold')
+    #    ax.axhline(y=-300, color='r', linestyle='--', label='Threshold')
             
     # elif game == Walker2dEnv:
     #     if test == "IN":
@@ -200,15 +220,7 @@ def plot(game, all_history_rewards, test, save_path):
     #     #ax.axhline(y=100, color='r', linestyle='--', label='Threshold')
 
 
-    plt.tight_layout()
-    plt.grid(axis='y')
-    
 
-    save_box_path = os.path.join(save_path, "Boxplot_" + title + ".png")
-    print(save_box_path)
-    plt.savefig(save_box_path, dpi=300)
-
-    plt.close()
 
     significant_combinations = get_significant_combinations(data, save_path, test)
     # Create an empty 2D array for p-values
@@ -219,6 +231,44 @@ def plot(game, all_history_rewards, test, save_path):
         i, j = entry[0]
         p_value = entry[1]
         p_values[i][j] = p_value
+    # Set significance levels
+    alpha_1 = 0.05
+    alpha_2 = 0.001
+    offset = 20  # Increase this value as needed
+
+    # After creating the boxplot
+    bp = ax.boxplot(data, labels=labels)
+    # Find the maximum y-value across all the boxplots
+    max_y_values = [np.max(bp['whiskers'][i*2+1].get_ydata()) for i in range(len(bp['boxes']))]
+    max_y = max(max_y_values)
+
+    # Loop over pairs of boxes
+    for i in range(len(bp['boxes'])):
+        for j in range(i+1, len(bp['boxes'])):
+            # If the boxes are significantly different, add a marker above them
+            if p_values[i, j] <= alpha_1:
+                # Stagger the x-coordinates for the lines
+                x_coords = [i+1, j+1 ]
+                # Add a line and a marker above the boxes
+                ax.plot(x_coords, [max_y + offset, max_y + offset], color='k')
+                # Choose the marker based on the p-value
+                marker = '**' if p_values[i, j] < alpha_2 else '*'
+                ax.text((i+1 + j+1) / 2, max_y + offset + 2, marker, ha='center', color='r')
+                offset += 20  # Increase the offset for the next pair
+
+
+
+
+
+    plt.tight_layout()
+    plt.grid(axis='y')
+    
+
+    save_box_path = os.path.join(save_path, "Boxplot_" + title + ".pdf")
+    print(save_box_path)
+    plt.savefig(save_box_path, format="pdf")
+
+    plt.close()
 
     # Create a mask for p-values < 0.05
     mask = p_values < 0.05
@@ -240,7 +290,7 @@ def plot(game, all_history_rewards, test, save_path):
                 
     plt.title('Heatmap of p-values (< 0.05)')
 
-    plt.savefig(os.path.join(save_path, "significant_heatmap_" + title + ".png"), dpi=300)
+    plt.savefig(os.path.join(save_path, "significant_heatmap_" + title + ".pdf"), format="pdf")
     plt.close()
 
 
@@ -376,7 +426,7 @@ elif game == "BipedalWalker":
     save_path = os.path.join(save_path, "Results_Biped")
 
 elif game == "Walker2dEnv":
-    save_path = save_path + "Results_Walker/"
+    save_path = save_path + "/Results_Walker/"
 
 # print(np.mean(np.mean(all_history_rewards_IN[0], axis=1)))
 # print(np.shape(np.mean(all_history_rewards_IN[0], axis=1)))
@@ -390,19 +440,24 @@ INOUT_variations = utils.get_set(config, test_set="INOUT")
 # print("IN")
 # print(IN_variations)
 # print("INOUT")
-#print(len(INOUT_variations))
+print("len(INOUT)", len(INOUT_variations))
+print("len(IN)", len(IN_variations))
+print("len(OUT)", len(OUT_variations))
 
 all_history_rewards_IN = all_history_rewards_INOUT
 all_history_rewards_OUT = all_history_rewards_INOUT
 
 #print(np.shape(all_history_rewards_INOUT))
-
+print("IN variations: ", IN_variations)
+print("INOUT variations: ", INOUT_variations)
 indices_to_delete_IN = []
 indices_to_delete_OUT = []
 for i in range(len(INOUT_variations)): 
     IN = False
     for j in range(len(IN_variations)):
-        if IN_variations[j][0] == INOUT_variations[i][0] and IN_variations[j][1] == INOUT_variations[i][1]:
+        print(IN_variations[j][0], INOUT_variations[i][0])
+        print(IN_variations[j][1], INOUT_variations[i][1])
+        if round(IN_variations[j][0],1) == round(INOUT_variations[i][0],1) and round(IN_variations[j][1],1) == round(INOUT_variations[i][1],1):
             IN = True
     if not IN: 
         indices_to_delete_IN.append(i)
@@ -415,8 +470,8 @@ all_history_rewards_IN = np.delete(all_history_rewards_IN, indices_to_delete_IN,
 all_history_rewards_OUT = np.delete(all_history_rewards_OUT, indices_to_delete_OUT, axis=2)
             
 
-print(np.shape(all_history_rewards_IN))
-print(np.shape(all_history_rewards_OUT))
+print("shape(IN) ", np.shape(all_history_rewards_IN))
+print("shape(OUT) ", np.shape(all_history_rewards_OUT))
 
 # Plotting
 plot(game, all_history_rewards_IN, test="IN", save_path=save_path)
@@ -432,13 +487,14 @@ ranks_INOUT = get_rankings(all_history_rewards_INOUT, "INOUT")
 
 
 original_stdout = sys.stdout
-output_file_path = os.path.join(os.path.dirname(save_path), "/Results.txt")
+output_file_path = os.path.join(save_path, "Results.txt")
+print(output_file_path)
 with open(output_file_path, 'w') as f:
     sys.stdout = f  
     print("TRAIN SET: ")
     print(np.array([np.std(history_rewards, axis=1) for history_rewards in all_history_rewards_IN]))
 
-    all_avg_scores_IN = [np.mean(history_rewards, axis=1) for history_rewards in all_history_rewards_IN]
+    all_avg_scores_IN = [np.median(history_rewards, axis=1) for history_rewards in all_history_rewards_IN]
     medians_IN = [np.median(avg_scores) for avg_scores in all_avg_scores_IN]
     avgs_IN = [np.mean(avg_scores) for avg_scores in all_avg_scores_IN]
     std_IN = np.mean(np.array([np.std(history_rewards, axis=1) for history_rewards in all_history_rewards_IN]), axis=1)
@@ -459,7 +515,7 @@ with open(output_file_path, 'w') as f:
 
     print("")
     print("TEST SET: ")
-    all_avg_scores_OUT = [np.mean(history_rewards, axis=1) for history_rewards in all_history_rewards_OUT]
+    all_avg_scores_OUT = [np.median(history_rewards, axis=1) for history_rewards in all_history_rewards_OUT]
     medians_OUT = [np.median(avg_scores) for avg_scores in all_avg_scores_OUT]
     avgs_OUT = [np.mean(avg_scores) for avg_scores in all_avg_scores_OUT]
     std_OUT = np.mean(np.array([np.std(history_rewards, axis=1) for history_rewards in all_history_rewards_OUT]), axis=1)
@@ -475,6 +531,26 @@ with open(output_file_path, 'w') as f:
     print("STD")
     for i, schedule in enumerate(training_schedules):
         print(schedule, std_OUT[i])
+
+    print("TRAIN+TEST SET: ")
+    all_avg_scores_INOUT = [np.median(history_rewards, axis=1) for history_rewards in all_history_rewards_INOUT]
+    medians_INOUT = [np.median(avg_scores) for avg_scores in all_avg_scores_INOUT]
+    avgs_INOUT = [np.mean(avg_scores) for avg_scores in all_avg_scores_INOUT]
+    std_INOUT = np.mean(np.array([np.std(history_rewards, axis=1) for history_rewards in all_history_rewards_INOUT]), axis=1)
+    print("MEDIANS")
+    for i, schedule in enumerate(training_schedules):
+        print(schedule, medians_INOUT[i])
+
+    print("AVGS")
+    for i, schedule in enumerate(training_schedules):
+        print(schedule, avgs_INOUT[i])
+
+
+    print("STD")
+    for i, schedule in enumerate(training_schedules):
+        print(schedule, std_INOUT[i])
+
+
 
     print("")
     print("RANKING BASED ON MEDIAN")

@@ -252,7 +252,7 @@ class Algo:
         start_time = time.time()
         while generation < self.max_eval:
             
-            print("ITER: ", iter)
+            #print("ITER: ", iter)
             if self.training_schedule == "RL":
                 epsilon = 0.1  # Set your epsilon value here
                 
@@ -453,7 +453,7 @@ class Algo:
 
             
             if self.game == CartPoleEnv or self.game == "AcrobotEnv":
-                if generation%20==0:
+                if generation%100==0:
                     print("Saving data...")
                     evals = pandas_logger.to_dataframe()
                     evals['no_envs'] = number_environments

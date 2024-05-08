@@ -16,58 +16,55 @@ import pandas as pd
 import os
 from scipy import stats
 import matplotlib.patches as patches
+import matplotlib
 
 
 
+train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Ant\MAB\20240228142251"
 
-# ANT 
-# train_incremental_path = "/home/edoardo.barba/Results_Ant/incremental/20240119201533"
-# train_random_path = "/home/edoardo.barba/Results_Ant/random/20240119201533"
-
-# training_schedules = ["random", "incremental"]
-# all_train_folders = [train_random_path, train_incremental_path]
-
+all_train_folders = [train_MAB_path]
+training_schedules = ["MAB"]
 
 
 
 
 # BIPEDAL WALKER 
 
-# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
+train_cauchy1_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\cauchy1\20231219091844"
 # train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+train_gaussian1_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\gaussian1\20231223120018"
 # train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
 # train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
-# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
+train_uniform_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\uniform\Discrete_Continous"
 # train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-# train_beta01 = "/home/edoardo.barba/Results_Biped/beta01/20231219092337"
-# train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
-# train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
-# # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
-# train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-# train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
-# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240123041607"
-# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20240130055816"
 train_beta01 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\beta01\20231219092337"
 # train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+train_betawalk01 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\betawalk01\20231221112601" 
 # train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
 # # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
-# train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-# train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
-# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240125170701"
-train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20231219025742"
-train_incremental_new_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240127034215"
-train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\20240130055434"
-
-# train_MAB_path = "/home/edoardo.barba/Results_Biped/MAB/20240130055434"
+train_default_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\default\def"
+train_borderincr_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\border_incr\20240103134750"
+train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Walker\incremental\ORIGINAL"
+# train_incremental_30_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240205224118"
+train_incremental_9_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\9_variations"
+# train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Walker\MAB\20240206155145"
+train_random_path_ant = r"C:\Users\edoar\Documents\GitHub\Results_Ant\random\20240228142243"
+train_random_path_walker = r"C:\Users\edoar\Documents\GitHub\Results_Walker\random\ORIGINAL"
+train_random_path_9 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\9_morph"
+train_MAB_path_ant = r"C:\Users\edoar\Documents\GitHub\Results_Ant\MAB\20240228142251"
+train_MAB_path_walker = r"C:\Users\edoar\Documents\GitHub\Results_Walker\MAB\ORIGINAL"
+train_MAB_path_9 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\20240130071104"
+train_random_path_9 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\9_morph"
 # training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
 # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
-training_schedules = ["beta01"]
-all_train_folders = [train_beta01]
+# training_schedules = ["Random", "Incremental", "Uniform", "Gaussian", "Beta", "Cauchy"]
+# all_train_folders = [train_random_path, train_incremental_path, train_uniform_path, train_gaussian1_path, train_beta01, train_cauchy1_path]
+
+training_schedules = ["Random", "MAB"]
+all_train_folders = [train_random_path_walker, train_MAB_path_walker]
 
 
+matplotlib.rcParams.update({'font.size': 13})  # Adjust the font size as needed
 
 # WALKER 2D
 
@@ -96,7 +93,7 @@ all_train_folders = [train_beta01]
 # all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path]
 
 
-save_path = "/home/edoardo.barba/Results_Biped"
+# save_path = "/home/edoardo.barba/Results_Biped"
 SEED=0
 
 def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
@@ -131,8 +128,8 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
 
     elif game=="BipedalWalker":
         sns.heatmap(pivot_df, vmin=-300, vmax=300, annot=True, fmt=".0f")        
-        plt.xlabel('Leg Width')
-        plt.ylabel('Leg Height')
+        plt.xlabel('Leg Width', fontsize=20)
+        plt.ylabel('Leg Length', fontsize=20)
         rect = patches.Rectangle((2, 2), 6, 6, linewidth=3, edgecolor='red', facecolor='none')
         plt.gca().add_patch(rect)
         # Add the red square
@@ -140,19 +137,19 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
         #plt.gca().add_patch(rect)
     elif game=="Walker2dEnv":
         sns.heatmap(pivot_df, vmin=-1700, vmax=0, annot=True, fmt=".0f")    
-        plt.xlabel('Upper leg length')
-        plt.ylabel('Lower leg length')
-        rect = patches.Rectangle((1, 1), 10, 10, linewidth=3, edgecolor='red', facecolor='none')
+        plt.xlabel('Upper Leg Length', fontsize=20)
+        plt.ylabel('Lower Leg Length', fontsize=20)
+        rect = patches.Rectangle((3, 3), 6, 6, linewidth=3, edgecolor='red', facecolor='none')
         plt.gca().add_patch(rect)
 
     elif game=="AntEnv":
-        sns.heatmap(pivot_df, annot=True, fmt=".0f")    
-        # plt.xlabel('Upper leg length')
-        # plt.ylabel('Lower leg length')
-        rect = patches.Rectangle((1, 1), 10, 10, linewidth=3, edgecolor='red', facecolor='none')
+        sns.heatmap(pivot_df, vmin=-4600, vmax=0, annot=True, fmt=".0f")    
+        plt.xlabel('Upper Leg Length', fontsize=20)
+        plt.ylabel('Lower Leg Length', fontsize=20)
+        rect = patches.Rectangle((2,2), 6, 6, linewidth=3, edgecolor='red', facecolor='none')
         plt.gca().add_patch(rect)
         
-    plt.title(title)
+    #plt.title(title)
 
     #plt.axvline(x=0.05, color='red', linestyle='--', linewidth=2)  # Adjust color, linestyle, and linewidth as needed
     plt.tight_layout()
@@ -174,8 +171,8 @@ def plot_heatmap(json_filename, all_variations, scores, title, save_path=None):
                 training_schedule = part
                 break
                 
-        save_path = os.path.join(save_path, "HeatMap_" + training_schedule + "_" + title + ".png")
-        plt.savefig(save_path, dpi=300)
+        save_path = os.path.join(save_path, "HeatMap_" + training_schedule + "_" + title + ".pdf")
+        plt.savefig(save_path, format="pdf")
         plt.close()
     else:
         plt.show()
@@ -238,7 +235,7 @@ if __name__ == "__main__":
 
         #plot_heatmap(game, IN_variations, all_history_rewards_IN, title='IN', save_path=plots_path)
         #plot_heatmap(game, OUT_variations, all_history_rewards_OUT, title='OUT', save_path=plots_path)
-        plot_heatmap(game, INOUT_variations, all_history_rewards_INOUT, title='TRAIN+TEST', save_path=plots_path)
+        plot_heatmap(game, INOUT_variations, all_history_rewards_INOUT, title=str(game), save_path=plots_path)
 
     #print(stats.kruskal(all_ts_avgs_IN[0], all_ts_avgs_IN[1], all_ts_avgs_IN[2], all_ts_avgs_IN[3], all_ts_avgs_IN[4], all_ts_avgs_IN[5]))
     

@@ -17,7 +17,10 @@ import os
 from scipy.stats import ttest_ind
 import statsmodels.stats.api as sms
 from scipy import stats
+import matplotlib
 from utils import generate_border_morphologies
+
+matplotlib.rcParams.update({'font.size': 16})  # Adjust the font size as needed
 
 
 def count_changes(column):
@@ -43,8 +46,7 @@ def list_folders(path):
     return folders
 
 
-train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\20240130071104"
-
+train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\36_var"
 
 if __name__ == '__main__':
     with open(str(sys.argv[1])) as json_file:
@@ -97,6 +99,8 @@ if __name__ == '__main__':
 
     print(variations)
     data = {'Parameter 1': rounded_param1_values, 'Parameter 2': rounded_param2_values, 'Reward': mean_used}
+
+    print(len(rounded_param1_values), len(rounded_param2_values), len(mean_used))
     df = pd.DataFrame(data)
     #print(df)
     pivot_df = df.pivot(index='Parameter 2', columns='Parameter 1', values='Reward')
@@ -105,15 +109,23 @@ if __name__ == '__main__':
     plt.figure(figsize=(10, 7))
 
 
-    sns.heatmap(pivot_df, cmap='Blues', annot=True, fmt=".0f")        
-    plt.xlabel('Leg Width')
-    plt.ylabel('Leg Height')
+    sns.heatmap(pivot_df, cmap='Blues', annot=True, fmt=".0f") 
+    if config['game'] == "BipedalWalker":       
+        plt.xlabel('Leg Width')
+        plt.ylabel('Leg Height')
+    elif config['game'] == "Walker2dEnv":
+        plt.xlabel('Upper Leg Length')
+        plt.ylabel('Lower Leg Length')
 
-    plt.title("used env")
+    elif config['game'] == "AntEnv":
+        plt.xlabel('Upper Leg Length')
+        plt.ylabel('Lower Leg Length')
+
+    #plt.title("Morphologies Frequency Selection")
 
     #plt.axvline(x=0.05, color='red', linestyle='--', linewidth=2)  # Adjust color, linestyle, and linewidth as needed
     plt.tight_layout()
-    plt.savefig(train_MAB_path + "/heatmap_used_env.png")
+    plt.savefig(train_MAB_path + "/heatmap_used_env.pdf", format="pdf")
     plt.close()
 
 
@@ -145,8 +157,8 @@ if __name__ == '__main__':
     all_mean_array = []
     for i, run_number in enumerate(runs_folders):
         run_path = os.path.join(runs_folder_path, run_number)
-        generation_run_folder_path = os.path.join(run_path, "3000")
-        print("generation_run_folder_path", generation_run_folder_path)
+        generation_run_folder_path = os.path.join(run_path, "5000")
+        #print("generation_run_folder_path", generation_run_folder_path)
         history_beta_file = np.load(generation_run_folder_path + "/history_beta.npz")
         history_beta = history_beta_file['history_beta']
         #mean_array = np.mean(history_beta, axis=1)
@@ -156,47 +168,83 @@ if __name__ == '__main__':
     mean_array = np.mean(np.array(all_mean_array), axis=0)
     print(np.shape(mean_array))
 
-    import plotly.graph_objects as go
+    sns.scatterplot(x=variations[:, 0], y=variations[:, 1], size=np.mean(np.array(all_count_array), axis=0), sizes=(10, 200))
 
-    # Assuming data_array is your array
-    # data_array = np.random.rand(9, 3001, 2)  # example array
+    plt.xlim(config['IN_parameter1'])
+    plt.ylim(config['IN_parameter2'])
+    # Remove the legend
+    plt.legend().set_visible(False)
 
-    # Create a figure
-    fig = go.Figure()
-    labels = [str(vec) for vec in variations]
+    save_plot_path = os.path.join(train_MAB_path, "Variations_used")
+    plt.savefig(save_plot_path)
+    plt.close()
 
-    # Add traces for each index along the second dimension
-    for i in range(mean_array.shape[1]):
-        fig.add_trace(go.Scatter(visible=False, x=labels, y=mean_array[:, i, 0], name='alpha'))
-        fig.add_trace(go.Scatter(visible=False, x=labels, y=mean_array[:, i, 1], name='beta'))
 
-    # Make the first traces visible
-    fig.data[0].visible = True
-    fig.data[1].visible = True
+    sum_array = np.sum(mean_array, axis=2)
+    ratio_array = mean_array[:, :, 0] / (mean_array[:, :, 0] + mean_array[:, :, 1])
+            
+    print(np.shape(ratio_array))
 
-    # Create slider steps
-    steps = []
-    for i in range(0, len(fig.data), 2):
-        step = dict(
-            method="update",
-            args=[{"visible": [False] * len(fig.data)},
-                {"title": "Plot for index " + str(i//2)}],
-        )
-        step["args"][0]["visible"][i] = True  # Toggle i'th trace to "visible"
-        step["args"][0]["visible"][i+1] = True  # Toggle i+1'th trace to "visible"
-        steps.append(step)
 
-    # Create the slider
-    sliders = [dict(
-        active=0,
-        currentvalue={"prefix": "Index: "},
-        pad={"t": 50},
-        steps=steps
-    )]
 
-    fig.update_layout(sliders=sliders)
 
-    fig.show()
+
+
+    plt.figure(figsize=(10, 7))
+    plt.plot(ratio_array.T, label=labels) 
+
+
+    plt.xlabel('Generations')
+    plt.ylabel('Expected Value')
+    plt.title("Expected Value for each task")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(train_MAB_path + "/exp_value.png")
+    plt.close()
+
+    # import plotly.graph_objects as go
+
+    # # Assuming data_array is your array
+    # # data_array = np.random.rand(9, 3001, 2)  # example array
+
+    # # Create a figure
+    # fig = go.Figure()
+    # labels = [str(vec) for vec in variations]
+
+
+
+    # # Add traces for each index along the second dimension
+    # for i in range(mean_array.shape[1]):
+    #     fig.add_trace(go.Scatter(visible=False, x=labels, y=mean_array[:, i, 0], name='alpha'))
+    #     fig.add_trace(go.Scatter(visible=False, x=labels, y=mean_array[:, i, 1], name='beta'))
+
+    # # Make the first traces visible
+    # fig.data[0].visible = True
+    # fig.data[1].visible = True
+
+    # # Create slider steps
+    # steps = []
+    # for i in range(0, len(fig.data), 2):
+    #     step = dict(
+    #         method="update",
+    #         args=[{"visible": [False] * len(fig.data)},
+    #             {"title": "Plot for index " + str(i//2)}],
+    #     )
+    #     step["args"][0]["visible"][i] = True  # Toggle i'th trace to "visible"
+    #     step["args"][0]["visible"][i+1] = True  # Toggle i+1'th trace to "visible"
+    #     steps.append(step)
+
+    # # Create the slider
+    # sliders = [dict(
+    #     active=0,
+    #     currentvalue={"prefix": "Index: "},
+    #     pad={"t": 50},
+    #     steps=steps
+    # )]
+
+    # fig.update_layout(sliders=sliders)
+
+    # fig.show()
 
 
 
@@ -204,17 +252,17 @@ if __name__ == '__main__':
     
 
     # Plotting
-    plt.figure(figsize=(10, 6))
-    for i in range(len(variations)):
-        x = np.linspace(0, 1, 100)
-        y = x**(mean_array[i][0]) * (1 - x)**(mean_array[i][1])
-        plt.plot(x, y, label=f'{labels[i]}')
+    # plt.figure(figsize=(10, 6))
+    # for i in range(len(variations)):
+    #     x = np.linspace(0, 1, 100)
+    #     y = x**(mean_array[i][0]) * (1 - x)**(mean_array[i][1])
+    #     plt.plot(x, y, label=f'{labels[i]}')
 
-    plt.legend()
-    plt.title('Beta Distributions for Variations')
-    plt.xlabel('x')
-    plt.ylabel('Probability Density')
+    # plt.legend()
+    # plt.title('Beta Distributions for Variations')
+    # plt.xlabel('x')
+    # plt.ylabel('Probability Density')
 
-    figure_name = "Betas.png"
-    plt.savefig(os.path.join(train_MAB_path, figure_name))
-    plt.close()
+    # figure_name = "Betas.png"
+    # plt.savefig(os.path.join(train_MAB_path, figure_name))
+    # plt.close()

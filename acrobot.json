@@ -4,6 +4,7 @@
     "nStep": 200,
     "NN-struc": [6, 20, 3, 1],
     "stdev_init": 0.1,
+    "gscore_test": 100,
     "initial_bounds": [-0.00001, 0.00001],
     "generations": 100,
     "filename": "Results_Acrobot",
@@ -15,11 +16,12 @@
     "IN_parameter2": [0.3, 0.8],
     "OUT_parameter1": [0.1, 1],
     "OUT_parameter2": [0.1, 1],
-    "incremental_step_sizes": [0.1, 0.1],
+    "incremental_step_sizes": [0.05, 0.05],
     "testing_step_sizes": [0.1, 0.1],
     "validation_step_sizes": [0.1, 0.1],
     "actors": -1,
     "parallel_runs_actors": -1,
     "samples_per_cycle": 50,
-    "training_schedule": ["incremental", "random", "beta01"]
+    "evals":1,
+    "training_schedule": ["incremental"]
 }

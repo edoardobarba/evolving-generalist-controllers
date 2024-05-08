@@ -21,31 +21,30 @@ from scipy import stats
 
 
 train_cauchy1_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\cauchy1\20231219091844"
-# train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231213105259"
-# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231212113730"
-# train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231212113730"
-# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231212113730"
-# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231213105259"
-# train_RL_path = "/home/edoardo.barba/Results_Biped/RL/20231214142613"  #NEW RL WITH AVERAGE
-# train_beta1 = "/home/edoardo.barba/Results_Biped/beta1/20231213105322"
-# train_beta2 = "/home/edoardo.barba/Results_Biped/beta2/20231213105322"
-# train_betawalk1 = "/home/edoardo.barba/Results_Biped/betawalk1/20231214142613" #NEW BETAWALK
-# train_betawalk2 = "/home/edoardo.barba/Results_Biped/betawalk2/20231214142613" #NEW BETAWALK
-# train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231214143701"
-
-#NEW TRAIN SET: 
-
-train_random_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\20240108110555"
-train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20231219025742"
-train_incremental_30_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240205224118"
-train_incremental_50_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240204175622"
-train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\20240130055434"
-
+# train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
+train_gaussian1_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\gaussian1\20231223120018"
+# train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
+# train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
+train_uniform_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\uniform\Discrete_Continous"
+# train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
+train_beta01 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\beta01\20231219092337"
+# train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
+# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+# train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
+# # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
+train_default_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\default\G_score_graph"
+# train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
+train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\ORIGINAL"
+# train_incremental_30_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240205224118"
+train_incremental_50_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\nn_50"
+# train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Walker\MAB\20240206155145"
+train_random_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\ORIGINAL"
 # train_MAB_path = "/home/edoardo.barba/Results_Biped/MAB/20240130055434"
 # training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
 # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
-training_schedules = ["20 neurons", "30 neurons", "50 neurons"]
-all_train_folders = [train_incremental_path, train_incremental_30_path, train_incremental_50_path]
+training_schedules = ["Default", "Incremental"]
+all_train_folders = [train_default_path, train_incremental_path]
+
 
 
 
@@ -138,7 +137,7 @@ for generations in arr_generations:
     plt.tight_layout()
     plt.grid()
     
-    plt.ylim(-300, 10)
+    # plt.ylim(-300, 10)
 
     fig_save_path = save_path + "/fitness_trends" + str(generations) + ".png"
     # Show the plot

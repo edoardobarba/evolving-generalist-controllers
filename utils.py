@@ -229,7 +229,7 @@ def generate_samples(parameter1_range, parameter2_range, num_samples, distr, sam
         return np.array(all_samples)
     
     elif distr == "default":
-        return np.array([[17,44]])
+        return np.array([[8,34]])
     
 
 def get_set(config, test_set):

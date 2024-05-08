@@ -14,6 +14,9 @@ from concurrent.futures import ProcessPoolExecutor
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import gaussian_kde
+import matplotlib
+
 
 def single_run(config, run_id, timestamp_str, training_schedule):
     print("Running single_run with run_id={}, training_schedule={}".format(run_id, training_schedule))
@@ -50,27 +53,64 @@ def single_run(config, run_id, timestamp_str, training_schedule):
 
 
     if run_id==0:
-        if training_schedule == "betawalk01" or training_schedule == "betawalk02": 
-            indices = np.arange(len(variations))
-            hue_values = indices // samples_per_cycle
-            sns.scatterplot(x=variations[:, 0], y=variations[:, 1], hue=hue_values, legend=False)
+        # if training_schedule == "betawalk01" or training_schedule == "betawalk02": 
+        #     indices = np.arange(len(variations))
+        #     hue_values = indices // samples_per_cycle
+        #     sns.scatterplot(x=variations[:, 0], y=variations[:, 1], hue=hue_values, legend=False)
 
-        sns.scatterplot(x=variations[:, 0], y=variations[:, 1])
-        plt.title(training_schedule)
+        #sns.scatterplot(x=variations[:, 0], y=variations[:, 1])
+
+        # Calculate the point density
+        if training_schedule == "random" or training_schedule == "MAB" or training_schedule=="incremental" or training_schedule=="border_incr":
+            fig, ax = plt.subplots()
+            ax.scatter(variations[:, 0], variations[:, 1], s=50)
+        else: 
+            xy = np.vstack([variations[:, 0],variations[:, 1]])
+            z = gaussian_kde(xy)(xy)
+
+            fig, ax = plt.subplots()
+            ax.scatter(variations[:, 0], variations[:, 1], s=30)  # Decrease the value of s to make points smaller
+        
+
+        # Create a 2D histogram
+        # plt.hist2d(variations[:,0], variations[:,1], bins=(50, 50), cmap=plt.cm.jet)
+        # plt.colorbar(label='Density')
+        # plt.title('2D Histogram')
+        # plt.xlabel('Parameter 1')
+        # plt.ylabel('Parameter 2')
+        # plt.show()
+
+        # # Create a kernel density estimation plot
+        # sns.kdeplot(x=variations[:,0], y=variations[:,1], cmap="jet", fill=True)
+        # plt.title('Kernel Density Estimation Plot')
+        # plt.xlabel('Parameter 1')
+        # plt.ylabel('Parameter 2')
+        # plt.show()
+        # print(variations[:, 0])
+        # print(variations[:, 1])
+
+
+        #plt.title(training_schedule)
         plt.xlim(config['IN_parameter1'])
         plt.ylim(config['IN_parameter2'])
         if config["game"]=="CartPoleEnv":
             plt.xlabel('Pole Mass (parameter 1)')
             plt.ylabel('Pole Length (parameter 2)')
         elif config["game"]=="BipedalWalker":
-            plt.xlabel('parameter 1')
-            plt.ylabel('parameter 2')
+            plt.xlabel('Leg Width', fontsize=16)
+            plt.ylabel('Leg Length', fontsize=16)
+
+        elif config["game"]=="Walker2dEnv" or config["game"]=="AntEnv":
+            plt.xlabel('Lower Leg Length', fontsize=16)
+            plt.ylabel('Upper Leg Length', fontsize=16)
 
         elif config["game"]=="AcrobotEnv":
             plt.xlabel('Mass1 (parameter 1)')
             plt.ylabel('Mass2 (parameter 2)')
-        save_plot_path = os.path.join(path, "Variations_generated_" + training_schedule + ".png")
-        plt.savefig(save_plot_path)
+
+        save_plot_path = os.path.join(path, "Variations_generated_" + training_schedule + ".pdf")
+        #plt.show()
+        plt.savefig(save_plot_path, format="pdf")
         plt.close()
 
     filename = "config.json"

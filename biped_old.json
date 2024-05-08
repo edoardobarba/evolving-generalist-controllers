@@ -27,5 +27,5 @@
     "actors": -1,
     "parallel_runs_actors": 4,
     "samples_per_cycle": 50,
-    "training_schedule": ["incremental", "random"]
+    "training_schedule": ["betawalk1"]
 }

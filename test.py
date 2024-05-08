@@ -24,114 +24,42 @@ import joblib
 
 
 
-# # ANT 
-# train_incremental_path = "/home/edoardo.barba/Results_Ant/incremental/20240119201533"
-# train_random_path = "/home/edoardo.barba/Results_Ant/random/20240119201533"
 
-# training_schedules = ["random", "incremental"]
-# all_train_folders = [train_random_path, train_incremental_path]
-
-
-
-
-
-# BIPEDAL WALKER 
-
-# train_cauchy1_path = "/home/edoardo.barba/Results_Biped/cauchy1/20231219091844"
+train_cauchy1_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\cauchy1\20231219091844"
 # train_cauchy2_path = "/home/edoardo.barba/Results_Biped/cauchy2/20231219091844"
-# train_gaussian1_path = "/home/edoardo.barba/Results_Biped/gaussian1/20231223120018"
+train_gaussian1_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\gaussian1\20231223120018"
 # train_gaussian2_path = "/home/edoardo.barba/Results_Biped/gaussian2/20231223120018"
 # train_incremental_path = "/home/edoardo.barba/Results_Biped/incremental/20231219025742"
-# train_uniform_path = "/home/edoardo.barba/Results_Biped/uniform/20231219091844"
+train_uniform_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\uniform\Discrete_Continous"
 # train_RL_path = "/home/edoardo.barba/Results_Biped_old/RL/20231215114621" 
-# train_beta01 = "/home/edoardo.barba/Results_Biped_old/beta1"
-# # train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-# # train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
-# # train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
-# # # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
-# # train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-# # train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
-# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240125170701"
-train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240205224118"
 train_beta01 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\beta01\20231219092337"
 # train_beta02 = "/home/edoardo.barba/Results_Biped/beta02/20231219092337"
-# train_betawalk01 = "/home/edoardo.barba/Results_Biped/betawalk01/20231221112601" 
+train_betawalk01 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\betawalk01\20231221112601" 
 # train_betawalk02 = "/home/edoardo.barba/Results_Biped/betawalk02/20231221112601" 
 # # train_gauss_dec = "/home/edoardo.barba/Results_Biped/gauss_dec/20231223120018"
-# train_default_path = "/home/edoardo.barba/Results_Biped/default/20240103141803"
-# train_borderincr_path = "/home/edoardo.barba/Results_Biped/border_incr/20240103134750"
-# train_random_path = "/home/edoardo.barba/Results_Biped/random/20240125170701"
-train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\20240130055434"
+train_default_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\default\def"
+train_borderincr_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\border_incr\20240103134750"
+train_incremental_path = r"C:\Users\edoar\Documents\GitHub\Results_Ant\incremental\20240311120808"
+# train_incremental_30_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\20240205224118"
+train_incremental_9_path = r"C:\Users\edoar\Documents\GitHub\Results_Biped\incremental\9_variations"
+# train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Walker\MAB\20240206155145"
+train_random_path = r"C:\Users\edoar\Documents\GitHub\Results_Ant\random\20240228142243"
+train_random_path_9 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\9_morph"
+train_MAB_path = r"C:\Users\edoar\Documents\GitHub\Results_Ant\MAB\20240228142251"
+train_MAB_path_9 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\MAB\20240130071104"
+train_random_path_9 = r"C:\Users\edoar\Documents\GitHub\Results_Biped\random\9_morph"
 # training_schedules = ["border_incr", "random", "incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2","uniform", "beta01", "beta02", "betawalk01", "betawalk02"]
 # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path, train_uniform_path, train_beta01, train_beta02, train_betawalk01, train_betawalk02]
-training_schedules = ["incremental"]
+# training_schedules = ["Random", "Incremental", "Uniform", "Gaussian", "Beta", "Cauchy"]
+# all_train_folders = [train_random_path, train_incremental_path, train_uniform_path, train_gaussian1_path, train_beta01, train_cauchy1_path]
 all_train_folders = [train_incremental_path]
 
 
 
-# WALKER 2D
-
-# # train_borderincr_path = "/home/edoardo.barba/Results_Walker/border_incr/20240117050517"
-
-# train_incremental_path = "/home/edoardo.barba/Results_Walker/incremental/20240120035256"
-# train_random_path  = "/home/edoardo.barba/Results_Walker/random/20240120035256"
-
-
-
-# all_train_folders = [train_random_path, train_incremental_path]
-# training_schedules = ["random", "incremental"]
-# # all_train_folders = [train_borderincr_path, train_random_path, train_incremental_path]
-
-
-# ACROBOT
-
-# train_cauchy1_path = "/home/edoardo.barba/Results_Acrobot/cauchy1/20231130173608"
-# train_cauchy2_path = "/home/edoardo.barba/Results_Acrobot/cauchy2/20231130173608"
-# train_gaussian1_path = "/home/edoardo.barba/Results_Acrobot/gaussian1/20231130171943"
-# train_gaussian2_path = "/home/edoardo.barba/Results_Acrobot/gaussian2/20231130173608"
-# train_incremental_path = "/home/edoardo.barba/Results_Acrobot/incremental/20231130171943"
-
-
-# training_schedules = ["incremental", "gaussian1", "gaussian2", "cauchy1", "cauchy2"]
-# all_train_folders = [train_incremental_path, train_gaussian1_path, train_gaussian2_path, train_cauchy1_path, train_cauchy2_path]
-
-
-#save_path = "/home/edoardo.barba/Results_Walker"
-
-#save_path = "/home/edoardo.barba/Results_Walker"
-ACTORS = -1
-
-
-# CARTPOLE_IN_LOWER_MASSPOLE = 0.05
-# CARTPOLE_IN_UPPER_MASSPOLE = 0.5
-# CARTPOLE_OUT_LOWER_MASSPOLE = 0.01
-# CARTPOLE_OUT_UPPER_MASSPOLE = 1.0
-
-# CARTPOLE_IN_LOWER_LENGTH = 0.25
-# CARTPOLE_IN_UPPER_LENGTH = 0.75
-# CARTPOLE_OUT_LOWER_LENGTH = 0.05
-# CARTPOLE_OUT_UPPER_LENGTH = 1.0
-
-# CARTPOLE_DEFAULT_MASS = 1
-# CARTPOLE_DEFAULT_LENGTH = 1
-
-
-
-# ACROBOT_IN_LOWER_MASS1 = 0.3
-# ACROBOT_IN_UPPER_MASS1 = 0.7
-# ACROBOT_OUT_LOWER_MASS1 = 0.1
-# ACROBOT_OUT_UPPER_MASS1 = 1.0
-
-# ACROBOT_IN_LOWER_MASS2 = 0.3
-# ACROBOT_IN_UPPER_MASS2 = 0.7
-# ACROBOT_OUT_LOWER_MASS2 = 0.1
-# ACROBOT_OUT_UPPER_MASS2 = 1.0
-
-# ACROBOT_DEFAULT__MASS1 = 0.1
-# ACROBOT_DEFAULT_MASS2 = 0.5
 
 
 SEED=0
+ACTORS = -1
 
 
 def gym_render_testing(game, agent, xml_path, parameters, topology, steps):
@@ -280,9 +208,9 @@ if __name__ == '__main__':
         all_history_rewards_OUT = []
         all_history_rewards_INOUT = []
 
-        #generations = 3000
+
         #print("Testing ", generations, "generations")
-        generations = 3000
+        generations = 5000
         print("Generations: ", generations)
         for i, run_number in enumerate(runs_folders):
             run_path = os.path.join(runs_folder_path, run_number)
